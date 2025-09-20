@@ -1,0 +1,151 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Auth.Application.DTOs;
+using Auth.Application.IServices;
+using Auth.Domain.Entities;
+using Auth.Infrastructure.IRepository;
+using Mapster;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+
+namespace Auth.Application.Services;
+
+public class AuthService : IAuthService
+{
+    private readonly IUserRepository _userRepository;
+    private readonly IPasswordHasher<User> _passwordHasher;
+    private readonly IConfiguration _configuration;
+    public AuthService(IUserRepository userService, IPasswordHasher<User> passwordHasher, IConfiguration configuration)
+    {
+        _userRepository = userService;
+        _passwordHasher = passwordHasher;
+        _configuration = configuration;
+    }
+    
+    public async Task<Result<AuthResponse>> RegisterAsync(RegisterRequest request)
+    {
+        try
+        {
+            if (request.Password != request.ConfirmPassword)
+            {
+                return new Result<AuthResponse>()
+                {
+                    IsSuccess = false,
+                    Message = "Password and Confirm Password do not match"
+                };
+            }
+            
+
+            if (string.IsNullOrWhiteSpace(request.Email))
+            {
+                return new Result<AuthResponse>()
+                {
+                    IsSuccess = false,
+                    Message = "Email is required"
+                };
+            }
+
+            if (await _userRepository.ExistsByEmail(request.Email))
+            {
+                throw new Exception("Email already exists");
+            }
+
+            var user = request.Adapt<User>();
+            user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
+            var createdUser = await _userRepository.CreateUser(user);
+            var userDto = createdUser.Adapt<UserDto>();
+            var token = GenerateToken(createdUser);
+
+            return new Result<AuthResponse>()
+            {
+                IsSuccess = true,
+                Message = "User registered successfully",
+                Data = new AuthResponse()
+                {
+                    User = userDto,
+                    Token = token,
+                    ExpiresAt = DateTime.UtcNow.AddHours(2)
+                }
+                
+            };
+        }
+        catch (Exception ex)
+        {
+            return new Result<AuthResponse>()
+            {
+                IsSuccess = false,
+                Message = $"An error occurred during registration: {ex.Message}"
+            };
+        }
+    }
+    
+    public async Task<Result<AuthResponse>> LoginAsync(LoginRequest request)
+    {
+        try
+        {
+            var user = await _userRepository.GetUserByEmail(request.Email);
+            if (user == null)
+            {
+                return new Result<AuthResponse>()
+                {
+                    IsSuccess = false,
+                    Message = "Invalid username or password."
+                };
+            }
+            
+            var verificationResult = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
+            if (verificationResult == PasswordVerificationResult.Failed)
+            {
+                return new Result<AuthResponse>()
+                {
+                    IsSuccess = false,
+                    Message = "Invalid username or password."
+                };
+            }
+            var userDto = user.Adapt<UserDto>();
+            var token = GenerateToken(user);
+
+            return new Result<AuthResponse>()
+            {
+                IsSuccess = true,
+                Message = "Login successful",
+                Data = new AuthResponse(){
+                    User = userDto,
+                    Token = token,
+                    ExpiresAt = DateTime.UtcNow.AddHours(2),
+                }
+            };
+        }
+        catch (Exception ex)
+        {
+            return new Result<AuthResponse>()
+            {
+                IsSuccess = false,
+                Message = $"An error occurred during login: {ex.Message}"
+            };
+        }
+    }
+    
+    public string GenerateToken(User user)
+    {
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var claims = new[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.Role.ToString())
+        };
+        var token = new JwtSecurityToken(
+            issuer: _configuration["Jwt:Issuer"],
+            audience: _configuration["Jwt:Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddMinutes(double.Parse(_configuration["Jwt:ExpiresInMinutes"]!)),
+            signingCredentials: creds
+        );
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+}
