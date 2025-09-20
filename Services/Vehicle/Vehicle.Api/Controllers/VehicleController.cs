@@ -32,7 +32,7 @@ namespace Vehicle.Api.Controllers
                 return Ok(result);
             }
 
-            // GET: api/vehicle/customer/{customerId}
+            // GET: api/vehicle/customer/{customerId:guid}
             [HttpGet("customer/{customerId:guid}")]
             public async Task<IActionResult> GetByCustomerId(Guid customerId)
             {

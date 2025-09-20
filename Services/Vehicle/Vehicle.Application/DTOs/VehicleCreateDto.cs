@@ -8,7 +8,7 @@ namespace Vehicle.Application.DTOs
 {
     public class VehicleCreateDto
     {
-        public Guid CustomerId { get; set; }
+        public Guid UserId { get; set; }
         public string Model { get; set; } = string.Empty;
         public string VIN { get; set; } = string.Empty;
         public string LicensePlate { get; set; } = string.Empty;

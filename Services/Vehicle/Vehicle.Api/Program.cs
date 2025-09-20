@@ -4,6 +4,7 @@ using Vehicle.Application.Services;
 using Vehicle.Infrashtructure;
 using Vehicle.Infrashtructure.IRepository;
 using Vehicle.Infrashtructure.Repository;
+using Vehicle.Application.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,9 @@ builder.Services.AddDbContext<VehicleServiceDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
+
+// Configure Mapster
+VehicleMapping.Configure();
 
 var app = builder.Build();
 

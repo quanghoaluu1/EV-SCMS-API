@@ -56,7 +56,7 @@ namespace Vehicle.Infrashtructure.Repository
 
         public async Task<Domain.Entities.Vehicle?> UpdateAsync(Domain.Entities.Vehicle vehicle)
         {
-            var existing = await _context.vehicles.FindAsync(vehicle.UserId);
+            var existing = await _context.vehicles.FindAsync(vehicle.Id);
             if (existing == null) return null;
 
             _context.Entry(existing).CurrentValues.SetValues(vehicle);
