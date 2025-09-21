@@ -45,7 +45,7 @@ namespace Vehicle.Infrashtructure.Repository
         {
             return await _context.vehicles
                 .AsNoTracking()
-                .Where(v => v.UserId == customerId)
+                .Where(v => v.CustomerId == customerId)
                 .ToListAsync();
         }
 

@@ -28,7 +28,7 @@ namespace Vehicle.Application.Mapping
             TypeAdapterConfig<VehicleUpdateDto, Domain.Entities.Vehicle>
                 .NewConfig()
                 .Ignore(dest => dest.Id)           // không được update Id
-                .Ignore(dest => dest.UserId)   // không đổi chủ xe
+                .Ignore(dest => dest.CustomerId)   // không đổi chủ xe
                 .Map(dest => dest.UpdatedAt, src => DateTime.UtcNow);
         }
     }

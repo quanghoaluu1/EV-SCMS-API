@@ -31,6 +31,9 @@ namespace Vehicle.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("LicensePlate")
                         .IsRequired()
                         .HasColumnType("text");
@@ -42,11 +45,12 @@ namespace Vehicle.Infrastructure.Migrations
                     b.Property<int>("OdometerKm")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
 
                     b.Property<string>("VIN")
                         .IsRequired()
