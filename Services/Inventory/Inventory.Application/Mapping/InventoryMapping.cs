@@ -16,7 +16,7 @@ namespace Inventory.Application.Mapping
             // Entity → DTO
             TypeAdapterConfig<Domain.Entities.Inventory, InventoryDto>
                 .NewConfig()
-                .Map(dest => dest.Status, src => src.status); // nếu tên property khác nhau
+                .Map(dest => dest.status, src => src.status); // nếu tên property khác nhau
 
             // CreateDto → Entity
             TypeAdapterConfig<CreateInventoryDto, Domain.Entities.Inventory>

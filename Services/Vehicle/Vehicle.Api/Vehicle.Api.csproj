@@ -7,6 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Google.Protobuf" Version="3.32.1" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
+        <PackageReference Include="Grpc.Tools" Version="2.72.0">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.20">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -19,5 +25,9 @@
       <ProjectReference Include="..\Vehicle.Application\Vehicle.Application.csproj" />
       <ProjectReference Include="..\Vehicle.Infrastructure\Vehicle.Infrastructure.csproj" />
     </ItemGroup>
+
+	<ItemGroup>
+		<Protobuf Include="Protos\vehicle.proto" GrpcServices="Server" />
+	</ItemGroup>
 
 </Project>

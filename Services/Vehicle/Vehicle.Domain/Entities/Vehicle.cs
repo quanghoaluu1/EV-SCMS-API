@@ -18,6 +18,5 @@ namespace Vehicle.Domain.Entities
         public string Status { get; set; } = "Active";  //Active, Maintenance, Retired
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
     }
 }

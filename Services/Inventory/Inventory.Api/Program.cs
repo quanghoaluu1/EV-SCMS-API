@@ -1,3 +1,4 @@
+using Inventory.Api.Services;
 using Inventory.Application.IServices;
 using Inventory.Application.Services;
 using Inventory.Infrastructure;
@@ -13,10 +14,14 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Add gRPC
+builder.Services.AddGrpc();
+
 builder.Services.AddDbContext<InventoryServiceDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
-builder.Services.AddScoped<IInventoryService, InventoryService>();
+builder.Services.AddScoped<IInventoryService, Inventory.Application.Services.InventoryService>();
 
 var app = builder.Build();
 
@@ -32,5 +37,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Configure gRPC
+app.MapGrpcService<InventoryGrpcService>();
 
 app.Run();

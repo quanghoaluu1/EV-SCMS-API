@@ -7,6 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Google.Protobuf" Version="3.32.1" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
+        <PackageReference Include="Grpc.Tools" Version="2.72.0">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     </ItemGroup>
 
@@ -14,5 +20,9 @@
       <ProjectReference Include="..\Inventory.Application\Inventory.Application.csproj" />
       <ProjectReference Include="..\Inventory.Infrastructure\Inventory.Infrastructure.csproj" />
     </ItemGroup>
+
+	<ItemGroup>
+		<Protobuf Include="Protos\inventory.proto" GrpcServices="Server" />
+	</ItemGroup>
 
 </Project>

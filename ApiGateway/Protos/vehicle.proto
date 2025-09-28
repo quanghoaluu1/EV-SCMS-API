@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+option csharp_namespace = "VehicleService.Grpc";
+
+package vehicle;
+
+// Vehicle model
+message Vehicle {
+  string id = 1;
+  string customer_id = 2;
+  string model = 3;
+  string vin = 4;
+  string license_plate = 5;
+  int32 year = 6;
+  int32 odometer_km = 7;
+  string status = 8; // Active, Maintenance, Retired
+  int64 created_at = 9;
+  int64 updated_at = 10;
+}
+
+// Request/Response messages
+message GetVehicleRequest {
+  string id = 1; // Guid as string
+}
+
+message GetVehicleResponse {
+  Vehicle vehicle = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message CreateVehicleRequest {
+  string customer_id = 1;
+  string model = 2;
+  string vin = 3;
+  string license_plate = 4;
+  int32 year = 5;
+  int32 odometer_km = 6;
+  string status = 7;
+}
+
+message CreateVehicleResponse {
+  Vehicle vehicle = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message UpdateVehicleRequest {
+  string id = 1;
+  string customer_id = 2;
+  string model = 3;
+  string vin = 4;
+  string license_plate = 5;
+  int32 year = 6;
+  int32 odometer_km = 7;
+  string status = 8;
+}
+
+message UpdateVehicleResponse {
+  Vehicle vehicle = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message DeleteVehicleRequest {
+  string id = 1;
+}
+
+message DeleteVehicleResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message GetAllVehiclesRequest {
+  // No pagination parameters based on your service
+}
+
+message GetAllVehiclesResponse {
+  repeated Vehicle vehicles = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message GetByCustomerIdRequest {
+  string customer_id = 1;
+}
+
+message GetByCustomerIdResponse {
+  repeated Vehicle vehicles = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+// gRPC Service definition
+service VehicleService {
+  rpc GetVehicle(GetVehicleRequest) returns (GetVehicleResponse);
+  rpc CreateVehicle(CreateVehicleRequest) returns (CreateVehicleResponse);
+  rpc UpdateVehicle(UpdateVehicleRequest) returns (UpdateVehicleResponse);
+  rpc DeleteVehicle(DeleteVehicleRequest) returns (DeleteVehicleResponse);
+  rpc GetAllVehicles(GetAllVehiclesRequest) returns (GetAllVehiclesResponse);
+  rpc GetByCustomerId(GetByCustomerIdRequest) returns (GetByCustomerIdResponse);
+}

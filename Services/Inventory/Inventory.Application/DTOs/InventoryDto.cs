@@ -14,7 +14,7 @@ namespace Inventory.Application.DTOs
         public InventoryCategoryEnum Category { get; set; }
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
-        public string Status { get; set; } = "Available";
+        public string status { get; set; } = "Available";
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }

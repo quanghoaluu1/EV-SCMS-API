@@ -1,0 +1,96 @@
+syntax = "proto3";
+
+option csharp_namespace = "InventoryService.Grpc";
+
+package inventory;
+
+// Inventory Item model
+message InventoryItem {
+  string id = 1;
+  string name = 2;
+  int32 category = 3; // InventoryCategoryEnum as int
+  int32 quantity = 4;
+  double unit_price = 5;
+  string status = 6;
+  int64 created_at = 7;
+  int64 updated_at = 8;
+}
+
+// Request/Response messages
+message GetInventoryItemRequest {
+  string id = 1; // Guid as string
+}
+
+message GetInventoryItemResponse {
+  InventoryItem item = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message CreateInventoryItemRequest {
+  string name = 1;
+  int32 category = 2;
+  int32 quantity = 3;
+  double unit_price = 4;
+  string status = 5;
+}
+
+message CreateInventoryItemResponse {
+  InventoryItem item = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message UpdateInventoryItemRequest {
+  string id = 1;
+  string name = 2;
+  int32 category = 3;
+  int32 quantity = 4;
+  double unit_price = 5;
+  string status = 6;
+}
+
+message UpdateInventoryItemResponse {
+  InventoryItem item = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message DeleteInventoryItemRequest {
+  string id = 1;
+}
+
+message DeleteInventoryItemResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message GetAllInventoryItemsRequest {
+  // No pagination parameters based on your service
+}
+
+message GetAllInventoryItemsResponse {
+  repeated InventoryItem items = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message GetByCategoryRequest {
+  int32 category = 1; // InventoryCategoryEnum as int
+}
+
+message GetByCategoryResponse {
+  repeated InventoryItem items = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+// gRPC Service definition
+service InventoryService {
+  rpc GetInventoryItem(GetInventoryItemRequest) returns (GetInventoryItemResponse);
+  rpc CreateInventoryItem(CreateInventoryItemRequest) returns (CreateInventoryItemResponse);
+  rpc UpdateInventoryItem(UpdateInventoryItemRequest) returns (UpdateInventoryItemResponse);
+  rpc DeleteInventoryItem(DeleteInventoryItemRequest) returns (DeleteInventoryItemResponse);
+  rpc GetAllInventoryItems(GetAllInventoryItemsRequest) returns (GetAllInventoryItemsResponse);
+  rpc GetByCategory(GetByCategoryRequest) returns (GetByCategoryResponse);
+}

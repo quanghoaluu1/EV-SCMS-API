@@ -15,7 +15,7 @@ namespace Vehicle.Application.DTOs
         public string LicensePlate { get; set; } = string.Empty;
         public int Year { get; set; }
         public int OdometerKm { get; set; }
-        public string Status { get; set; } = string.Empty;
+        public string Status { get; set; } = "Active";
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }
