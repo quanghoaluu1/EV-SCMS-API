@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Vehicle.Api.Services;
 using Vehicle.Application.IServices;
 using Vehicle.Application.Mapping;
@@ -18,6 +18,7 @@ builder.Services.AddSwaggerGen();
 
 // Add gRPC
 builder.Services.AddGrpc();
+builder.Services.AddGrpcReflection();
 
 builder.Services.AddDbContext<VehicleServiceDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -44,5 +45,10 @@ app.MapControllers();
 
 // Configure gRPC
 app.MapGrpcService<VehicleGrpcService>();
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapGrpcReflectionService();
+}
 
 app.Run();

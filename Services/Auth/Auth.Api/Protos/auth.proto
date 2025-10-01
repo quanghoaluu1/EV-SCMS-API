@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+option csharp_namespace = "AuthService.Grpc";
+
+package auth;
+
+// User model
+message User {
+  string email = 1;
+  string full_name = 2;
+  string phone_number = 3;
+  string status = 4;
+  int32 role = 5;  // RoleEnum as int
+  int64 created_at = 6;
+}
+
+// Authentication models
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  bool is_success = 1;
+  string message = 2;
+  AuthResponse data = 3;
+}
+
+message RegisterRequest {
+  string email = 1;
+  string password = 2;
+  string confirm_password = 3;
+  string full_name = 4;
+  string phone_number = 5;
+  int32 role = 6;  // RoleEnum as int
+}
+
+message RegisterResponse {
+  bool is_success = 1;
+  string message = 2;
+  AuthResponse data = 3;
+}
+
+message AuthResponse {
+  User user = 1;
+  string token = 2;
+  int64 expires_at = 3;
+}
+
+message ValidateTokenRequest {
+  string token = 1;
+}
+
+message ValidateTokenResponse {
+  bool is_valid = 1;
+  string message = 2;
+  string user_id = 3;
+  string email = 4;
+  int32 role = 5;  // RoleEnum as int
+}
+
+// User management messages
+message GetUserByEmailRequest {
+  string email = 1;
+}
+
+message GetUserByEmailResponse {
+  User user = 1;
+  bool is_success = 2;
+  string message = 3;
+}
+
+// gRPC Service definition
+service AuthService {
+  // Authentication
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
+  
+  // User Management
+  rpc GetUserByEmail(GetUserByEmailRequest) returns (GetUserByEmailResponse);
+}

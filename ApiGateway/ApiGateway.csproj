@@ -17,9 +17,14 @@
       <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.4" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Services\Auth\Auth.Domain\Auth.Domain.csproj" />
+    </ItemGroup>
+
 	<ItemGroup>
 		<Protobuf Include="Protos\inventory.proto" GrpcServices="Client" />
 		<Protobuf Include="Protos\vehicle.proto" GrpcServices="Client" />
+		<Protobuf Include="Protos\auth.proto" GrpcServices="Client" />
 	</ItemGroup>
 
 </Project>

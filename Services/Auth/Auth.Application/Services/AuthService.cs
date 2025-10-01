@@ -148,4 +148,19 @@ public class AuthService : IAuthService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
+    public async Task<UserDto?> GetUserByEmailAsync(string email)
+    {
+        try
+        {
+            var user = await _userRepository.GetUserByEmail(email);
+            if (user == null)
+                return null;
+
+            return user.Adapt<UserDto>();
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
 }

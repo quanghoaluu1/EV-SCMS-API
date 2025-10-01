@@ -41,9 +41,25 @@ builder.Services.AddGrpcClient<VehicleService.Grpc.VehicleService.VehicleService
     return handler;
 });
 
+builder.Services.AddGrpcClient<AuthService.Grpc.AuthService.AuthServiceClient>(options =>
+{
+    options.Address = new Uri(builder.Configuration.GetValue<string>("GrpcServices:AuthService")
+                            ?? "https://localhost:5003");
+})
+.ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler();
+    if (builder.Environment.IsDevelopment())
+    {
+        handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+    }
+    return handler;
+});
+
 // Register wrapper services
 builder.Services.AddScoped<IInventoryGrpcClient, InventoryGrpcClient>();
 builder.Services.AddScoped<IVehicleGrpcClient, VehicleGrpcClient>();
+builder.Services.AddScoped<IAuthGrpcClient, AuthGrpcClient>();
 
 var app = builder.Build();
 
