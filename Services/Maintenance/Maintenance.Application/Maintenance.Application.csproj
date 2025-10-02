@@ -8,6 +8,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Maintenance.Domain\Maintenance.Domain.csproj" />
+    <ProjectReference Include="..\Maintenance.Infrastructure\Maintenance.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Mapster" Version="7.4.2-pre02" />
   </ItemGroup>
 
 </Project>

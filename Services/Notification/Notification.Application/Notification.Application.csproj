@@ -8,6 +8,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Notification.Domain\Notification.Domain.csproj" />
+    <ProjectReference Include="..\Notification.Infrastructure\Notification.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Mapster" Version="7.4.2-pre02" />
   </ItemGroup>
 
 </Project>

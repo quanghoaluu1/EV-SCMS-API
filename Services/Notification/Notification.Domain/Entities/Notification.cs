@@ -1,0 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Notification.Domain.Entities
+{
+    public class Notification
+    {
+        public Guid NotificationId { get; set; }     
+        public Guid? CustomerId { get; set; }         
+        public Guid? VehicleId { get; set; }          
+        public string Title { get; set; } = string.Empty; 
+        public string Message { get; set; } = string.Empty; 
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? ReadAt { get; set; } 
+    }
+}
