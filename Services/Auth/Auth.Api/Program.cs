@@ -1,3 +1,4 @@
+using Auth.Api.GrpcServices;
 using Auth.Application.IServices;
 using Auth.Application.Services;
 using Auth.Domain.Entities;
@@ -20,6 +21,8 @@ builder.Services.AddDbContext<AuthServiceDbContext>(options =>
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddGrpc();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -34,5 +37,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapGrpcService<AuthGrpcService>();
+app.MapGet("/", () => "AuthService running");
 
 app.Run();

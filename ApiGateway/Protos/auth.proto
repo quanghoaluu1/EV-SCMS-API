@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+option csharp_namespace = "Auth.Grpc";
+
+service AuthGrpc {
+  rpc Register (RegisterRequest) returns (LoginReply);
+  rpc Login (LoginRequest) returns (LoginReply);
+  rpc VerifyToken (VerifyRequest) returns (VerifyReply);
+}
+
+message RegisterRequest {
+  string email = 1;
+  string fullname =2;
+  string password = 3;
+  string confirmPassword = 4;
+  string role = 5;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginReply {
+  bool isSuccess = 1;
+  string message = 2;
+  string token = 3;
+  string expiresAt = 4;
+
+  message User {
+    string id = 1;
+    string email = 2;
+    string role = 3;
+  }
+
+  User user = 5;
+}
+
+message VerifyRequest {
+  string token = 1;
+}
+
+message VerifyReply {
+  bool isValid = 1;
+  string userId = 2;
+  string email = 3;
+  string role = 4;
+}
