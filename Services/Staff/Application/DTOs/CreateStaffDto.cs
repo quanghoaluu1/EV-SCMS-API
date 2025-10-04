@@ -1,4 +1,6 @@
-﻿namespace Application.DTOs;
+﻿using Domain.Enum;
+
+namespace Application.DTOs;
 
 public class CreateStaffDto
 {
@@ -6,5 +8,5 @@ public class CreateStaffDto
     public string FullName { get; set; } = null!;
     public string Email { get; set; } = null!;
     public string PhoneNumber { get; set; } = null!;
-    public string Position { get; set; } = null!;
+    public StaffPosition Position { get; set; }
 }
