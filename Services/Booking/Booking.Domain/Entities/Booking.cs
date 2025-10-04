@@ -10,10 +10,9 @@ namespace Booking.Domain.Entities
     public class Booking
     {
         public Guid BookingId { get; set; } = Guid.NewGuid();
-
         public Guid CustomerId { get; set; }
         public Guid VehicleId { get; set; } 
-        public Guid? StaffId { get; set; }
+        public Guid? StaffId { get; set; } //Staf assigned to the booking / first available staff if null
         public BookingEnums ServiceType { get; set; }
         public DateTime ScheduledDate { get; set; }
         public BookingStatusEnum Status { get; set; } = BookingStatusEnum.Pending;

@@ -1,6 +1,25 @@
+using Mapster;
+using Microsoft.EntityFrameworkCore;
+using Notification.Application.IServices;
+using Notification.Application.Mapping;
+using Notification.Application.Services;
+using Notification.Infrastructure;
+using Notification.Infrastructure.IRepository;
+using Notification.Infrastructure.Repository;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddDbContext<NotificationDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+
+var config = TypeAdapterConfig.GlobalSettings;
+MappingConfig.RegisterMappings(config);
+builder.Services.AddSingleton(config);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
