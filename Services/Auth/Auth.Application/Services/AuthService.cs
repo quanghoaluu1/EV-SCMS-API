@@ -2,8 +2,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Auth.Application.DTOs;
+using Auth.Application.DTOs.Auth;
 using Auth.Application.IServices;
 using Auth.Domain.Entities;
+using Auth.Domain.Enums;
 using Auth.Infrastructure.IRepository;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
@@ -51,6 +53,8 @@ public class AuthService : IAuthService
             {
                 throw new Exception("Email already exists");
             }
+
+            request.Role ??= RoleEnum.Customer;
 
             var user = request.Adapt<User>();
             user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
@@ -128,7 +132,82 @@ public class AuthService : IAuthService
         }
     }
     
-    public string GenerateToken(User user)
+    public async Task<Result<bool>> ChangeRoleAsync(ChangeRoleRequest request)
+    {
+        try
+        {
+            var success = await _userRepository.ChangeRole(request.UserId, request.Role);
+            if (!success)
+            {
+                return new Result<bool>()
+                {
+                    IsSuccess = false,
+                    Message = "User not found",
+                    Data = false
+                };
+            }
+            return new Result<bool>()
+            {
+                IsSuccess = true,
+                Message = "User role updated successfully",
+                Data = true
+            };
+        }
+        catch (Exception ex)
+        {
+            return new Result<bool>()
+            {
+                IsSuccess = false,
+                Message = $"An error occurred while changing role: {ex.Message}",
+                Data = false
+            };
+        }
+    }
+
+    public async Task<Result<UserDto>> GetUserByIdAsync(Guid userId)
+    {
+        try
+        {
+            if (userId == Guid.Empty)
+            {
+                return new Result<UserDto>()
+                {
+                    IsSuccess = false,
+                    Message = "User id can not be null",
+                    Data = null
+                };
+            }
+
+            var user = await _userRepository.GetUserById(userId);
+            if (user is null)
+            {
+                return new Result<UserDto>()
+                {
+                    IsSuccess = false,
+                    Message = "User not found",
+                    Data = null
+                };
+            }
+
+            var userDto = user.Adapt<UserDto>();
+            return new Result<UserDto>()
+            {
+                IsSuccess = true,
+                Message = "User found",
+                Data = userDto
+            };
+        }
+        catch (Exception ex)
+        {
+            return new Result<UserDto>()
+            {
+                IsSuccess = false,
+                Message = $"An error occurred while getting user: {ex.Message}",
+                Data = null
+            };
+        }
+    }
+    private string GenerateToken(User user)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

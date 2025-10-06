@@ -4,6 +4,7 @@ public enum RoleEnum
 {
     Admin,
     Customer,
-    Staff,
-    Technician
+    Technician,
+    ServiceAdvisor,
+    Manager,
 }

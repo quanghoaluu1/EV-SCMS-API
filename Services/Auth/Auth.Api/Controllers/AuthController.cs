@@ -1,4 +1,5 @@
 using Auth.Application.DTOs;
+using Auth.Application.DTOs.Auth;
 using Auth.Application.IServices;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,6 +35,28 @@ public class AuthController : ControllerBase
             return BadRequest(result);
         }
 
+        return Ok(result);
+    }
+
+    [HttpPost("change-role")]
+    public async Task<IActionResult> ChangeRole([FromBody] ChangeRoleRequest request)
+    {
+        var result = await _authService.ChangeRoleAsync(request);
+        if (!result.IsSuccess)
+        {
+            return BadRequest(result);
+        }
+        return Ok(result);
+    }
+
+    [HttpGet("id")]
+    public async Task<IActionResult> GetByUserId(Guid userId)
+    {
+        var result = await _authService.GetUserByIdAsync(userId);
+        if (!result.IsSuccess)
+        {
+            return BadRequest(result);
+        }
         return Ok(result);
     }
 }

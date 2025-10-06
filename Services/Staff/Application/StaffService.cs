@@ -33,7 +33,6 @@ public class StaffService : IStaffService
             {
                 StaffId = staff.Id,
                 UserId = staff.UserId,
-                Position = staff.Position.ToString(),
             });
         }
 
@@ -43,8 +42,7 @@ public class StaffService : IStaffService
             {
                 Id = Guid.NewGuid(),
                 UserId = dto.UserId,
-                Position = dto.Position,
-                HireDate = DateOnly.FromDateTime(DateTime.Now),
+                HireDate = dto.HireDate,
             };
 
             await _staffRepository.AddAsync(staff);
@@ -53,7 +51,6 @@ public class StaffService : IStaffService
             {
                 StaffId = staff.Id,
                 UserId = staff.UserId,
-                Position = staff.Position.ToString(),
             };
         }
 
@@ -62,7 +59,6 @@ public class StaffService : IStaffService
             var staff = await _staffRepository.GetByIdAsync(id);
             if (staff == null) return false;
 
-            dto.Position = dto.Position ?? staff.Position;
 
             await _staffRepository.UpdateAsync(staff);
             return true;

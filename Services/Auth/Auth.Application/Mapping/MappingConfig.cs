@@ -1,4 +1,5 @@
 using Auth.Application.DTOs;
+using Auth.Application.DTOs.Auth;
 using Auth.Domain.Entities;
 using Mapster;
 
@@ -11,6 +12,7 @@ public class MappingConfig
         TypeAdapterConfig<User, UserDto>
             .NewConfig()
             .Map(dest => dest.Status, src => src.Status.ToString());
+        
         TypeAdapterConfig<RegisterRequest, User>
             .NewConfig()
             .Map(dest => dest.Email, src => src.Email != null ? src.Email.ToLower().Trim() : null)

@@ -6,7 +6,6 @@ public class Staff
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }
-    public StaffPosition Position { get; set; }
     public DateOnly HireDate { get; set; }
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; }

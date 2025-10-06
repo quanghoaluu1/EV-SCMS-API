@@ -1,4 +1,6 @@
-namespace Auth.Application.DTOs;
+using Auth.Domain.Enums;
+
+namespace Auth.Application.DTOs.Auth;
 
 public class RegisterRequest
 {
@@ -6,4 +8,5 @@ public class RegisterRequest
     public string FullName { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
     public string ConfirmPassword { get; set; } = string.Empty;
+    public RoleEnum? Role { get; set; }
 }
