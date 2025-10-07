@@ -1,0 +1,21 @@
+﻿syntax = "proto3";
+option csharp_namespace = "AuthGrpc";
+package auth;
+
+service Auth{
+  rpc GetUserById (GetUserByIdRequest) returns (GetUserByIdReply);
+}
+message GetUserByIdRequest {
+  string userId = 1; // GUID string
+}
+message GetUserByIdReply {
+  bool success = 1;
+  string message = 2;
+  string userId = 3; // echo back
+  string email = 4;
+  string fullName = 5;
+  string status = 6; // Active, Inactive
+  string role = 7; 
+  string createdAt = 8; // ISO date-time: yyyy-MM-ddTHH:mm:ssZ
+}
+message Empty {}

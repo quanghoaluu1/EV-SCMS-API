@@ -1,3 +1,4 @@
+using Auth.Api.GrpcServices;
 using Auth.Application.IServices;
 using Auth.Application.Services;
 using Auth.Domain.Entities;
@@ -27,7 +28,7 @@ builder.Services.AddDbContext<AuthServiceDbContext>(options =>
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
-
+builder.Services.AddGrpc();
 
 var app = builder.Build();
 
@@ -38,6 +39,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapGrpcService<AuthGrpcService>();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

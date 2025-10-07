@@ -1,6 +1,8 @@
 using Application.DTOs;
 using Application.IService;
 using Domain.Entities;
+using GrpcContract;
+using Infrastructure.Interfaces;
 using Infrastructure.IRepository;
 
 namespace Application;
@@ -8,21 +10,44 @@ namespace Application;
 public class StaffService : IStaffService
 {
     private readonly IStaffRepository _staffRepository;
+    private readonly IAuthGrpcGateway _authGrpcGateway;
 
-        public StaffService(IStaffRepository staffRepository)
+        public StaffService(IStaffRepository staffRepository, IAuthGrpcGateway authGrpcGateway)
         {
             _staffRepository = staffRepository;
+            _authGrpcGateway = authGrpcGateway;
         }
 
-        public async Task<StaffDto?> GetStaffByIdAsync(Guid id)
+        public async Task<ResultDto<StaffDto>> GetStaffByIdAsync(Guid id)
         {
             var staff = await _staffRepository.GetByIdAsync(id);
+            
             if (staff == null) return null;
 
-            return new StaffDto
+            var userReply = await _authGrpcGateway.GetUserById(staff.UserId);
+            if (userReply == null || !userReply.Success)
             {
-                StaffId = staff.Id,
-                UserId = staff.UserId,
+                return new ResultDto<StaffDto>()
+                {
+                    IsSuccess = false,
+                    Message = "Failed to retrieve user information through gRPC",
+                    Data = null,
+                };
+            }
+            
+            
+            return new ResultDto<StaffDto>()
+            {
+                IsSuccess = true,
+                Message = "Staff retrieved successfully",
+                Data = new StaffDto
+                {
+                    StaffId = staff.Id,
+                    UserId = staff.UserId,
+                    FullName = userReply.FullName,
+                    Email = userReply.Email,
+                    Role = userReply.Role
+                }
             };
         }
 
