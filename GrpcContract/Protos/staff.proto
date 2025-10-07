@@ -1,0 +1,21 @@
+﻿
+syntax = "proto3";
+option csharp_namespace = "StaffGrpc";
+package staff;
+
+service Staff {
+  rpc CreateStaff (CreateStaffRequest) returns (CreateStaffReply);
+}
+
+message CreateStaffRequest {
+  string userId = 1; // GUID string
+  string hireDate = 2; // ISO date: yyyy-MM-dd
+}
+
+
+message CreateStaffReply {
+  bool success = 1;
+  string message = 2;
+  string staffId = 3; // GUID string when success
+  string userId = 4; // echo back
+}
