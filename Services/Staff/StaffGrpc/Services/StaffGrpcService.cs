@@ -4,10 +4,10 @@ using Grpc.Core;
 
 namespace StaffGrpc.Services;
 
-public class StaffService : Staff.StaffBase
+public class StaffGrpcService : Staff.StaffBase
 {
     private readonly IStaffService _staffService;
-    public StaffService(IStaffService staffService)
+    public StaffGrpcService(IStaffService staffService)
     {
         _staffService = staffService;
     }
@@ -48,6 +48,8 @@ public class StaffService : Staff.StaffBase
         }
         catch (Exception ex)
         {
+            Console.WriteLine("Staff Grpc exception: ", ex);
+            throw new RpcException(new Status(StatusCode.Internal, ex.Message));
             return new CreateStaffReply { Success = false, Message = ex.Message };
         }
     }

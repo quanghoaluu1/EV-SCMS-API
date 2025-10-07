@@ -27,7 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Protobuf Include="../../../GrpcContract/Protos/staff.proto" GrpcServices="Client" />
+        <PackageReference Include="Grpc.AspNetCore.Server.ClientFactory" Version="2.57.0" />
     </ItemGroup>
 
 </Project>

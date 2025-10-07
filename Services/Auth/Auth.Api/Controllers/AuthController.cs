@@ -66,7 +66,7 @@ public class AuthController : ControllerBase
             StaffId = Guid.Parse(staffReply.StaffId)
         };
 
-        return Ok(userResult);
+        return Ok(response);
     }
 
     [HttpPost("login")]
