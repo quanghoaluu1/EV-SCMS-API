@@ -6,7 +6,8 @@ using Auth.Application.DTOs.Auth;
 using Auth.Application.IServices;
 using Auth.Domain.Entities;
 using Auth.Domain.Enums;
-using Auth.Infrastructure.IRepository;
+using Auth.Infrastructure;
+using Auth.Infrastructure.Interfaces;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -19,13 +20,17 @@ public class AuthService : IAuthService
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher<User> _passwordHasher;
     private readonly IConfiguration _configuration;
-    public AuthService(IUserRepository userService, IPasswordHasher<User> passwordHasher, IConfiguration configuration)
+    private readonly IStaffGrpcGateway _staffGrpc;
+
+    public AuthService(IUserRepository userService, IPasswordHasher<User> passwordHasher, IConfiguration configuration,
+        IStaffGrpcGateway staffGrpc)
     {
         _userRepository = userService;
         _passwordHasher = passwordHasher;
         _configuration = configuration;
+        _staffGrpc = staffGrpc;
     }
-    
+
     public async Task<Result<AuthResponse>> RegisterAsync(RegisterRequest request)
     {
         try
@@ -38,7 +43,7 @@ public class AuthService : IAuthService
                     Message = "Password and Confirm Password do not match"
                 };
             }
-            
+
 
             if (string.IsNullOrWhiteSpace(request.Email))
             {
@@ -72,7 +77,7 @@ public class AuthService : IAuthService
                     Token = token,
                     ExpiresAt = DateTime.UtcNow.AddHours(2)
                 }
-                
+
             };
         }
         catch (Exception ex)
@@ -84,7 +89,88 @@ public class AuthService : IAuthService
             };
         }
     }
-    
+
+    public async Task<Result<RegisterStaffResponse>> RegisterStaffAsync(RegisterStaffRequest request,
+        CancellationToken ct)
+    {
+        if (request.Password != request.ConfirmPassword)
+        {
+            return new Result<RegisterStaffResponse>()
+            {
+                IsSuccess = false,
+                Message = "Password and Confirm Password do not match"
+            };
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Email))
+        {
+            return new Result<RegisterStaffResponse>()
+            {
+                IsSuccess = false,
+                Message = "Email is required"
+            };
+        }
+
+        if (await _userRepository.ExistsByEmail(request.Email))
+        {
+            return new Result<RegisterStaffResponse>()
+            {
+                IsSuccess = false,
+                Message = "Email already exists"
+            };
+        }
+
+        if (request.Role == RoleEnum.Customer)
+        {
+            return new Result<RegisterStaffResponse>()
+            {
+                IsSuccess = false,
+                Message = "Invalid role for staff registration"
+            };
+        }
+
+        try
+        {
+            var user = request.Adapt<User>();
+            user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
+            var createdUser = await _userRepository.CreateUser(user);
+            var userDto = createdUser.Adapt<UserDto>();
+
+            var staffReply = await _staffGrpc.CreateStaffAsync(createdUser.Id, request.HireDate, ct);
+            if (!staffReply.Success)
+            {
+                return new Result<RegisterStaffResponse>()
+                {
+                    IsSuccess = false,
+                    Message = $"Staff creation failed: {staffReply.Message}"
+                };
+            }
+
+            return new Result<RegisterStaffResponse>()
+            {
+                IsSuccess = true,
+                Message = "Staff registered successfully",
+                Data = new RegisterStaffResponse()
+                {
+                    Auth = new AuthResponse()
+                    {
+                        User = userDto,
+                        Token = GenerateToken(createdUser),
+                        ExpiresAt = DateTime.UtcNow.AddHours(2)
+                    },
+                }
+            };
+        }
+        catch (Exception ex)
+        {
+            return new Result<RegisterStaffResponse>()
+            {
+                IsSuccess = false,
+                Message = $"An error occurred during staff registration: {ex.Message}"
+            };
+        }
+    }
+
     public async Task<Result<AuthResponse>> LoginAsync(LoginRequest request)
     {
         try
@@ -98,7 +184,7 @@ public class AuthService : IAuthService
                     Message = "Invalid username or password."
                 };
             }
-            
+
             var verificationResult = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
             if (verificationResult == PasswordVerificationResult.Failed)
             {
@@ -108,6 +194,7 @@ public class AuthService : IAuthService
                     Message = "Invalid username or password."
                 };
             }
+
             var userDto = user.Adapt<UserDto>();
             var token = GenerateToken(user);
 
@@ -115,7 +202,8 @@ public class AuthService : IAuthService
             {
                 IsSuccess = true,
                 Message = "Login successful",
-                Data = new AuthResponse(){
+                Data = new AuthResponse()
+                {
                     User = userDto,
                     Token = token,
                     ExpiresAt = DateTime.UtcNow.AddHours(2),
@@ -131,7 +219,7 @@ public class AuthService : IAuthService
             };
         }
     }
-    
+
     public async Task<Result<bool>> ChangeRoleAsync(ChangeRoleRequest request)
     {
         try
@@ -146,6 +234,7 @@ public class AuthService : IAuthService
                     Data = false
                 };
             }
+
             return new Result<bool>()
             {
                 IsSuccess = true,
@@ -207,6 +296,7 @@ public class AuthService : IAuthService
             };
         }
     }
+
     private string GenerateToken(User user)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
@@ -226,5 +316,4 @@ public class AuthService : IAuthService
         );
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
-
 }

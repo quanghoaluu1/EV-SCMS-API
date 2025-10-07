@@ -1,6 +1,6 @@
 using Auth.Domain.Entities;
 using Auth.Domain.Enums;
-using Auth.Infrastructure.IRepository;
+using Auth.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Infrastructure.Repository;

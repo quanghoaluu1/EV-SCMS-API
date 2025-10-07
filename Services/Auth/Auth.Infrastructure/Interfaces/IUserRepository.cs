@@ -1,7 +1,7 @@
 using Auth.Domain.Entities;
 using Auth.Domain.Enums;
 
-namespace Auth.Infrastructure.IRepository;
+namespace Auth.Infrastructure.Interfaces;
 
 public interface IUserRepository
 {
