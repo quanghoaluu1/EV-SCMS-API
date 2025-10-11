@@ -1,9 +1,8 @@
 ﻿syntax = "proto3";
 
-option csharp_namespace = "Customer.Api.Protos";
-package Customer;
+option csharp_namespace = "CustomerGrpc";
 
-service Customer {
+service CustomerService {
   rpc CreateCustomer (CreateCustomerRequest) returns (CreateCustomerReply);
   rpc GetCustomerById (GetCustomerByIdRequest) returns (GetCustomerByIdReply);
   rpc GetCustomerByUserId (GetCustomerByUserIdRequest) returns (GetCustomerByUserIdReply);
@@ -15,19 +14,19 @@ service Customer {
 }
 
 message CreateCustomerRequest {
-  string userId = 1; // GUID string
+  string userId = 1;
   string address = 2;
 }
 
 message CreateCustomerReply {
   bool success = 1;
   string message = 2;
-  string customerId = 3; // GUID string when success
-  string userId = 4; // echo back
+  string customerId = 3;
+  string userId = 4;
 }
 
 message GetCustomerByIdRequest {
-  string customerId = 1; // GUID string
+  string customerId = 1;
 }
 
 message GetCustomerByIdReply {
@@ -37,12 +36,12 @@ message GetCustomerByIdReply {
   string userId = 4;
   string address = 5;
   string status = 6;
-  string createdAt = 7; // ISO date-time
-  string updatedAt = 8; // ISO date-time
+  string createdAt = 7;
+  string updatedAt = 8;
 }
 
 message GetCustomerByUserIdRequest {
-  string userId = 1; // GUID string
+  string userId = 1;
 }
 
 message GetCustomerByUserIdReply {
@@ -52,8 +51,8 @@ message GetCustomerByUserIdReply {
   string userId = 4;
   string address = 5;
   string status = 6;
-  string createdAt = 7; // ISO date-time
-  string updatedAt = 8; // ISO date-time
+  string createdAt = 7;
+  string updatedAt = 8;
 }
 
 message GetAllCustomersRequest {
@@ -80,7 +79,7 @@ message GetCustomersByStatusReply {
 }
 
 message UpdateCustomerRequest {
-  string customerId = 1; // GUID string
+  string customerId = 1;
   string address = 2;
   string status = 3;
 }
@@ -92,7 +91,7 @@ message UpdateCustomerReply {
 }
 
 message UpdateCustomerStatusRequest {
-  string customerId = 1; // GUID string
+  string customerId = 1;
   string status = 2;
 }
 
@@ -103,7 +102,7 @@ message UpdateCustomerStatusReply {
 }
 
 message DeleteCustomerRequest {
-  string customerId = 1; // GUID string
+  string customerId = 1;
 }
 
 message DeleteCustomerReply {
@@ -112,13 +111,12 @@ message DeleteCustomerReply {
   string customerId = 3;
 }
 
-// Common message for customer information
 message CustomerInfo {
   string customerId = 1;
   string userId = 2;
   string address = 3;
   string status = 4;
-  string createdAt = 5; // ISO date-time
+  string createdAt = 5;
 }
 
 message Empty {}

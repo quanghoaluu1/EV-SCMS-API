@@ -1,17 +1,20 @@
 ﻿using Grpc.Core;
-using Vehicle.Api;
 using Vehicle.Application.DTOs;
 using Vehicle.Application.IServices;
+using Vehicle.Infrastructure.IService;
+using VehicleGrpc;
 
 namespace VehicleGrpc.API.Services;
 
-public class VehicleGrpcService : Vehicle.Api.Vehicle.VehicleBase
+public class VehicleGrpcService : VehicleGrpc.Vehicle.VehicleBase
 {
     private readonly IVehicleService _vehicleService;
+    private readonly ICustomerGrpcGateway _customerGrpcGateway;
 
-    public VehicleGrpcService(IVehicleService vehicleService)
+    public VehicleGrpcService(IVehicleService vehicleService, ICustomerGrpcGateway customerGrpcGateway)
     {
         _vehicleService = vehicleService;
+        _customerGrpcGateway = customerGrpcGateway;
     }
 
     public override async Task<CreateVehicleReply> CreateVehicle(CreateVehicleRequest request, ServerCallContext context)
@@ -20,10 +23,21 @@ public class VehicleGrpcService : Vehicle.Api.Vehicle.VehicleBase
         {
             if (!Guid.TryParse(request.CustomerId, out var customerId))
             {
-                return new CreateVehicleReply { Success = false, Message = "Invalid CustomerId" };
+                return new CreateVehicleReply { Success = false, Message = "Invalid CustomerId format" };
             }
 
-            // Create vehicle directly - no Auth validation in gRPC service
+            // Validate customer exists via gRPC call
+            var customerResponse = await _customerGrpcGateway.GetCustomerById(customerId);
+            if (!customerResponse.Success)
+            {
+                return new CreateVehicleReply
+                {
+                    Success = false,
+                    Message = $"Customer validation failed: {customerResponse.Message}"
+                };
+            }
+
+            // Create vehicle after successful customer validation
             var dto = new VehicleCreateDto
             {
                 CustomerId = customerId,

@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-option csharp_namespace = "Vehicle.Api";
-package Vehicle;
+option csharp_namespace = "VehicleGrpc";
+package VehicleService;
 
 service Vehicle {
   rpc CreateVehicle (CreateVehicleRequest) returns (CreateVehicleReply);

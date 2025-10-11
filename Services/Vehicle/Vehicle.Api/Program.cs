@@ -5,27 +5,44 @@ using Vehicle.Application.Services;
 using Vehicle.Infrashtructure;
 using Vehicle.Infrashtructure.IRepository;
 using Vehicle.Infrashtructure.Repository;
+using Vehicle.Infrastructure.IService;
+using Vehicle.Infrastructure.Service;
 using VehicleGrpc.API.Services;
-//using VehicleGrpc.Services;
+using CustomerGrpc;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//// Add gRPC client for Auth service
-//builder.Services.AddGrpcClient<AuthGrpc.Auth.AuthClient>(o =>
-//{
-//    o.Address = new Uri("https://localhost:7212");
-//});
-//builder.Services.AddScoped<IAuthGrpcGateway, AuthGrpcGateway>();
-
 // Add gRPC services
 builder.Services.AddGrpc();
+
+// Add gRPC client for Customer service with improved configuration
+builder.Services.AddGrpcClient<CustomerService.CustomerServiceClient>(options =>
+{
+    options.Address = new Uri("https://localhost:7040");
+})
+.ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler();
+    // For development - ignore SSL certificate errors
+    handler.ServerCertificateCustomValidationCallback = 
+        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+    return handler;
+})
+.ConfigureChannel(options =>
+{
+    // Configure gRPC channel options
+    options.UnsafeUseInsecureChannelCallCredentials = true;
+    options.MaxReceiveMessageSize = 4 * 1024 * 1024; // 4 MB
+    options.MaxSendMessageSize = 4 * 1024 * 1024; // 4 MB
+});
+
+builder.Services.AddScoped<ICustomerGrpcGateway, CustomerGrpcGateway>();
 
 builder.Services.AddDbContext<VehicleServiceDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
