@@ -6,4 +6,15 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="IServices\" />
+    <Folder Include="Mapping\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Customer.Domain\Customer.Domain.csproj" />
+    <ProjectReference Include="..\Customer.Infrastructure\Customer.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
