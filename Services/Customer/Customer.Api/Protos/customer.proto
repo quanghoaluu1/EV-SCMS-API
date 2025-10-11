@@ -1,0 +1,124 @@
+syntax = "proto3";
+
+option csharp_namespace = "Customer.Api.Protos";
+package Customer;
+
+service Customer {
+  rpc CreateCustomer (CreateCustomerRequest) returns (CreateCustomerReply);
+  rpc GetCustomerById (GetCustomerByIdRequest) returns (GetCustomerByIdReply);
+  rpc GetCustomerByUserId (GetCustomerByUserIdRequest) returns (GetCustomerByUserIdReply);
+  rpc GetAllCustomers (GetAllCustomersRequest) returns (GetAllCustomersReply);
+  rpc GetCustomersByStatus (GetCustomersByStatusRequest) returns (GetCustomersByStatusReply);
+  rpc UpdateCustomer (UpdateCustomerRequest) returns (UpdateCustomerReply);
+  rpc UpdateCustomerStatus (UpdateCustomerStatusRequest) returns (UpdateCustomerStatusReply);
+  rpc DeleteCustomer (DeleteCustomerRequest) returns (DeleteCustomerReply);
+}
+
+message CreateCustomerRequest {
+  string userId = 1; // GUID string
+  string address = 2;
+}
+
+message CreateCustomerReply {
+  bool success = 1;
+  string message = 2;
+  string customerId = 3; // GUID string when success
+  string userId = 4; // echo back
+}
+
+message GetCustomerByIdRequest {
+  string customerId = 1; // GUID string
+}
+
+message GetCustomerByIdReply {
+  bool success = 1;
+  string message = 2;
+  string customerId = 3;
+  string userId = 4;
+  string address = 5;
+  string status = 6;
+  string createdAt = 7; // ISO date-time
+  string updatedAt = 8; // ISO date-time
+}
+
+message GetCustomerByUserIdRequest {
+  string userId = 1; // GUID string
+}
+
+message GetCustomerByUserIdReply {
+  bool success = 1;
+  string message = 2;
+  string customerId = 3;
+  string userId = 4;
+  string address = 5;
+  string status = 6;
+  string createdAt = 7; // ISO date-time
+  string updatedAt = 8; // ISO date-time
+}
+
+message GetAllCustomersRequest {
+  int32 pageNumber = 1;
+  int32 pageSize = 2;
+}
+
+message GetAllCustomersReply {
+  bool success = 1;
+  string message = 2;
+  repeated CustomerInfo customers = 3;
+}
+
+message GetCustomersByStatusRequest {
+  string status = 1;
+  int32 pageNumber = 2;
+  int32 pageSize = 3;
+}
+
+message GetCustomersByStatusReply {
+  bool success = 1;
+  string message = 2;
+  repeated CustomerInfo customers = 3;
+}
+
+message UpdateCustomerRequest {
+  string customerId = 1; // GUID string
+  string address = 2;
+  string status = 3;
+}
+
+message UpdateCustomerReply {
+  bool success = 1;
+  string message = 2;
+  string customerId = 3;
+}
+
+message UpdateCustomerStatusRequest {
+  string customerId = 1; // GUID string
+  string status = 2;
+}
+
+message UpdateCustomerStatusReply {
+  bool success = 1;
+  string message = 2;
+  string customerId = 3;
+}
+
+message DeleteCustomerRequest {
+  string customerId = 1; // GUID string
+}
+
+message DeleteCustomerReply {
+  bool success = 1;
+  string message = 2;
+  string customerId = 3;
+}
+
+// Common message for customer information
+message CustomerInfo {
+  string customerId = 1;
+  string userId = 2;
+  string address = 3;
+  string status = 4;
+  string createdAt = 5; // ISO date-time
+}
+
+message Empty {}
