@@ -11,13 +11,14 @@ namespace Maintenance.Domain.Entities
     {
         public Guid MaintenanceId { get; set; }
         public Guid VehicleId { get; set; }    
-        public Guid CustomerId { get; set; }  
+        public Guid CustomerId { get; set; }
+        public Guid BookingId { get; set; }
+        public Guid StaffId { get; set; }
         public DateTime ServiceDate { get; set; }
         public int Odometer { get; set; }
-        public string ServiceType { get; set; } = string.Empty;
+        public MaintenanceServiceTypeEnum ServiceType { get; set; }
         public string? Description { get; set; }
         public MaintenanceEnums Status { get; set; }= MaintenanceEnums.Pending;
-        public decimal TotalCost { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }

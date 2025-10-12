@@ -21,6 +21,7 @@
         <Protobuf Include="Protos\auth.proto" GrpcServices="Both" />
         <Protobuf Include="Protos\staff.proto" GrpcServices="Both" />
 		<Protobuf Include="Protos\booking.proto" GrpcServices="Both" />
+		<Protobuf Include="Protos\maintenance.proto" GrpcServices="Both" />
 	</ItemGroup>
 
 </Project>
