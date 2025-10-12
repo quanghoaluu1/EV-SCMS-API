@@ -28,4 +28,8 @@
 		<ProjectReference Include="..\Vehicle.Infrastructure\Vehicle.Infrastructure.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Protos\" />
+	</ItemGroup>
+
 </Project>

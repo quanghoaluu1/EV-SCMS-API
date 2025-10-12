@@ -7,13 +7,33 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.20">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-    </ItemGroup>
+
+		<PackageReference Include="Google.Protobuf" Version="3.33.0-rc1" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
+        <PackageReference Include="Grpc.Tools" Version="2.72.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Protobuf Include="../../../GrpcContract/Protos/booking.proto" GrpcServices="Server" />
+	</ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Booking.Application\Booking.Application.csproj" />
       <ProjectReference Include="..\Booking.Infrastructure\Booking.Infrastructure.csproj" />
+	  <ProjectReference Include="../../../GrpcContract/GrpcContract.csproj" />
+	</ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Protos\" />
     </ItemGroup>
 
 </Project>

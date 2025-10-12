@@ -6,7 +6,7 @@ using VehicleGrpc;
 
 namespace VehicleGrpc.API.Services;
 
-public class VehicleGrpcService : VehicleGrpc.Vehicle.VehicleBase
+public class VehicleGrpcService : VehicleGrpc.VehicleGrpcService.VehicleGrpcServiceBase
 {
     private readonly IVehicleService _vehicleService;
     private readonly ICustomerGrpcGateway _customerGrpcGateway;

@@ -27,5 +27,11 @@ namespace Booking.Infrastructure.IRepository
         // Specific operations
         Task<bool> UpdateStatusAsync(Guid bookingId, BookingStatusEnum newStatus);
         Task<bool> AssignStaffAsync(Guid bookingId, Guid staffId);
+
+        Task<IEnumerable<Domain.Entities.Booking>> GetBookingsByDateAsync(DateTime date, int pageNumber = 1, int pageSize = 100);
+
+        Task<bool> UpdatePaymentStatusAsync(Guid bookingId, string paymentStatus);
+
+
     }
 }

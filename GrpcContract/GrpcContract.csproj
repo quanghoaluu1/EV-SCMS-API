@@ -20,6 +20,7 @@
         <Protobuf Include="Protos\vehicle.proto" GrpcServices="Both" />
         <Protobuf Include="Protos\auth.proto" GrpcServices="Both" />
         <Protobuf Include="Protos\staff.proto" GrpcServices="Both" />
-    </ItemGroup>
+		<Protobuf Include="Protos\booking.proto" GrpcServices="Both" />
+	</ItemGroup>
 
 </Project>

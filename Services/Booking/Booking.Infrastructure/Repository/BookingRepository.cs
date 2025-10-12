@@ -34,6 +34,8 @@ namespace Booking.Infrastructure.Repository
         {
             var booking = await _context.Bookings.FindAsync(id);
             if (booking == null) return false;
+
+            _context.Bookings.Remove(booking); 
             await _context.SaveChangesAsync();
             return true;
         }
@@ -101,7 +103,6 @@ namespace Booking.Infrastructure.Repository
             }
         }
 
-        // Additional useful methods
         public async Task<IEnumerable<Domain.Entities.Booking>> GetByStatusAsync(
             BookingStatusEnum status,
             int pageNumber = 1,
@@ -164,5 +165,37 @@ namespace Booking.Infrastructure.Repository
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<IEnumerable<Domain.Entities.Booking>> GetBookingsByDateAsync
+        (
+            DateTime date,
+            int pageNumber = 1,
+            int pageSize = 100) 
+        {
+            var startOfDay = date.Date;
+            var endOfDay = startOfDay.AddDays(1).AddTicks(-1);
+
+            return await _context.Bookings
+                .AsNoTracking()
+                .Where(b => b.ScheduledDate >= startOfDay && b.ScheduledDate <= endOfDay)
+                .OrderBy(b => b.ScheduledDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+        public async Task<bool> UpdatePaymentStatusAsync(Guid bookingId, string paymentStatus)
+        {
+            var booking = await _context.Bookings.FindAsync(bookingId);
+            if (booking == null) return false;
+
+            booking.PaymentStatus = paymentStatus;
+            booking.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+
     }
 }

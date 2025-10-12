@@ -17,7 +17,6 @@ namespace Booking.Application.DTOs
             public BookingEnums ServiceType { get; set; }
             public DateTime ScheduledDate { get; set; }
             public string? Notes { get; set; }
-            public decimal? TotalCost { get; set; }
         }
 
         public class BookingUpdateDto

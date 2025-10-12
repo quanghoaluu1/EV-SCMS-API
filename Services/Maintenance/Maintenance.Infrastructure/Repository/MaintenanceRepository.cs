@@ -36,7 +36,7 @@ namespace Maintenance.Infrastructure.Repository
         public async Task UpdateAsync(Domain.Entities.Maintenance maintenance)
         {
             _context.Maintenances.Update(maintenance);
-            await Task.CompletedTask; // để tuân thủ async
+            await Task.CompletedTask;
         }
 
         public async Task DeleteAsync(Guid id)
