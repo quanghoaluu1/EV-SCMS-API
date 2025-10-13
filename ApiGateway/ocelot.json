@@ -9,7 +9,7 @@
                     "Port": 7212
                 }
             ],
-            "UpstreamPathTemplate": "/api/auth/{everything}",
+            "UpstreamPathTemplate": "/api/Auth/{everything}",
             "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
         },
         {
@@ -21,9 +21,45 @@
                     "Port": 7242
                 }
             ],
-            "UpstreamPathTemplate": "/api/staff/{everything}",
+            "UpstreamPathTemplate": "/api/Staff/{everything}",
             "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
         },
+        {
+          "DownstreamPathTemplate": "/api/LeaveRequest/{everything}",
+          "DownstreamScheme": "https",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "localhost",
+              "Port": 7242
+            }
+          ],
+          "UpstreamPathTemplate": "/api/LeaveRequest/{everything}",
+          "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+        },
+      {
+        "DownstreamPathTemplate": "/api/Shift/{everything}",
+        "DownstreamScheme": "https",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 7242
+          }
+        ],
+        "UpstreamPathTemplate": "/api/Shift/{everything}",
+        "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+      },
+      {
+        "DownstreamPathTemplate": "/api/StaffShift/{everything}",
+        "DownstreamScheme": "https",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 7242
+          }
+        ],
+        "UpstreamPathTemplate": "/api/StaffShift/{everything}",
+        "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+      },
         {
             "DownstreamPathTemplate": "/api/Customer/{everything}",
             "DownstreamScheme": "https",
@@ -33,7 +69,7 @@
                     "Port": 7040
                 }
             ],
-            "UpstreamPathTemplate": "/api/customer/{everything}",
+            "UpstreamPathTemplate": "/api/Customer/{everything}",
             "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ]
         },
         {
@@ -45,7 +81,7 @@
                     "Port": 7039
                 }
             ],
-            "UpstreamPathTemplate": "/api/vehicle/{everything}",
+            "UpstreamPathTemplate": "/api/Vehicle/{everything}",
             "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
         },
         {
@@ -57,7 +93,7 @@
                     "Port": 7043
                 }
             ],
-            "UpstreamPathTemplate": "/api/maintenance/{everything}",
+            "UpstreamPathTemplate": "/api/Maintenance/{everything}",
             "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ]
         },
         {
@@ -69,7 +105,7 @@
                     "Port": 7041
                 }
             ],
-            "UpstreamPathTemplate": "/api/bookings/{everything}",
+            "UpstreamPathTemplate": "/api/Bookings/{everything}",
             "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ]
         },
         {
@@ -81,7 +117,7 @@
                     "Port": 7159
                 }
             ],
-            "UpstreamPathTemplate": "/api/inventory/{everything}",
+            "UpstreamPathTemplate": "/api/Inventory/{everything}",
             "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
         }
     ],

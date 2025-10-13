@@ -22,7 +22,15 @@ public class StaffService : IStaffService
         {
             var staff = await _staffRepository.GetByIdAsync(id);
             
-            if (staff == null) return null;
+            if (staff == null)
+            {
+                return new ResultDto<StaffDto>
+                {
+                    IsSuccess = false,
+                    Message = "Staff not found",
+                    Data = null,
+                };
+            }
 
             var userReply = await _authGrpcGateway.GetUserById(staff.UserId);
             if (userReply == null || !userReply.Success)
@@ -46,6 +54,7 @@ public class StaffService : IStaffService
                     UserId = staff.UserId,
                     FullName = userReply.FullName,
                     Email = userReply.Email,
+                    PhoneNumber = string.Empty,
                     Role = userReply.Role
                 }
             };
