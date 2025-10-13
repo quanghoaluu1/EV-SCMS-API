@@ -18,5 +18,7 @@ namespace Booking.Application.IServices
         Task<IEnumerable<BookingListDto>> GetByCustomerIdAsync(Guid customerId, int pageNumber = 1, int pageSize = 10);
         Task<bool> UpdateStatusAsync(Guid bookingId, BookingStatusEnum status);
         Task<bool> AssignStaffAsync(Guid bookingId, Guid staffId);
+        Task<IEnumerable<BookingListDto>> GetBookingsByDateAsync(DateTime date, int pageNumber = 1, int pageSize = 100);
+        Task<bool> UpdatePaymentStatusAsync(Guid bookingId, string paymentStatus);
     }
 }

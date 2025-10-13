@@ -21,11 +21,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Domain\Domain.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Protobuf Include="../../../GrpcContract/Protos/auth.proto" GrpcServices="Client"/>
-    </ItemGroup>
+	  <ProjectReference Include="../../../GrpcContract/GrpcContract.csproj" />
+	</ItemGroup>
 
 
 </Project>

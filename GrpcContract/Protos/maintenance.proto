@@ -1,0 +1,144 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "MaintenanceGrpc";
+
+package maintenance;
+
+// Maintenance gRPC Service
+service MaintenanceGrpcService {
+  // CRUD Operations
+  rpc CreateMaintenance (CreateMaintenanceRequest) returns (MaintenanceResponse);
+  rpc GetMaintenanceById (GetMaintenanceByIdRequest) returns (MaintenanceResponse);
+  rpc GetAllMaintenances (GetAllMaintenancesRequest) returns (MaintenanceListResponse);
+  rpc UpdateMaintenance (UpdateMaintenanceRequest) returns (MaintenanceResponse);
+  rpc DeleteMaintenance (DeleteMaintenanceRequest) returns (DeleteResponse);
+  
+  // Query Operations
+  rpc GetMaintenancesByBookingId (GetMaintenancesByBookingIdRequest) returns (MaintenanceListResponse);
+  rpc GetMaintenancesByCustomerId (GetMaintenancesByCustomerIdRequest) returns (MaintenanceListResponse);
+  rpc GetMaintenancesByVehicleId (GetMaintenancesByVehicleIdRequest) returns (MaintenanceListResponse);
+  rpc GetMaintenancesByStaffId (GetMaintenancesByStaffIdRequest) returns (MaintenanceListResponse);
+  rpc GetMaintenancesByStatus (GetMaintenancesByStatusRequest) returns (MaintenanceListResponse);
+  rpc GetMaintenancesByDateRange (GetMaintenancesByDateRangeRequest) returns (MaintenanceListResponse);
+  
+  // Specific Operations
+  rpc UpdateMaintenanceStatus (UpdateMaintenanceStatusRequest) returns (UpdateResponse);
+  rpc AssignStaff (AssignStaffRequest) returns (UpdateResponse);
+}
+
+
+message CreateMaintenanceRequest {
+  string vehicle_id = 1;
+  string customer_id = 2;
+  string booking_id = 3;
+  string staff_id = 4;
+  string service_date = 5; // ISO 8601 format: "2025-10-15T10:00:00Z"
+  int32 odometer = 6;
+  int32 service_type = 7; // enum as int
+  string description = 8;
+}
+
+message GetMaintenanceByIdRequest {
+  string maintenance_id = 1;
+}
+
+message GetAllMaintenancesRequest {
+  int32 page_number = 1;
+  int32 page_size = 2;
+}
+
+message UpdateMaintenanceRequest {
+  string maintenance_id = 1;
+  string staff_id = 2; // optional
+  string service_date = 3; // optional
+  int32 odometer = 4; // optional
+  int32 service_type = 5; // optional
+  string description = 6; // optional
+  int32 status = 7; // optional
+}
+
+message DeleteMaintenanceRequest {
+  string maintenance_id = 1;
+}
+
+message GetMaintenancesByBookingIdRequest {
+  string booking_id = 1;
+}
+
+message GetMaintenancesByCustomerIdRequest {
+  string customer_id = 1;
+  int32 page_number = 2;
+  int32 page_size = 3;
+}
+
+message GetMaintenancesByVehicleIdRequest {
+  string vehicle_id = 1;
+}
+
+message GetMaintenancesByStaffIdRequest {
+  string staff_id = 1;
+  int32 page_number = 2;
+  int32 page_size = 3;
+}
+
+message GetMaintenancesByStatusRequest {
+  int32 status = 1; // enum as int
+  int32 page_number = 2;
+  int32 page_size = 3;
+}
+
+message GetMaintenancesByDateRangeRequest {
+  string start_date = 1; // ISO 8601 format
+  string end_date = 2; // ISO 8601 format
+}
+
+message UpdateMaintenanceStatusRequest {
+  string maintenance_id = 1;
+  int32 status = 2; // enum as int
+}
+
+message AssignStaffRequest {
+  string maintenance_id = 1;
+  string staff_id = 2;
+}
+
+
+message MaintenanceResponse {
+  string maintenance_id = 1;
+  string vehicle_id = 2;
+  string customer_id = 3;
+  string booking_id = 4;
+  string staff_id = 5;
+  string service_date = 6; // ISO 8601 format
+  int32 odometer = 7;
+  int32 service_type = 8; // enum as int
+  string service_type_name = 9; // Display name
+  string description = 10;
+  int32 status = 11; // enum as int
+  string status_name = 12; // Display name
+  string created_at = 13; // ISO 8601 format
+  string updated_at = 14; // ISO 8601 format
+  bool success = 15;
+  string message = 16;
+}
+
+message MaintenanceListResponse {
+  repeated MaintenanceResponse maintenances = 1;
+  int32 total_count = 2;
+}
+
+message UpdateResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message DeleteResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// ===== ENUMS (for reference, values match C# enums) =====
+// MaintenanceStatus: Pending=0, InProgress=1, Completed=2, Cancelled=3
+// MaintenanceServiceType: PeriodicMaintenance=0, BatteryCheck=1, BrakeService=2, 
+//                         TireReplacement=3, SuspensionRepair=4, ElectricalRepair=5,
+//                         ChargingSystemRepair=6, GeneralRepair=7, Inspection=8, Emergency=9

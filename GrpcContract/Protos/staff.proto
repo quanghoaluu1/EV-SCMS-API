@@ -1,10 +1,11 @@
-﻿
-syntax = "proto3";
+﻿syntax = "proto3";
+
 option csharp_namespace = "StaffGrpc";
 package staff;
 
 service Staff {
   rpc CreateStaff (CreateStaffRequest) returns (CreateStaffReply);
+  rpc GetStaffById (GetStaffByIdRequest) returns (GetStaffByIdReply);
 }
 
 message CreateStaffRequest {
@@ -12,10 +13,29 @@ message CreateStaffRequest {
   string hireDate = 2; // ISO date: yyyy-MM-dd
 }
 
-
 message CreateStaffReply {
   bool success = 1;
   string message = 2;
   string staffId = 3; // GUID string when success
   string userId = 4; // echo back
+}
+
+message GetStaffByIdRequest {
+  string staffId = 1; // GUID string
+}
+
+message GetStaffByIdReply {
+  bool success = 1;
+  string message = 2;
+  StaffInfo data = 3;
+}
+
+message StaffInfo {
+  string staffId = 1;
+  string userId = 2;
+  string fullName = 3;
+  string email = 4;
+  string phoneNumber = 5;
+  string role = 6;
+  string hireDate = 7; // ISO date: yyyy-MM-dd
 }

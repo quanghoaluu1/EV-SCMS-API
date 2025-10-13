@@ -8,20 +8,16 @@ namespace Inventory.Domain.Enums
 {
     public enum InventoryCategoryEnum
     {
-        Engine,
-        Transmission,
-        Brakes,
-        Suspension,
-        Exhaust,
-        Battery,
-        Lighting,
-        Sensors,
-        Oil,
-        Tires,
-        Filters,
-        Belts,
-        Body,
-        Interior,
-        Cleaning
+        Battery = 0,
+        BrakeParts = 1,
+        Tires = 2,
+        SuspensionParts = 3,
+        ElectricalParts = 4,
+        ChargingComponents = 5,
+        BodyParts = 6,
+        InteriorParts = 7,
+        Fluids = 8,
+        Tools = 9,
+        Accessories = 10
     }
 }

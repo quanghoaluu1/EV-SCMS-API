@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+option csharp_namespace = "BookingGrpc";
+
+package booking;
+
+// Booking gRPC Service
+service BookingGrpcService {
+  rpc CreateBooking (CreateBookingRequest) returns (CreateBookingReply);
+  rpc GetBookingById (GetBookingByIdRequest) returns (GetBookingByIdReply);
+  rpc ValidateBookingData (ValidateBookingDataRequest) returns (ValidateBookingDataReply);
+}
+
+// Request/Reply messages
+message CreateBookingRequest {
+  string customer_id = 1;
+  string vehicle_id = 2;
+  string staff_id = 3;
+  int32 service_type = 4;
+  string scheduled_date = 5;
+  string notes = 6;
+}
+
+message CreateBookingReply {
+  bool success = 1;
+  string message = 2;
+  string booking_id = 3;
+  string customer_id = 4;
+  string vehicle_id = 5;
+  string staff_id = 6;
+}
+
+message GetBookingByIdRequest {
+  string booking_id = 1;
+}
+
+message GetBookingByIdReply {
+  bool success = 1;
+  string message = 2;
+  string booking_id = 3;
+  string customer_id = 4;
+  string vehicle_id = 5;
+  string staff_id = 6;
+  int32 service_type = 7;
+  string scheduled_date = 8;
+  int32 status = 9;
+  string notes = 10;
+  string total_cost = 11;
+  string payment_status = 12;
+  string created_at = 13;
+  string updated_at = 14;
+}
+
+message ValidateBookingDataRequest {
+  string customer_id = 1;
+  string vehicle_id = 2;
+  string staff_id = 3;
+}
+
+message ValidateBookingDataReply {
+  bool success = 1;
+  string message = 2;
+  ValidationResult customer_validation = 3;
+  ValidationResult vehicle_validation = 4;
+  ValidationResult staff_validation = 5;
+}
+
+message ValidationResult {
+  bool is_valid = 1;
+  string message = 2;
+  string entity_data = 3;
+}

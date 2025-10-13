@@ -1,0 +1,122 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "CustomerGrpc";
+
+service CustomerService {
+  rpc CreateCustomer (CreateCustomerRequest) returns (CreateCustomerReply);
+  rpc GetCustomerById (GetCustomerByIdRequest) returns (GetCustomerByIdReply);
+  rpc GetCustomerByUserId (GetCustomerByUserIdRequest) returns (GetCustomerByUserIdReply);
+  rpc GetAllCustomers (GetAllCustomersRequest) returns (GetAllCustomersReply);
+  rpc GetCustomersByStatus (GetCustomersByStatusRequest) returns (GetCustomersByStatusReply);
+  rpc UpdateCustomer (UpdateCustomerRequest) returns (UpdateCustomerReply);
+  rpc UpdateCustomerStatus (UpdateCustomerStatusRequest) returns (UpdateCustomerStatusReply);
+  rpc DeleteCustomer (DeleteCustomerRequest) returns (DeleteCustomerReply);
+}
+
+message CreateCustomerRequest {
+  string userId = 1;
+  string address = 2;
+}
+
+message CreateCustomerReply {
+  bool success = 1;
+  string message = 2;
+  string customerId = 3;
+  string userId = 4;
+}
+
+message GetCustomerByIdRequest {
+  string customerId = 1;
+}
+
+message GetCustomerByIdReply {
+  bool success = 1;
+  string message = 2;
+  string customerId = 3;
+  string userId = 4;
+  string address = 5;
+  string status = 6;
+  string createdAt = 7;
+  string updatedAt = 8;
+}
+
+message GetCustomerByUserIdRequest {
+  string userId = 1;
+}
+
+message GetCustomerByUserIdReply {
+  bool success = 1;
+  string message = 2;
+  string customerId = 3;
+  string userId = 4;
+  string address = 5;
+  string status = 6;
+  string createdAt = 7;
+  string updatedAt = 8;
+}
+
+message GetAllCustomersRequest {
+  int32 pageNumber = 1;
+  int32 pageSize = 2;
+}
+
+message GetAllCustomersReply {
+  bool success = 1;
+  string message = 2;
+  repeated CustomerInfo customers = 3;
+}
+
+message GetCustomersByStatusRequest {
+  string status = 1;
+  int32 pageNumber = 2;
+  int32 pageSize = 3;
+}
+
+message GetCustomersByStatusReply {
+  bool success = 1;
+  string message = 2;
+  repeated CustomerInfo customers = 3;
+}
+
+message UpdateCustomerRequest {
+  string customerId = 1;
+  string address = 2;
+  string status = 3;
+}
+
+message UpdateCustomerReply {
+  bool success = 1;
+  string message = 2;
+  string customerId = 3;
+}
+
+message UpdateCustomerStatusRequest {
+  string customerId = 1;
+  string status = 2;
+}
+
+message UpdateCustomerStatusReply {
+  bool success = 1;
+  string message = 2;
+  string customerId = 3;
+}
+
+message DeleteCustomerRequest {
+  string customerId = 1;
+}
+
+message DeleteCustomerReply {
+  bool success = 1;
+  string message = 2;
+  string customerId = 3;
+}
+
+message CustomerInfo {
+  string customerId = 1;
+  string userId = 2;
+  string address = 3;
+  string status = 4;
+  string createdAt = 5;
+}
+
+message Empty {}

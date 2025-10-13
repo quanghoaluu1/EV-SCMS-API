@@ -22,10 +22,15 @@ namespace Booking.Application.Services
 
         public async Task<BookingResponseDto> CreateAsync(BookingCreateDto dto)
         {
-            var booking = dto.Adapt<Domain.Entities.Booking>();
-            booking.CreatedAt = DateTime.UtcNow;
-            booking.UpdatedAt = DateTime.UtcNow;
+            // Validate business rules
+            if (dto.ScheduledDate < DateTime.UtcNow)
+            {
+                throw new ArgumentException("Cannot book a past date");
+            }
 
+            //var existingBookings = await _repository.GetBookingsByDateAsync(dto.ScheduledDate.Date);
+
+            var booking = dto.Adapt<Domain.Entities.Booking>();
             var created = await _repository.AddAsync(booking);
             return created.Adapt<BookingResponseDto>();
         }
@@ -74,5 +79,27 @@ namespace Booking.Application.Services
         {
             return await _repository.AssignStaffAsync(bookingId, staffId);
         }
+
+        public async Task<IEnumerable<BookingListDto>> GetBookingsByDateAsync(
+            DateTime date,
+            int pageNumber = 1,
+            int pageSize = 100)
+        {
+            var bookings = await _repository.GetBookingsByDateAsync(date, pageNumber, pageSize);
+            return bookings.Adapt<IEnumerable<BookingListDto>>();
+        }
+
+        public async Task<bool> UpdatePaymentStatusAsync(Guid bookingId, string paymentStatus)
+        {
+            var validStatuses = new[] { "Unpaid", "Paid", "Partial", "Refunded" };
+            if (!validStatuses.Contains(paymentStatus))
+            {
+                throw new ArgumentException($"Invalid payment status: {paymentStatus}");
+            }
+
+            return await _repository.UpdatePaymentStatusAsync(bookingId, paymentStatus);
+        }
+
+
     }
 }

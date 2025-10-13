@@ -12,6 +12,6 @@ namespace Inventory.Infrastructure
         public InventoryServiceDbContext(DbContextOptions<InventoryServiceDbContext> options) : base(options)
         {
         }
-        public DbSet<Inventory.Domain.Entities.Inventory> inventories { get; set; } = null!;
+        public DbSet<Inventory.Domain.Entities.Inventory> Inventories { get; set; } = null!;
     }
 }

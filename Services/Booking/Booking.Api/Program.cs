@@ -3,10 +3,15 @@ using Booking.Application.Mapping;
 using Booking.Application.Services;
 using Booking.Infrastructure;
 using Booking.Infrastructure.IRepository;
+using Booking.Infrastructure.IServices;
 using Booking.Infrastructure.Repository;
+using Booking.Infrastructure.Services;
+using Booking.Api.Services;
 using Mapster;
-using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
+using CustomerGrpc;
+using VehicleGrpc;
+using StaffGrpc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +23,51 @@ builder.Services.AddDbContext<BookingServiceDbContext>(options =>
 builder.Services.AddScoped<IBookingService, BookingServices>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddControllers();
+
+// Add gRPC services
+builder.Services.AddGrpc();
+
+// Add gRPC clients for external service validation
+builder.Services.AddGrpcClient<CustomerService.CustomerServiceClient>(options =>
+{
+    options.Address = new Uri("https://localhost:7040"); // Customer service URL
+})
+.ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler();
+    handler.ServerCertificateCustomValidationCallback =
+        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+    return handler;
+});
+
+builder.Services.AddGrpcClient<VehicleGrpcService.VehicleGrpcServiceClient>(options =>
+{
+    options.Address = new Uri("https://localhost:7039"); // Vehicle service URL
+})
+.ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler();
+    handler.ServerCertificateCustomValidationCallback =
+        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+    return handler;
+});
+
+builder.Services.AddGrpcClient<Staff.StaffClient>(options =>
+{
+    options.Address = new Uri("https://localhost:7242"); // Staff service URL
+})
+.ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler();
+    handler.ServerCertificateCustomValidationCallback =
+        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+    return handler;
+});
+
+// Register gRPC gateways
+builder.Services.AddScoped<ICustomerGrpcGateway, CustomerGrpcGateway>();
+builder.Services.AddScoped<IVehicleGrpcGateway, VehicleGrpcGateway>();
+builder.Services.AddScoped<IStaffGrpcGateway, StaffGrpcGateway>();
 
 var config = TypeAdapterConfig.GlobalSettings;
 MappingConfig.RegisterMappings(config);
@@ -35,6 +85,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Map gRPC services
+app.MapGrpcService<BookingGrpcService>();
 
 app.UseHttpsRedirection();
 
