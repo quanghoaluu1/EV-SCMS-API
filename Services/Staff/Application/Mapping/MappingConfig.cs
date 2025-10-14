@@ -8,6 +8,9 @@ public static class MappingConfig
 {
     public static void Register()
     {
+        TypeAdapterConfig<Staff, StaffDto>
+            .NewConfig()
+            .Map(dest => dest.StaffId, src => src.Id);
         TypeAdapterConfig<Shift, ShiftDto>
             .NewConfig()
             .Map(dest => dest.Id, src => src.Id)

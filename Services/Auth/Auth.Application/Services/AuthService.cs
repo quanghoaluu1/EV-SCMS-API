@@ -21,14 +21,16 @@ public class AuthService : IAuthService
     private readonly IPasswordHasher<User> _passwordHasher;
     private readonly IConfiguration _configuration;
     private readonly IStaffGrpcGateway _staffGrpc;
+    private readonly ICustomerGrpcGateway _customerGrpc;
 
     public AuthService(IUserRepository userService, IPasswordHasher<User> passwordHasher, IConfiguration configuration,
-        IStaffGrpcGateway staffGrpc)
+        IStaffGrpcGateway staffGrpc, ICustomerGrpcGateway customerGrpc)
     {
         _userRepository = userService;
         _passwordHasher = passwordHasher;
         _configuration = configuration;
         _staffGrpc = staffGrpc;
+        _customerGrpc = customerGrpc;
     }
 
     public async Task<Result<AuthResponse>> RegisterAsync(RegisterRequest request)
@@ -64,6 +66,17 @@ public class AuthService : IAuthService
             var user = request.Adapt<User>();
             user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
             var createdUser = await _userRepository.CreateUser(user);
+            
+            var customerReply = await _customerGrpc.CreateCustomer(user.Id, string.Empty);
+            if (!customerReply.Success)
+            {
+                return new Result<AuthResponse>()
+                {
+                    IsSuccess = false,
+                    Message = "Failed to create customer."
+                };
+            }
+            
             var userDto = createdUser.Adapt<UserDto>();
             var token = GenerateToken(createdUser);
 
