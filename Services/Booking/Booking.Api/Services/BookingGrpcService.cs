@@ -186,7 +186,7 @@ namespace Booking.Api.Services
                     ScheduledDate = booking.ScheduledDate.ToString("yyyy-MM-ddTHH:mm:ssZ"),
                     Status = (int)booking.Status,
                     Notes = booking.Notes ?? "",
-                    TotalCost = booking.TotalCost?.ToString("F2") ?? "0.00",
+                    TotalCost = booking.TotalCost ?? 0,
                     PaymentStatus = booking.PaymentStatus,
                     CreatedAt = booking.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ"),
                     UpdatedAt = booking.UpdatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ")

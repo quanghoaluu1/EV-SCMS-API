@@ -13,5 +13,11 @@ namespace Booking.Infrastructure
         {
         }
         public DbSet<Domain.Entities.Booking> Bookings { get; set; } = null!;
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Domain.Entities.Booking>()
+                .HasKey(b => b.BookingId);
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using CustomerGrpc;
+﻿using Customer.Application.DTOs;
+using CustomerGrpc;
 using Customer.Application.IServices;
 using Grpc.Core;
 
@@ -47,7 +48,22 @@ namespace Customer.Api.Services
             }
         }
 
-
-
+        public override async Task<CreateCustomerReply> CreateCustomer(CreateCustomerRequest request,
+            ServerCallContext context)
+        {
+            var customerCreateDto = new CustomerDTOs.CustomerCreateDto()
+            {
+                UserId = Guid.Parse(request.UserId),
+                Address = request.Address
+            };
+            var customer = await _customerService.CreateAsync(customerCreateDto);
+            return new CreateCustomerReply
+            {
+                Success = true,
+                Message = "Customer created",
+                CustomerId = customer.Id.ToString(),
+                UserId = customer.UserId.ToString()
+            };
+        }
     }
 }
