@@ -17,13 +17,31 @@ public class PaymentController : ControllerBase
     public async Task<IActionResult> CreateLinkPayment([FromBody] Guid bookingId)
     {
         var result = await _paymentService.CreatePaymentLink(bookingId);
+        if (!result.IsSuccess)
+        {
+            return BadRequest(result);       
+        }
         return Ok(result);
     }
     [HttpPut("update")]
     public async Task<IActionResult> UpdatePayment([FromBody] string orderCode)
     {
         var result = await _paymentService.UpdatePaymentAsync(orderCode);
+        if (!result.IsSuccess)
+        {
+            return BadRequest(result);       
+        }
         return Ok(result);
     }
-    
+
+    [HttpPost("confirm-cash")]
+    public async Task<IActionResult> ConfirmCashPayment(Guid bookingId)
+    {
+        var result = await _paymentService.ConfirmCashPayment(bookingId);
+        if (!result.IsSuccess)
+        {
+            return BadRequest(result);       
+        }
+        return Ok(result);
+    }
 }

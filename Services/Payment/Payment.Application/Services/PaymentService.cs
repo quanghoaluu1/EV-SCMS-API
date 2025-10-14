@@ -174,4 +174,66 @@ public class PaymentService : IPaymentService
             };
         }
     }
+
+    public async Task<ResultDto<bool>> ConfirmCashPayment(Guid bookingId)
+    {
+        try
+        {
+            var bookingByIdReply = await _bookingGrpcGateway.GetBookingById(bookingId);
+            if (!bookingByIdReply.Success)
+            {
+                return new ResultDto<bool>()
+                {
+                    IsSuccess = false,
+                    Message = bookingByIdReply.Message,
+                    Data = false
+                };
+            }
+
+            var customer = await _customerGrpcGateway.GetCustomerById(Guid.Parse(bookingByIdReply.CustomerId));
+            if (!customer.Success)
+            {
+                return new ResultDto<bool>()
+                {
+                    IsSuccess = false,
+                    Message = customer.Message,
+                    Data = false
+                };
+            }
+
+            var orderCode = Math.Abs(int.Parse(DateTimeOffset.Now.ToString("fffffff")) +
+                                     customer.CustomerId.GetHashCode() + random.Next(1000, 9999));
+            var totalPrice = bookingByIdReply.TotalCost;
+
+            var payment = new PaymentTransaction()
+            {
+                BookingId = bookingId,
+                CustomerId = Guid.Parse(customer.CustomerId),
+                OrderCode = orderCode.ToString(),
+                Amount = totalPrice,
+                Method = PaymentMethod.Cash,
+                Status = PaymentStatus.Paid,
+                ConfirmedBy = Guid.Parse(bookingByIdReply.StaffId),
+                ConfirmedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+            await _paymentRepository.AddAsync(payment);
+            return new ResultDto<bool>()
+            {
+                IsSuccess = true,
+                Message = "Payment by cash confirmed successfully",
+                Data = true
+            };
+        }
+        catch (Exception e)
+        {
+            return new ResultDto<bool>()
+            {
+                IsSuccess = false,
+                Message = e.Message,
+                Data = false
+            };
+        }
+    }
 }
