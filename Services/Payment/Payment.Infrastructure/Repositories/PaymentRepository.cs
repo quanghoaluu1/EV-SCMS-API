@@ -1,4 +1,5 @@
-﻿using Payment.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Payment.Domain.Entities;
 using Payment.Infrastructure.Interfaces;
 
 namespace Payment.Infrastructure.Repositories;
@@ -16,5 +17,10 @@ public class PaymentRepository : IPaymentRepository
         _context.PaymentTransactions.Add(paymentTransaction);
         await _context.SaveChangesAsync();
         return paymentTransaction;
+    }
+
+    public async Task<PaymentTransaction?> GetByOrderCode(string orderCode)
+    {
+        return await _context.PaymentTransactions.FirstOrDefaultAsync(p => p.OrderCode == orderCode);
     }
 }

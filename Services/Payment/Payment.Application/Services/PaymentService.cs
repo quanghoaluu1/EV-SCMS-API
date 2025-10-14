@@ -118,4 +118,13 @@ public class PaymentService : IPaymentService
         }
 
     }
+    
+    // public async Task<ResultDto<bool>> UpdatePaymentAsync(string orderCode)
+    // {
+    //     try
+    //     {
+    //         var payment = await _paymentRepository.GetByOrderCode(orderCode);
+    //         
+    //     }
+    // }
 }
