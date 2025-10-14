@@ -1,4 +1,6 @@
-﻿using GrpcContract;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
+using GrpcContract;
 using Microsoft.Extensions.Configuration;
 using Net.payOS;
 using Net.payOS.Types;
@@ -88,6 +90,7 @@ public class PaymentService : IPaymentService
                 BookingId = bookingId,
                 CustomerId = Guid.Parse(customer.CustomerId),
                 OrderCode = orderCode.ToString(),
+                DataJson = JsonSerializer.Serialize(items),
                 Amount = totalPrice,
                 Method = PaymentMethod.BankTransfer,
                 Status = PaymentStatus.Unpaid,
@@ -119,12 +122,56 @@ public class PaymentService : IPaymentService
 
     }
     
-    // public async Task<ResultDto<bool>> UpdatePaymentAsync(string orderCode)
-    // {
-    //     try
-    //     {
-    //         var payment = await _paymentRepository.GetByOrderCode(orderCode);
-    //         
-    //     }
-    // }
+    public async Task<ResultDto<bool>> UpdatePaymentAsync(string orderCode)
+    {
+        try
+        {
+            var payment = await _paymentRepository.GetByOrderCode(orderCode);
+            if (payment is null)
+            {
+                return new ResultDto<bool>()
+                {
+                    IsSuccess = false,
+                    Message = "Payment not found",
+                    Data = false
+                };
+            }
+
+            var paymentStatus = await _payos.getPaymentLinkInformation(long.Parse(orderCode));
+            payment.Status = paymentStatus.status switch
+            {
+                "PAID" => PaymentStatus.Paid,
+                "UNPAID" => PaymentStatus.Unpaid,
+                "CANCELLED" => PaymentStatus.Cancelled,
+                _ => payment.Status
+            };
+
+            var updateResult = await _paymentRepository.UpdatePaymentAsync(payment);
+            if (!updateResult)
+            {
+                return new ResultDto<bool>()
+                {
+                    IsSuccess = false,
+                    Message = "Failed to update payment",
+                    Data = false
+                };
+            }
+
+            return new ResultDto<bool>()
+            {
+                IsSuccess = true,
+                Message = "Update payment successfully",
+                Data = true
+            };
+        }
+        catch (Exception e)
+        {
+            return new ResultDto<bool>()
+            {
+                IsSuccess = false,
+                Message = e.Message,
+                Data = false
+            };
+        }
+    }
 }

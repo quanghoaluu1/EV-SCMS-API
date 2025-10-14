@@ -19,4 +19,11 @@ public class PaymentController : ControllerBase
         var result = await _paymentService.CreatePaymentLink(bookingId);
         return Ok(result);
     }
+    [HttpPut("update")]
+    public async Task<IActionResult> UpdatePayment([FromBody] string orderCode)
+    {
+        var result = await _paymentService.UpdatePaymentAsync(orderCode);
+        return Ok(result);
+    }
+    
 }

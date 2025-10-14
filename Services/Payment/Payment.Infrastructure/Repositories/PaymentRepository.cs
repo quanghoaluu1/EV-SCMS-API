@@ -23,4 +23,10 @@ public class PaymentRepository : IPaymentRepository
     {
         return await _context.PaymentTransactions.FirstOrDefaultAsync(p => p.OrderCode == orderCode);
     }
+    public async Task<bool> UpdatePaymentAsync(PaymentTransaction paymentTransaction)
+    {
+        _context.PaymentTransactions.Update(paymentTransaction);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 }
