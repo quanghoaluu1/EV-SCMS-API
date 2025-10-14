@@ -171,6 +171,7 @@ public class AuthService : IAuthService
                         Token = GenerateToken(createdUser),
                         ExpiresAt = DateTime.UtcNow.AddHours(2)
                     },
+                    StaffId = Guid.Parse(staffReply.StaffId)
                 }
             };
         }

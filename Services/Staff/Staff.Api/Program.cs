@@ -8,6 +8,7 @@ using Infrastructure.Repository;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Staff.Api.Converters;
+using StaffGrpc.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,7 @@ builder.Services.AddGrpcClient<AuthGrpc.Auth.AuthClient>(o =>
     o.Address = new Uri("https://localhost:7212");
 });
 builder.Services.AddScoped<IAuthGrpcGateway, AuthGrpcGateway>();
+builder.Services.AddGrpc();
 builder.Services.AddDbContext<StaffDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IStaffRepository, StaffRepository>();
@@ -47,6 +49,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapGrpcService<StaffGrpcService>();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
