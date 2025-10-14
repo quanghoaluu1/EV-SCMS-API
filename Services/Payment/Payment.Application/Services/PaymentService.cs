@@ -60,7 +60,7 @@ public class PaymentService : IPaymentService
             {
                 new ItemData(bookingByIdReply.ServiceType.ToString(), 1, Convert.ToInt32(bookingByIdReply.TotalCost))
             };
-            var totalPrice = Convert.ToInt32(bookingByIdReply.TotalCost);
+            var totalPrice = bookingByIdReply.TotalCost;
             var orderCode = Math.Abs(int.Parse(DateTimeOffset.Now.ToString("fffffff")) + customer.CustomerId.GetHashCode() + random.Next(1000, 9999));
 
             PaymentData paymentData = new PaymentData(

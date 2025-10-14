@@ -45,7 +45,7 @@ message GetBookingByIdReply {
   string scheduled_date = 8;
   int32 status = 9;
   string notes = 10;
-  string total_cost = 11;
+  int32 total_cost = 11;
   string payment_status = 12;
   string created_at = 13;
   string updated_at = 14;

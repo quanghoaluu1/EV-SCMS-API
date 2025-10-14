@@ -53,8 +53,8 @@ namespace Booking.Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<decimal?>("TotalCost")
-                        .HasColumnType("numeric");
+                    b.Property<int?>("TotalCost")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
