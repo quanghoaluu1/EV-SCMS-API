@@ -46,25 +46,11 @@ public class AuthController : ControllerBase
             ConfirmPassword = request.ConfirmPassword,
             Role = request.Role
         };
-        var userResult = await _authService.RegisterAsync(userRegister);
-        if (!userResult.IsSuccess || userResult.Data?.User == null)
+        var response = await _authService.RegisterStaffAsync(request);
+        if (!response.IsSuccess)
         {
-            return BadRequest(userResult.Message);
+            return BadRequest(response);
         }
-
-        var user = userResult.Data.User;
-
-        var staffReply = await _staffGrpcGateway.CreateStaffAsync(user.Id, request.HireDate, CancellationToken.None);
-        if (staffReply == null || string.IsNullOrEmpty(staffReply.StaffId) || !staffReply.Success)
-        {
-            return StatusCode(StatusCodes.Status502BadGateway, $"Failed to create staff via gRPC: {staffReply?.Message}");
-        }
-
-        var response = new RegisterStaffResponse()
-        {
-            Auth = userResult.Data!,
-            StaffId = Guid.Parse(staffReply.StaffId)
-        };
 
         return Ok(response);
     }

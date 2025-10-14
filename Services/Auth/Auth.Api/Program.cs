@@ -11,11 +11,16 @@ using Microsoft.EntityFrameworkCore;
 using StaffGrpc;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddGrpcClient<global::StaffGrpc.Staff.StaffClient>(o =>
+builder.Services.AddGrpcClient<StaffGrpc.Staff.StaffClient>(o =>
 {
-    o.Address = new Uri("https://localhost:7003");
+    o.Address = new Uri("https://localhost:7242");
+});
+builder.Services.AddGrpcClient<CustomerGrpc.CustomerService.CustomerServiceClient>(o =>
+{
+    o.Address = new Uri("https://localhost:7040");
 });
 builder.Services.AddScoped<IStaffGrpcGateway,StaffGrpcGateway>();
+builder.Services.AddScoped<ICustomerGrpcGateway, CustomerGrpcGateway>();
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -45,9 +50,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-using (var scope = app.Services.CreateScope())
-{
-    var test = scope.ServiceProvider.GetService<StaffGrpc.Staff.StaffClient>();
-    Console.WriteLine(test != null ? "✅ StaffClient resolved" : "❌ StaffClient not found");
-}
+
 app.Run();

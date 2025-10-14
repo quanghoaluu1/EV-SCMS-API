@@ -20,10 +20,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Auth.Domain\Auth.Domain.csproj" />
+        <ProjectReference Include="../../../GrpcContract/GrpcContract.csproj" />
     </ItemGroup>
-    
-    <ItemGroup>
-        <Protobuf Include="../../../GrpcContract/Protos/staff.proto" GrpcServices="Client" />
-    </ItemGroup>
+
 
 </Project>
