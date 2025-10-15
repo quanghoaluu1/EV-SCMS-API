@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Messaging;
 using static Booking.Application.DTOs.BookingDTOs;
 
 namespace Booking.Application.Services
@@ -14,10 +15,12 @@ namespace Booking.Application.Services
     public class BookingServices : IBookingService
     {
         private readonly IBookingRepository _repository;
+        private readonly IMessageBus _messageBus;
 
         public BookingServices(IBookingRepository repository)
         {
             _repository = repository;
+            _messageBus = new RabbitMqMessageBus("localhost", "admin", "12345");
         }
 
         public async Task<BookingResponseDto> CreateAsync(BookingCreateDto dto)
@@ -32,6 +35,19 @@ namespace Booking.Application.Services
 
             var booking = dto.Adapt<Domain.Entities.Booking>();
             var created = await _repository.AddAsync(booking);
+            
+            await _messageBus.Publish("booking_created", new
+            {
+                EventName = "BookingCreated",
+                Data = System.Text.Json.JsonSerializer.Serialize(new
+                {
+                    BookingId = created.BookingId,
+                    CustomerId = created.CustomerId,
+                    ScheduledDate = created.ScheduledDate,
+                    Status = created.Status.ToString()
+                })
+            });
+            
             return created.Adapt<BookingResponseDto>();
         }
 

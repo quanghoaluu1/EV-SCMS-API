@@ -8,20 +8,20 @@ namespace Booking.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class BookingsController : ControllerBase
+    public class BookingController : ControllerBase
     {
         private readonly IBookingService _bookingService;
         private readonly ICustomerGrpcGateway _customerGrpcGateway;
         private readonly IVehicleGrpcGateway _vehicleGrpcGateway;
         private readonly IStaffGrpcGateway _staffGrpcGateway;
-        private readonly ILogger<BookingsController> _logger;
+        private readonly ILogger<BookingController> _logger;
 
-        public BookingsController(
+        public BookingController(
             IBookingService bookingService,
             ICustomerGrpcGateway customerGrpcGateway,
             IVehicleGrpcGateway vehicleGrpcGateway,
             IStaffGrpcGateway staffGrpcGateway,
-            ILogger<BookingsController> logger)
+            ILogger<BookingController> logger)
         {
             _bookingService = bookingService;
             _customerGrpcGateway = customerGrpcGateway;
