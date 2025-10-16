@@ -4,6 +4,7 @@ using Domain.Entities;
 using GrpcContract;
 using Infrastructure.Interfaces;
 using Infrastructure.IRepository;
+using Mapster;
 
 namespace Application;
 
@@ -22,7 +23,15 @@ public class StaffService : IStaffService
         {
             var staff = await _staffRepository.GetByIdAsync(id);
             
-            if (staff == null) return null;
+            if (staff == null)
+            {
+                return new ResultDto<StaffDto>
+                {
+                    IsSuccess = false,
+                    Message = "Staff not found",
+                    Data = null,
+                };
+            }
 
             var userReply = await _authGrpcGateway.GetUserById(staff.UserId);
             if (userReply == null || !userReply.Success)
@@ -46,19 +55,36 @@ public class StaffService : IStaffService
                     UserId = staff.UserId,
                     FullName = userReply.FullName,
                     Email = userReply.Email,
+                    PhoneNumber = string.Empty,
                     Role = userReply.Role
                 }
             };
         }
 
-        public async Task<IEnumerable<StaffDto>> GetAllStaffAsync()
+        public async Task<ResultDto<IEnumerable<StaffDto>>> GetAllStaffAsync()
         {
             var staffs = await _staffRepository.GetAllAsync();
-            return staffs.Select(staff => new StaffDto
+            var staffDtos = staffs.Adapt<List<StaffDto>>();
+
+            var tasks = staffDtos.Select(async staffDto =>
             {
-                StaffId = staff.Id,
-                UserId = staff.UserId,
+                var userReply = await _authGrpcGateway.GetUserById(staffDto.UserId);
+                if (userReply?.Success == true)
+                {
+                    staffDto.FullName = userReply.FullName;
+                    staffDto.Email = userReply.Email;
+                    staffDto.Role = userReply.Role;
+                }
             });
+
+            await Task.WhenAll(tasks);
+
+            return new ResultDto<IEnumerable<StaffDto>>()
+            {
+                IsSuccess = true,
+                Message = "Staffs retrieved successfully",
+                Data = staffDtos,
+            };
         }
 
         public async Task<StaffDto> CreateStaffAsync(CreateStaffDto dto)

@@ -17,7 +17,7 @@ namespace Booking.Domain.Entities
         public DateTime ScheduledDate { get; set; }
         public BookingStatusEnum Status { get; set; } = BookingStatusEnum.Pending;
         public string? Notes { get; set; }
-        public decimal? TotalCost { get; set; }
+        public int? TotalCost { get; set; }
         public string PaymentStatus { get; set; } = "Unpaid";
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

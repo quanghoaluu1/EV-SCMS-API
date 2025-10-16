@@ -10,4 +10,5 @@ public interface IStaffRepository
     Task UpdateAsync(Staff staff);
     Task DeleteAsync(Guid id);
     Task<bool> ExistsAsync(Guid id);
+    Task<IEnumerable<Staff>> GetActiveAsync();
 }

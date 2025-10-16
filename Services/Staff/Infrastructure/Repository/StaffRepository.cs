@@ -23,6 +23,11 @@ public class StaffRepository : IStaffRepository
         return await _context.Staffs.ToListAsync();
     }
 
+    public async Task<IEnumerable<Staff>> GetActiveAsync()
+    {
+        return await _context.Staffs.Where(s => s.IsActive).ToListAsync();
+    }
+
     public async Task AddAsync(Staff staff)
     {
         await _context.Staffs.AddAsync(staff);

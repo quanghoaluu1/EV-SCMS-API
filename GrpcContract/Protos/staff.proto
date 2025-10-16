@@ -1,7 +1,6 @@
 ﻿syntax = "proto3";
 
 option csharp_namespace = "StaffGrpc";
-package staff;
 
 service Staff {
   rpc CreateStaff (CreateStaffRequest) returns (CreateStaffReply);

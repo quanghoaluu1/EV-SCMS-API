@@ -24,6 +24,9 @@ service MaintenanceGrpcService {
   // Specific Operations
   rpc UpdateMaintenanceStatus (UpdateMaintenanceStatusRequest) returns (UpdateResponse);
   rpc AssignStaff (AssignStaffRequest) returns (UpdateResponse);
+
+   // ===== NEW: REPORT METHOD =====
+  rpc GetMaintenanceStats (GetMaintenanceStatsRequest) returns (MaintenanceStatsReply);
 }
 
 
@@ -135,6 +138,22 @@ message UpdateResponse {
 message DeleteResponse {
   bool success = 1;
   string message = 2;
+}
+
+// ===== NEW: REPORT MESSAGE =====
+
+message GetMaintenanceStatsRequest {
+  // Empty
+}
+
+message MaintenanceStatsReply {
+  bool success = 1;
+  string message = 2;
+  int32 total = 3;
+  int32 pending = 4;
+  int32 in_progress = 5;
+  int32 completed = 6;
+  int32 cancelled = 7;
 }
 
 // ===== ENUMS (for reference, values match C# enums) =====

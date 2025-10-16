@@ -646,6 +646,53 @@ namespace Maintenance.Api.Services
             }
         }
 
+        // NEW: GetMaintenanceStats method
+        public override async Task<MaintenanceStatsReply> GetMaintenanceStats(GetMaintenanceStatsRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("gRPC GetMaintenanceStats called");
+
+                // Get all maintenances to calculate statistics
+                var allMaintenances = await _maintenanceService.GetAllAsync(1, int.MaxValue);
+                var maintenanceList = allMaintenances.ToList();
+
+                var total = maintenanceList.Count;
+                var pending = maintenanceList.Count(m => m.Status == MaintenanceEnums.Pending);
+                var inProgress = maintenanceList.Count(m => m.Status == MaintenanceEnums.InProgress);
+                var completed = maintenanceList.Count(m => m.Status == MaintenanceEnums.Completed);
+                var cancelled = maintenanceList.Count(m => m.Status == MaintenanceEnums.Cancelled);
+
+                _logger.LogInformation("Maintenance stats calculated: Total={Total}, Pending={Pending}, InProgress={InProgress}, Completed={Completed}, Cancelled={Cancelled}",
+                    total, pending, inProgress, completed, cancelled);
+
+                return new MaintenanceStatsReply
+                {
+                    Success = true,
+                    Message = "Maintenance statistics retrieved successfully",
+                    Total = total,
+                    Pending = pending,
+                    InProgress = inProgress,
+                    Completed = completed,
+                    Cancelled = cancelled
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error in GetMaintenanceStats gRPC method");
+                return new MaintenanceStatsReply
+                {
+                    Success = false,
+                    Message = $"Internal server error: {ex.Message}",
+                    Total = 0,
+                    Pending = 0,
+                    InProgress = 0,
+                    Completed = 0,
+                    Cancelled = 0
+                };
+            }
+        }
+
         #region Private Helper Methods
 
         private MaintenanceResponse MapToMaintenanceResponse(MaintenanceResponseDto maintenance)
