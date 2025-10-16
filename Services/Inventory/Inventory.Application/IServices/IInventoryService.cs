@@ -11,20 +11,11 @@ namespace Inventory.Application.IServices
 {
     public interface IInventoryService
     {
-        Task<InventoryResponseDto> CreateAsync(CreateInventoryDto dto);
-        Task<InventoryResponseDto?> GetByIdAsync(Guid id);
-        Task<IEnumerable<InventoryListDto>> GetAllAsync(int pageNumber = 1, int pageSize = 10);
-        Task<InventoryResponseDto?> UpdateAsync(Guid id, UpdateInventoryDto dto);
+        Task<IEnumerable<InventoryDto>> GetAllAsync();
+        Task<InventoryDto?> GetByIdAsync(Guid id);
+        Task<InventoryDto> CreateAsync(CreateInventoryDto dto);
+        Task<InventoryDto?> UpdateAsync(Guid id, UpdateInventoryDto dto);
         Task<bool> DeleteAsync(Guid id);
-
-        Task<IEnumerable<InventoryListDto>> GetByCategoryAsync(InventoryCategoryEnum category);
-        Task<IEnumerable<InventoryListDto>> GetByStatusAsync(InventoryStatusEnum status);
-
-        Task<InventoryAlertDto> GetAlertsAsync();
-        Task<IEnumerable<InventoryListDto>> GetLowStockItemsAsync();
-        Task<IEnumerable<InventoryListDto>> GetOutOfStockItemsAsync();
-        Task<InventorySummaryDto> GetSummaryAsync();
-
-        Task<bool> AdjustStockAsync(Guid id, AdjustStockDto dto);
+        Task<IEnumerable<InventoryDto>> GetByCategoryAsync(InventoryCategoryEnum category);
     }
 }

@@ -13,9 +13,8 @@ namespace Inventory.Domain.Entities
         public string Name { get; set; } = string.Empty;
         public InventoryCategoryEnum Category { get; set; }
         public int Quantity { get; set; }
-        public int MinimumStockLevel { get; set; } = 5;
         public decimal UnitPrice { get; set; }
-        public InventoryStatusEnum Status { get; set; } = InventoryStatusEnum.Available;
+        public string status { get; set; } = "Available";
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
     }
