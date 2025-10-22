@@ -33,6 +33,7 @@
 
 	<ItemGroup>
 		<Protobuf Include="../../../GrpcContract/Protos/vehicle.proto" GrpcServices="Client" />
-	</ItemGroup>
+        <ProjectReference Include="../../../GrpcContract/GrpcContract.csproj" />
+    </ItemGroup>
 
 </Project>
