@@ -1,5 +1,8 @@
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using Notification.Api.Consumers;
+using Notification.Api.EventBus;
+using Notification.Application.Hubs;
 using Notification.Application.IServices;
 using Notification.Application.Mapping;
 using Notification.Application.Services;
@@ -17,9 +20,22 @@ builder.Services.AddDbContext<NotificationDbContext>(options =>
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<IRabbitMqConnection, RabbitMqConnection>();
+builder.Services.AddHostedService<EventConsumer>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", b =>
+        b.AllowAnyHeader()
+            .AllowAnyMethod()
+            .SetIsOriginAllowed(_ => true)
+            .AllowCredentials());
+});
+
 var config = TypeAdapterConfig.GlobalSettings;
 MappingConfig.RegisterMappings(config);
 builder.Services.AddSingleton(config);
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -34,7 +50,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors("AllowAll");
+app.MapHub<NotificationHub>("/notifyHub");
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

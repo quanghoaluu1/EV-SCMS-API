@@ -14,7 +14,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddGrpcClient<AuthGrpc.Auth.AuthClient>(o =>
+{
+    o.Address = new Uri("https://localhost:7212");
+});
+builder.Services.AddScoped<IAuthGrpcGateway, AuthGrpcGateway>();
 // Add gRPC services
 builder.Services.AddGrpc();
 

@@ -11,7 +11,7 @@ namespace Customer.Infrastructure.IRepository
         Task<Domain.Entities.Customer> AddAsync(Domain.Entities.Customer customer);
         Task<Domain.Entities.Customer?> GetByIdAsync(Guid id);
         Task<Domain.Entities.Customer?> GetByUserIdAsync(Guid userId);
-        Task<IEnumerable<Domain.Entities.Customer>> GetAllAsync(int pageNumber = 1, int pageSize = 10);
+        Task<List<Domain.Entities.Customer>> GetAllAsync(int pageNumber = 1, int pageSize = 10);
         Task<Domain.Entities.Customer?> UpdateAsync(Domain.Entities.Customer customer);
         Task<bool> DeleteAsync(Guid id);
 

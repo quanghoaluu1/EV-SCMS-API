@@ -14,7 +14,8 @@ namespace Customer.Application.Mapping
         {
             // Entity → ResponseDto
             TypeAdapterConfig<Domain.Entities.Customer, CustomerResponseDto>
-                .NewConfig();
+                .NewConfig()
+                .Map(dest => dest.Id, src => src.Id);
 
             // Entity → ListDto
             TypeAdapterConfig<Domain.Entities.Customer, CustomerListDto>

@@ -34,7 +34,7 @@ namespace Customer.Infrastructure.Repository
             return await _context.Customers.FirstOrDefaultAsync(c => c.UserId == userId);
         }
 
-        public async Task<IEnumerable<Domain.Entities.Customer>> GetAllAsync(int pageNumber = 1, int pageSize = 10)
+        public async Task<List<Domain.Entities.Customer>> GetAllAsync(int pageNumber = 1, int pageSize = 10)
         {
             return await _context.Customers
                 .Skip((pageNumber - 1) * pageSize)
