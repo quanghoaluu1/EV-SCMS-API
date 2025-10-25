@@ -11,7 +11,7 @@ service BookingGrpcService {
   rpc ValidateBookingData (ValidateBookingDataRequest) returns (ValidateBookingDataReply);
   rpc GetBookingStats (GetBookingStatsRequest) returns (BookingStatsReply);
   rpc GetRevenue (GetRevenueRequest) returns (RevenueReply);
-  rpc UpdatePaymentStautus (UpdatePaymentStatusRequest) returns (UpdatePaymentStatusReply);
+  rpc UpdatePaymentStatus (UpdatePaymentStatusRequest) returns (UpdatePaymentStatusReply);
 }
 
 // Request/Reply messages
