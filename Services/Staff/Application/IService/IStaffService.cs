@@ -7,6 +7,7 @@ public interface IStaffService
 {
     
     Task<ResultDto<StaffDto>> GetStaffByIdAsync(Guid id);
+    Task<ResultDto<StaffDto>> GetStaffByUserIdAsync(Guid userId);
     Task<ResultDto<IEnumerable<StaffDto>>> GetAllStaffAsync();
     Task<StaffDto> CreateStaffAsync(CreateStaffDto dto);
     Task<bool> UpdateStaffAsync(Guid id, UpdateStaffDto dto);
