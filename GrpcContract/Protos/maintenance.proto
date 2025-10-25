@@ -4,6 +4,14 @@ option csharp_namespace = "MaintenanceGrpc";
 
 package maintenance;
 
+// Maintenance Inventory Item message
+message MaintenanceInventoryItem {
+  string inventory_id = 1;
+  int32 quantity = 2;
+  double unit_cost = 3;
+  double total_cost = 4;
+}
+
 // Maintenance gRPC Service
 service MaintenanceGrpcService {
   // CRUD Operations
@@ -40,6 +48,7 @@ message CreateMaintenanceRequest {
   int32 service_type = 7; // enum as int
   string description = 8;
   double cost = 9; // Added cost field
+  repeated MaintenanceInventoryItem inventory_items = 10;
 }
 
 message GetMaintenanceByIdRequest {
@@ -60,6 +69,7 @@ message UpdateMaintenanceRequest {
   string description = 6; // optional
   double cost = 7; // optional - Added cost field
   int32 status = 8; // optional - Updated field number
+  repeated MaintenanceInventoryItem inventory_items = 9; // optional
 }
 
 message DeleteMaintenanceRequest {
@@ -126,6 +136,8 @@ message MaintenanceResponse {
   string updated_at = 15; // ISO 8601 format - Updated field number
   bool success = 16; // Updated field number
   string message = 17; // Updated field number
+  repeated MaintenanceInventoryItem inventory_items = 18;
+
 }
 
 message MaintenanceListResponse {

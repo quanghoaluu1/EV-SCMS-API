@@ -17,16 +17,26 @@ namespace Maintenance.Application.Mapping
             // Entity -> ResponseDto
             config.NewConfig<Domain.Entities.Maintenance, MaintenanceResponseDto>()
                 .Map(dest => dest.ServiceTypeName, src => GetServiceTypeName(src.ServiceType))
-                .Map(dest => dest.StatusName, src => src.Status.ToString());
+                .Map(dest => dest.StatusName, src => src.Status.ToString())
+                .Map(dest => dest.InventoryItems, src => src.InventoryItems.Adapt<List<MaintenanceInventoryItemDto>>());
 
             // Entity -> ListDto 
             config.NewConfig<Domain.Entities.Maintenance, MaintenanceListDto>();
+
+            // MaintenanceInventoryItem mappings
+            config.NewConfig<Domain.Entities.MaintenanceInventoryItem, MaintenanceInventoryItemDto>();
+            config.NewConfig<MaintenanceInventoryItemDto, Domain.Entities.MaintenanceInventoryItem>()
+                .Ignore(dest => dest.Id)
+                .Ignore(dest => dest.CreatedAt)
+                .Ignore(dest => dest.UpdatedAt)
+                .Ignore(dest => dest.Maintenance);
 
             // CreateDto -> Entity 
             config.NewConfig<CreateMaintenanceDto, Domain.Entities.Maintenance>()
                 .Ignore(dest => dest.MaintenanceId)
                 .Ignore(dest => dest.CreatedAt)
-                .Ignore(dest => dest.UpdatedAt);
+                .Ignore(dest => dest.UpdatedAt)
+                .Ignore(dest => dest.InventoryItems); // Will be handled separately
 
             // UpdateDto -> Entity
             // Use IgnoreNullValues to only update non-null fields
@@ -37,7 +47,8 @@ namespace Maintenance.Application.Mapping
                 .Ignore(dest => dest.CustomerId) // Cannot change customer
                 .Ignore(dest => dest.BookingId)  // Cannot change booking
                 .Ignore(dest => dest.CreatedAt)
-                .Ignore(dest => dest.UpdatedAt);
+                .Ignore(dest => dest.UpdatedAt)
+                .Ignore(dest => dest.InventoryItems); // Will be handled separately
         }
 
         // Helper method for service type display name

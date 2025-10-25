@@ -68,6 +68,56 @@ namespace Maintenance.Infrastructure.Migrations
 
                     b.ToTable("Maintenances");
                 });
+
+            modelBuilder.Entity("Maintenance.Domain.Entities.MaintenanceInventoryItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("InventoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("MaintenanceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("TotalCost")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("UnitCost")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaintenanceId");
+
+                    b.ToTable("MaintenanceInventoryItems");
+                });
+
+            modelBuilder.Entity("Maintenance.Domain.Entities.MaintenanceInventoryItem", b =>
+                {
+                    b.HasOne("Maintenance.Domain.Entities.Maintenance", "Maintenance")
+                        .WithMany("InventoryItems")
+                        .HasForeignKey("MaintenanceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Maintenance");
+                });
+
+            modelBuilder.Entity("Maintenance.Domain.Entities.Maintenance", b =>
+                {
+                    b.Navigation("InventoryItems");
+                });
 #pragma warning restore 612, 618
         }
     }

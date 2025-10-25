@@ -10,6 +10,14 @@ namespace Maintenance.Application.DTOs
 {
     public static class MaintenanceDTOs
     {
+        public class MaintenanceInventoryItemDto
+        {
+            public Guid InventoryId { get; set; }
+            public int Quantity { get; set; }
+            public decimal UnitCost { get; set; }
+            public decimal TotalCost { get; set; }
+        }
+
         public class CreateMaintenanceDto
         {
             [Required(ErrorMessage = "Vehicle ID is required")]
@@ -40,6 +48,9 @@ namespace Maintenance.Application.DTOs
             [Required(ErrorMessage = "Cost is required")]
             [Range(0.01, double.MaxValue, ErrorMessage = "Cost must be greater than 0")]
             public decimal Cost { get; set; }
+
+            public List<MaintenanceInventoryItemDto> InventoryItems { get; set; } = new List<MaintenanceInventoryItemDto>();
+
         }
 
         public class UpdateMaintenanceDto
@@ -59,6 +70,9 @@ namespace Maintenance.Application.DTOs
             public decimal? Cost { get; set; }
 
             public MaintenanceEnums? Status { get; set; }
+
+            public List<MaintenanceInventoryItemDto>? InventoryItems { get; set; }
+
         }
 
         public class MaintenanceResponseDto
@@ -78,6 +92,9 @@ namespace Maintenance.Application.DTOs
             public string StatusName { get; set; } = string.Empty; // For display
             public DateTime CreatedAt { get; set; }
             public DateTime UpdatedAt { get; set; }
+
+            public List<MaintenanceInventoryItemDto> InventoryItems { get; set; } = new List<MaintenanceInventoryItemDto>();
+
         }
 
         public class MaintenanceListDto

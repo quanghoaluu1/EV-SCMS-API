@@ -34,6 +34,7 @@ namespace Maintenance.Infrastructure.Repository
         {
             return await _context.Maintenances
                 .AsNoTracking()
+                .Include(m => m.InventoryItems)
                 .FirstOrDefaultAsync(m => m.MaintenanceId == id);
         }
 
@@ -43,6 +44,7 @@ namespace Maintenance.Infrastructure.Repository
         {
             return await _context.Maintenances
                 .AsNoTracking()
+                .Include(m => m.InventoryItems)
                 .OrderByDescending(m => m.CreatedAt)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
@@ -51,7 +53,9 @@ namespace Maintenance.Infrastructure.Repository
 
         public async Task<Domain.Entities.Maintenance?> UpdateAsync(Domain.Entities.Maintenance maintenance)
         {
-            var existing = await _context.Maintenances.FindAsync(maintenance.MaintenanceId);
+            var existing = await _context.Maintenances
+                .Include(m => m.InventoryItems)
+                .FirstOrDefaultAsync(m => m.MaintenanceId == maintenance.MaintenanceId);
             if (existing == null) return null;
 
             // Update fields
@@ -66,6 +70,23 @@ namespace Maintenance.Infrastructure.Repository
             existing.Cost = maintenance.Cost;
             existing.Status = maintenance.Status;
             existing.UpdatedAt = DateTime.UtcNow;
+
+            // Update inventory items
+            existing.InventoryItems.Clear();
+            foreach (var item in maintenance.InventoryItems)
+            {
+                existing.InventoryItems.Add(new Domain.Entities.MaintenanceInventoryItem
+                {
+                    Id = Guid.NewGuid(),
+                    MaintenanceId = existing.MaintenanceId,
+                    InventoryId = item.InventoryId,
+                    Quantity = item.Quantity,
+                    UnitCost = item.UnitCost,
+                    TotalCost = item.TotalCost,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                });
+            }
 
             try
             {
