@@ -22,5 +22,8 @@ namespace Maintenance.Domain.Entities
         public MaintenanceEnums Status { get; set; }= MaintenanceEnums.Pending;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+        public ICollection<MaintenanceInventoryItem> InventoryItems { get; set; } = new List<MaintenanceInventoryItem>();
+
     }
 }

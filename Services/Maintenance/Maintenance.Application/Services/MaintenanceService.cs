@@ -41,6 +41,18 @@ namespace Maintenance.Application.Services
             // Map DTO to Entity
             var maintenance = dto.Adapt<Domain.Entities.Maintenance>();
 
+            // Handle inventory items
+            if (dto.InventoryItems != null && dto.InventoryItems.Any())
+            {
+                maintenance.InventoryItems = dto.InventoryItems.Select(item => new Domain.Entities.MaintenanceInventoryItem
+                {
+                    InventoryId = item.InventoryId,
+                    Quantity = item.Quantity,
+                    UnitCost = item.UnitCost,
+                    TotalCost = item.TotalCost
+                }).ToList();
+            }
+
             // Repository handles ID and timestamps
             var created = await _repository.AddAsync(maintenance);
 
@@ -83,6 +95,20 @@ namespace Maintenance.Application.Services
 
             // Mapster will map only non-null values (IgnoreNullValues = true)
             dto.Adapt(existing);
+
+            // Handle inventory items if provided
+            if (dto.InventoryItems != null)
+            {
+                // Clear existing inventory items and add new ones
+                existing.InventoryItems.Clear();
+                existing.InventoryItems = dto.InventoryItems.Select(item => new Domain.Entities.MaintenanceInventoryItem
+                {
+                    InventoryId = item.InventoryId,
+                    Quantity = item.Quantity,
+                    UnitCost = item.UnitCost,
+                    TotalCost = item.TotalCost
+                }).ToList();
+            }
 
             var updated = await _repository.UpdateAsync(existing);
 

@@ -132,7 +132,14 @@ namespace Maintenance.Api.Services
                     Odometer = request.Odometer,
                     ServiceType = (MaintenanceServiceTypeEnum)request.ServiceType,
                     Description = request.Description,
-                    Cost = (decimal)request.Cost
+                    Cost = (decimal)request.Cost,
+                    InventoryItems = request.InventoryItems.Select(item => new MaintenanceInventoryItemDto
+                    {
+                        InventoryId = Guid.Parse(item.InventoryId),
+                        Quantity = item.Quantity,
+                        UnitCost = (decimal)item.UnitCost,
+                        TotalCost = (decimal)item.TotalCost
+                    }).ToList()
                 };
 
                 var maintenance = await _maintenanceService.CreateAsync(dto);
@@ -286,6 +293,18 @@ namespace Maintenance.Api.Services
                 if (request.Status > 0 && Enum.IsDefined(typeof(MaintenanceEnums), request.Status))
                 {
                     dto.Status = (MaintenanceEnums)request.Status;
+                }
+
+                // Handle inventory items if provided
+                if (request.InventoryItems != null && request.InventoryItems.Count > 0)
+                {
+                    dto.InventoryItems = request.InventoryItems.Select(item => new MaintenanceInventoryItemDto
+                    {
+                        InventoryId = Guid.Parse(item.InventoryId),
+                        Quantity = item.Quantity,
+                        UnitCost = (decimal)item.UnitCost,
+                        TotalCost = (decimal)item.TotalCost
+                    }).ToList();
                 }
 
                 var updated = await _maintenanceService.UpdateAsync(maintenanceId, dto);
@@ -710,7 +729,7 @@ namespace Maintenance.Api.Services
 
         private MaintenanceResponse MapToMaintenanceResponse(MaintenanceResponseDto maintenance)
         {
-            return new MaintenanceResponse
+            var response = new MaintenanceResponse
             {
                 MaintenanceId = maintenance.MaintenanceId.ToString(),
                 VehicleId = maintenance.VehicleId.ToString(),
@@ -728,6 +747,20 @@ namespace Maintenance.Api.Services
                 CreatedAt = maintenance.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ"),
                 UpdatedAt = maintenance.UpdatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ")
             };
+
+            // Map inventory items
+            foreach (var inventoryItem in maintenance.InventoryItems)
+            {
+                response.InventoryItems.Add(new MaintenanceInventoryItem
+                {
+                    InventoryId = inventoryItem.InventoryId.ToString(),
+                    Quantity = inventoryItem.Quantity,
+                    UnitCost = (double)inventoryItem.UnitCost,
+                    TotalCost = (double)inventoryItem.TotalCost
+                });
+            }
+
+            return response;
         }
 
         #endregion
