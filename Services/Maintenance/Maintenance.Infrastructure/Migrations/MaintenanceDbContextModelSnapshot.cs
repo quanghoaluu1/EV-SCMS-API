@@ -31,6 +31,9 @@ namespace Maintenance.Infrastructure.Migrations
                     b.Property<Guid>("BookingId")
                         .HasColumnType("uuid");
 
+                    b.Property<decimal>("Cost")
+                        .HasColumnType("numeric");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 

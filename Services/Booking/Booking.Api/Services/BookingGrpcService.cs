@@ -319,5 +319,174 @@ namespace Booking.Api.Services
             }
         }
 
+        // NEW: GetBookingStats method
+        public override async Task<BookingStatsReply> GetBookingStats(GetBookingStatsRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("gRPC GetBookingStats called");
+
+                // Get all bookings to calculate statistics
+                var allBookings = await _bookingService.GetAllAsync(1, int.MaxValue);
+                var bookingList = allBookings.ToList();
+
+                var now = DateTime.UtcNow;
+                var today = now.Date;
+                var startOfWeek = today.AddDays(-(int)today.DayOfWeek);
+                var startOfMonth = new DateTime(today.Year, today.Month, 1);
+
+                var total = bookingList.Count;
+                var pending = bookingList.Count(b => b.Status == BookingStatusEnum.Pending);
+                var processing = bookingList.Count(b => b.Status == BookingStatusEnum.Processing);
+                var completed = bookingList.Count(b => b.Status == BookingStatusEnum.Completed);
+                var cancelled = bookingList.Count(b => b.Status == BookingStatusEnum.Cancelled);
+                
+                // Time-based statistics using ScheduledDate
+                var todayBookings = bookingList.Count(b => b.ScheduledDate.Date == today);
+                var thisWeekBookings = bookingList.Count(b => b.ScheduledDate.Date >= startOfWeek && b.ScheduledDate.Date <= today);
+                var thisMonthBookings = bookingList.Count(b => b.ScheduledDate.Date >= startOfMonth && b.ScheduledDate.Date <= today);
+                
+                var completionRate = total > 0 ? (double)completed / total * 100 : 0;
+
+                _logger.LogInformation("Booking stats calculated: Total={Total}, Pending={Pending}, Processing={Processing}, Completed={Completed}, Cancelled={Cancelled}",
+                    total, pending, processing, completed, cancelled);
+
+                return new BookingStatsReply
+                {
+                    Success = true,
+                    Message = "Booking statistics retrieved successfully",
+                    Total = total,
+                    Pending = pending,
+                    InProgress = processing,
+                    Completed = completed,
+                    Cancelled = cancelled,
+                    Today = todayBookings,
+                    ThisWeek = thisWeekBookings,
+                    ThisMonth = thisMonthBookings,
+                    CompletionRate = completionRate
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error in GetBookingStats gRPC method");
+                return new BookingStatsReply
+                {
+                    Success = false,
+                    Message = $"Internal server error: {ex.Message}",
+                    Total = 0,
+                    Pending = 0,
+                    InProgress = 0,
+                    Completed = 0,
+                    Cancelled = 0,
+                    Today = 0,
+                    ThisWeek = 0,
+                    ThisMonth = 0,
+                    CompletionRate = 0
+                };
+            }
+        }
+
+        // NEW: GetRevenue method
+        public override async Task<RevenueReply> GetRevenue(GetRevenueRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("gRPC GetRevenue called");
+
+                // Get all bookings with detailed info to calculate revenue
+                // We need to get full booking details, so let's get them one by one
+                var allBookings = await _bookingService.GetAllAsync(1, int.MaxValue);
+                var bookingList = allBookings.ToList();
+
+                var now = DateTime.UtcNow;
+                var today = now.Date;
+                var startOfWeek = today.AddDays(-(int)today.DayOfWeek);
+                var startOfMonth = new DateTime(today.Year, today.Month, 1);
+
+                // Get detailed booking info to access TotalCost and PaymentStatus
+                var detailedBookings = new List<BookingResponseDto>();
+                foreach (var booking in bookingList)
+                {
+                    var detailedBooking = await _bookingService.GetByIdAsync(booking.BookingId);
+                    if (detailedBooking != null)
+                    {
+                        detailedBookings.Add(detailedBooking);
+                    }
+                }
+
+                // Calculate revenue based on TotalCost
+                var totalRevenue = detailedBookings.Where(b => b.TotalCost.HasValue).Sum(b => b.TotalCost.Value);
+                var monthlyRevenue = detailedBookings.Where(b => b.ScheduledDate.Date >= startOfMonth && b.TotalCost.HasValue).Sum(b => b.TotalCost.Value);
+                var weeklyRevenue = detailedBookings.Where(b => b.ScheduledDate.Date >= startOfWeek && b.TotalCost.HasValue).Sum(b => b.TotalCost.Value);
+                var dailyRevenue = detailedBookings.Where(b => b.ScheduledDate.Date == today && b.TotalCost.HasValue).Sum(b => b.TotalCost.Value);
+                var paidRevenue = detailedBookings.Where(b => b.PaymentStatus == "Paid" && b.TotalCost.HasValue).Sum(b => b.TotalCost.Value);
+                var unpaidRevenue = detailedBookings.Where(b => b.PaymentStatus != "Paid" && b.TotalCost.HasValue).Sum(b => b.TotalCost.Value);
+                var averagePerBooking = detailedBookings.Count > 0 ? (double)totalRevenue / detailedBookings.Count : 0;
+
+                _logger.LogInformation("Revenue calculated: Total={Total}, Monthly={Monthly}, Weekly={Weekly}, Daily={Daily}",
+                    totalRevenue, monthlyRevenue, weeklyRevenue, dailyRevenue);
+
+                return new RevenueReply
+                {
+                    Success = true,
+                    Message = "Revenue statistics retrieved successfully",
+                    Total = totalRevenue,
+                    ThisMonth = monthlyRevenue,
+                    ThisWeek = weeklyRevenue,
+                    Today = dailyRevenue,
+                    Paid = paidRevenue,
+                    Unpaid = unpaidRevenue,
+                    AveragePerBooking = averagePerBooking
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error in GetRevenue gRPC method");
+                return new RevenueReply
+                {
+                    Success = false,
+                    Message = $"Internal server error: {ex.Message}",
+                    Total = 0,
+                    ThisMonth = 0,
+                    ThisWeek = 0,
+                    Today = 0,
+                    Paid = 0,
+                    Unpaid = 0,
+                    AveragePerBooking = 0
+                };
+            }
+        }
+
+        // NEW: UpdatePaymentStatus method
+        //public override async Task<UpdatePaymentStatusReply> UpdatePaymentStauts(UpdatePaymentStatusRequest request, ServerCallContext context)
+        //{
+        //    try
+        //    {
+        //        _logger.LogInformation("gRPC UpdatePaymentStatus called with BookingId: {BookingId}, PaymentStatus: {PaymentStatus}",
+        //            request.BookingId, request.PaymentStatus);
+
+        //        if (!Guid.TryParse(request.BookingId, out var bookingId))
+        //        {
+        //            return new UpdatePaymentStatusReply { Success = false, Message = "Invalid BookingId format" };
+        //        }
+
+        //        var success = await _bookingService.UpdatePaymentStatusAsync(bookingId, request.PaymentStatus);
+
+        //        return new UpdatePaymentStatusReply
+        //        {
+        //            Success = success,
+        //            Message = success ? "Payment status updated successfully" : "Booking not found"
+        //        };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Unexpected error in UpdatePaymentStatus gRPC method");
+        //        return new UpdatePaymentStatusReply
+        //        {
+        //            Success = false,
+        //            Message = $"Internal server error: {ex.Message}"
+        //        };
+        //    }
+        //}
     }
 }

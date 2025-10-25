@@ -25,41 +25,41 @@
             "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
         },
         {
-          "DownstreamPathTemplate": "/api/LeaveRequest/{everything}",
-          "DownstreamScheme": "https",
-          "DownstreamHostAndPorts": [
-            {
-              "Host": "localhost",
-              "Port": 7242
-            }
-          ],
-          "UpstreamPathTemplate": "/api/LeaveRequest/{everything}",
-          "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+            "DownstreamPathTemplate": "/api/LeaveRequest/{everything}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7242
+                }
+            ],
+            "UpstreamPathTemplate": "/api/LeaveRequest/{everything}",
+            "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
         },
-      {
-        "DownstreamPathTemplate": "/api/Shift/{everything}",
-        "DownstreamScheme": "https",
-        "DownstreamHostAndPorts": [
-          {
-            "Host": "localhost",
-            "Port": 7242
-          }
-        ],
-        "UpstreamPathTemplate": "/api/Shift/{everything}",
-        "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
-      },
-      {
-        "DownstreamPathTemplate": "/api/StaffShift/{everything}",
-        "DownstreamScheme": "https",
-        "DownstreamHostAndPorts": [
-          {
-            "Host": "localhost",
-            "Port": 7242
-          }
-        ],
-        "UpstreamPathTemplate": "/api/StaffShift/{everything}",
-        "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
-      },
+        {
+            "DownstreamPathTemplate": "/api/Shift/{everything}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7242
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Shift/{everything}",
+            "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/StaffShift/{everything}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7242
+                }
+            ],
+            "UpstreamPathTemplate": "/api/StaffShift/{everything}",
+            "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+        },
         {
             "DownstreamPathTemplate": "/api/Customer/{everything}",
             "DownstreamScheme": "https",
@@ -118,6 +118,18 @@
                 }
             ],
             "UpstreamPathTemplate": "/api/Inventory/{everything}",
+            "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Report/{everything}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7089
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Report/{everything}",
             "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
         }
     ],
