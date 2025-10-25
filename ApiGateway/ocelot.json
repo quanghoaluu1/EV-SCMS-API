@@ -119,7 +119,19 @@
             ],
             "UpstreamPathTemplate": "/api/Inventory/{everything}",
             "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
-        }
+        },
+      {
+        "DownstreamPathTemplate": "/api/Payment/{everything}",
+        "DownstreamScheme": "https",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 7115
+          }
+        ],
+        "UpstreamPathTemplate": "/api/Payment/{everything}",
+        "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+      }
     ],
   "GlobalConfiguration": {
     "BaseUrl": "https://localhost:7088"
