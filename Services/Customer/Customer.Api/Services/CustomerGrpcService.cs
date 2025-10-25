@@ -33,12 +33,12 @@ namespace Customer.Api.Services
                 {
                     Success = true,
                     Message = "Customer found",
-                    CustomerId = customer.Id.ToString(),
-                    UserId = customer.UserId.ToString(),
-                    Address = customer.Address,
-                    Status = customer.Status.ToString(),
-                    CreatedAt = customer.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ"),
-                    UpdatedAt = customer.UpdatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ")
+                    CustomerId = customer.Data.Id.ToString(),
+                    UserId = customer.Data.UserId.ToString(),
+                    Address = customer.Data.Address,
+                    Status = customer.Data.Status.ToString(),
+                    CreatedAt = customer.Data.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                    UpdatedAt = customer.Data.UpdatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ")
                 };
             }
             catch (Exception ex)

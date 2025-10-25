@@ -456,5 +456,37 @@ namespace Booking.Api.Services
                 };
             }
         }
+
+        // NEW: UpdatePaymentStatus method
+        //public override async Task<UpdatePaymentStatusReply> UpdatePaymentStauts(UpdatePaymentStatusRequest request, ServerCallContext context)
+        //{
+        //    try
+        //    {
+        //        _logger.LogInformation("gRPC UpdatePaymentStatus called with BookingId: {BookingId}, PaymentStatus: {PaymentStatus}",
+        //            request.BookingId, request.PaymentStatus);
+
+        //        if (!Guid.TryParse(request.BookingId, out var bookingId))
+        //        {
+        //            return new UpdatePaymentStatusReply { Success = false, Message = "Invalid BookingId format" };
+        //        }
+
+        //        var success = await _bookingService.UpdatePaymentStatusAsync(bookingId, request.PaymentStatus);
+
+        //        return new UpdatePaymentStatusReply
+        //        {
+        //            Success = success,
+        //            Message = success ? "Payment status updated successfully" : "Booking not found"
+        //        };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Unexpected error in UpdatePaymentStatus gRPC method");
+        //        return new UpdatePaymentStatusReply
+        //        {
+        //            Success = false,
+        //            Message = $"Internal server error: {ex.Message}"
+        //        };
+        //    }
+        //}
     }
 }

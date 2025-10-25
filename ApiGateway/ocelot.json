@@ -90,14 +90,14 @@
             "DownstreamHostAndPorts": [
                 {
                     "Host": "localhost",
-                    "Port": 7043
+                    "Port": 7097
                 }
             ],
             "UpstreamPathTemplate": "/api/Maintenance/{everything}",
             "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ]
         },
         {
-            "DownstreamPathTemplate": "/api/Bookings/{everything}",
+            "DownstreamPathTemplate": "/api/Booking/{everything}",
             "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [
                 {
@@ -105,7 +105,7 @@
                     "Port": 7041
                 }
             ],
-            "UpstreamPathTemplate": "/api/Bookings/{everything}",
+            "UpstreamPathTemplate": "/api/Booking/{everything}",
             "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ]
         },
         {

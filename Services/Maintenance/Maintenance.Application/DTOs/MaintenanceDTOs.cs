@@ -36,6 +36,10 @@ namespace Maintenance.Application.DTOs
 
             [MaxLength(1000, ErrorMessage = "Description cannot exceed 1000 characters")]
             public string? Description { get; set; }
+
+            [Required(ErrorMessage = "Cost is required")]
+            [Range(0.01, double.MaxValue, ErrorMessage = "Cost must be greater than 0")]
+            public decimal Cost { get; set; }
         }
 
         public class UpdateMaintenanceDto
@@ -50,6 +54,9 @@ namespace Maintenance.Application.DTOs
 
             [MaxLength(1000, ErrorMessage = "Description cannot exceed 1000 characters")]
             public string? Description { get; set; }
+
+            [Range(0.01, double.MaxValue, ErrorMessage = "Cost must be greater than 0")]
+            public decimal? Cost { get; set; }
 
             public MaintenanceEnums? Status { get; set; }
         }
@@ -66,6 +73,7 @@ namespace Maintenance.Application.DTOs
             public MaintenanceServiceTypeEnum ServiceType { get; set; }
             public string ServiceTypeName { get; set; } = string.Empty; // For display
             public string? Description { get; set; }
+            public decimal Cost { get; set; }
             public MaintenanceEnums Status { get; set; }
             public string StatusName { get; set; } = string.Empty; // For display
             public DateTime CreatedAt { get; set; }
@@ -80,6 +88,7 @@ namespace Maintenance.Application.DTOs
             public Guid BookingId { get; set; }
             public DateTime ServiceDate { get; set; }
             public MaintenanceServiceTypeEnum ServiceType { get; set; }
+            public decimal Cost { get; set; }
             public MaintenanceEnums Status { get; set; }
             public DateTime CreatedAt { get; set; }
         }

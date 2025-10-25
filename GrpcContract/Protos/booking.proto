@@ -9,10 +9,9 @@ service BookingGrpcService {
   rpc CreateBooking (CreateBookingRequest) returns (CreateBookingReply);
   rpc GetBookingById (GetBookingByIdRequest) returns (GetBookingByIdReply);
   rpc ValidateBookingData (ValidateBookingDataRequest) returns (ValidateBookingDataReply);
-
-  // ===== NEW: REPORT METHODS =====
   rpc GetBookingStats (GetBookingStatsRequest) returns (BookingStatsReply);
   rpc GetRevenue (GetRevenueRequest) returns (RevenueReply);
+  rpc UpdatePaymentStautus (UpdatePaymentStatusRequest) returns (UpdatePaymentStatusReply);
 }
 
 // Request/Reply messages
@@ -109,4 +108,15 @@ message RevenueReply {
   double paid = 7;
   double unpaid = 8;
   double average_per_booking = 9;
+}
+
+// ADD THESE MESSAGES:
+message UpdatePaymentStatusRequest {
+  string booking_id = 1;
+  string payment_status = 2;
+}
+
+message UpdatePaymentStatusReply {
+  bool success = 1;
+  string message = 2;
 }

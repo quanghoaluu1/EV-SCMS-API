@@ -23,6 +23,14 @@ public class StaffController : ControllerBase
         return Ok(staff);
     }
 
+    [HttpGet("userId")]
+    public async Task<IActionResult> GetByUserId(Guid userId)
+    {
+        var staff = await _staffService.GetStaffByUserIdAsync(userId);
+        if (staff == null) return NotFound();
+        return Ok(staff);   
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {

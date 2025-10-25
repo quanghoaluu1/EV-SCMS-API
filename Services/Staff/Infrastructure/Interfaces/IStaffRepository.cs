@@ -5,6 +5,7 @@ namespace Infrastructure.IRepository;
 public interface IStaffRepository
 {
     Task<Staff?> GetByIdAsync(Guid id);
+    Task<Staff?> GetByUserIdAsync(Guid userId);
     Task<IEnumerable<Staff>> GetAllAsync();
     Task AddAsync(Staff staff);
     Task UpdateAsync(Staff staff);

@@ -63,6 +63,7 @@ namespace Maintenance.Infrastructure.Repository
             existing.Odometer = maintenance.Odometer;
             existing.ServiceType = maintenance.ServiceType;
             existing.Description = maintenance.Description;
+            existing.Cost = maintenance.Cost;
             existing.Status = maintenance.Status;
             existing.UpdatedAt = DateTime.UtcNow;
 

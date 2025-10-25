@@ -18,6 +18,11 @@ public class StaffRepository : IStaffRepository
         return await _context.Staffs.FindAsync(id);
     }
 
+    public async Task<Staff?> GetByUserIdAsync(Guid userId)
+    {
+        return await _context.Staffs.FirstOrDefaultAsync(s => s.UserId == userId);
+    }
+
     public async Task<IEnumerable<Staff>> GetAllAsync()
     {
         return await _context.Staffs.ToListAsync();

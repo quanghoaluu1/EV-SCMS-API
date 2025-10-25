@@ -60,6 +60,48 @@ public class StaffService : IStaffService
                 }
             };
         }
+        
+        public async Task<ResultDto<StaffDto>> GetStaffByUserIdAsync(Guid userId)
+        {
+            var staff = await _staffRepository.GetByUserIdAsync(userId);
+            
+            if (staff == null)
+            {
+                return new ResultDto<StaffDto>
+                {
+                    IsSuccess = false,
+                    Message = "Staff not found",
+                    Data = null,
+                };
+            }
+
+            var userReply = await _authGrpcGateway.GetUserById(staff.UserId);
+            if (userReply == null || !userReply.Success)
+            {
+                return new ResultDto<StaffDto>()
+                {
+                    IsSuccess = false,
+                    Message = "Failed to retrieve user information through gRPC",
+                    Data = null,
+                };
+            }
+            
+            
+            return new ResultDto<StaffDto>()
+            {
+                IsSuccess = true,
+                Message = "Staff retrieved successfully",
+                Data = new StaffDto
+                {
+                    StaffId = staff.Id,
+                    UserId = staff.UserId,
+                    FullName = userReply.FullName,
+                    Email = userReply.Email,
+                    PhoneNumber = string.Empty,
+                    Role = userReply.Role
+                }
+            };
+        }
 
         public async Task<ResultDto<IEnumerable<StaffDto>>> GetAllStaffAsync()
         {

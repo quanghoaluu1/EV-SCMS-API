@@ -70,6 +70,13 @@ namespace Maintenance.Api.Services
                     throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid ServiceDate format. Use ISO format: yyyy-MM-ddTHH:mm:ssZ"));
                 }
 
+                // Validate cost
+                if (request.Cost <= 0)
+                {
+                    _logger.LogWarning("Invalid cost value: {Cost}", request.Cost);
+                    throw new RpcException(new Status(StatusCode.InvalidArgument, "Cost must be greater than 0"));
+                }
+
                 // Validate Vehicle
                 _logger.LogInformation("Validating vehicle: {VehicleId}", vehicleId);
                 var vehicleResponse = await _vehicleGrpcGateway.GetVehicleById(vehicleId);
@@ -124,7 +131,8 @@ namespace Maintenance.Api.Services
                     ServiceDate = serviceDate,
                     Odometer = request.Odometer,
                     ServiceType = (MaintenanceServiceTypeEnum)request.ServiceType,
-                    Description = request.Description
+                    Description = request.Description,
+                    Cost = (decimal)request.Cost
                 };
 
                 var maintenance = await _maintenanceService.CreateAsync(dto);
@@ -268,6 +276,11 @@ namespace Maintenance.Api.Services
                 if (!string.IsNullOrEmpty(request.Description))
                 {
                     dto.Description = request.Description;
+                }
+
+                if (request.Cost > 0)
+                {
+                    dto.Cost = (decimal)request.Cost;
                 }
 
                 if (request.Status > 0 && Enum.IsDefined(typeof(MaintenanceEnums), request.Status))
@@ -709,6 +722,7 @@ namespace Maintenance.Api.Services
                 ServiceType = (int)maintenance.ServiceType,
                 ServiceTypeName = maintenance.ServiceTypeName,
                 Description = maintenance.Description ?? "",
+                Cost = (double)maintenance.Cost,
                 Status = (int)maintenance.Status,
                 StatusName = maintenance.StatusName,
                 CreatedAt = maintenance.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ"),
