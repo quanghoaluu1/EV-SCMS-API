@@ -38,6 +38,35 @@ namespace Maintenance.Application.Services
                 throw new ArgumentException("Service date cannot be in the past");
             }
 
+            // Store original labor/service cost
+            var originalLaborCost = dto.Cost;
+
+            // Auto-calculate inventory item total costs
+            if (dto.InventoryItems != null && dto.InventoryItems.Any())
+            {
+                foreach (var item in dto.InventoryItems)
+                {
+                    var calculatedTotal = item.Quantity * item.UnitCost;
+
+                    if (item.TotalCost != calculatedTotal)
+                    {
+                        _logger.LogWarning("Auto-correcting inventory item total cost. Item: {InventoryId}, Provided: {Provided}, Calculated: {Calculated}",
+                            item.InventoryId, item.TotalCost, calculatedTotal);
+
+                        item.TotalCost = calculatedTotal;
+                    }
+                }
+
+                // NEW: Calculate and update total maintenance cost including inventory
+                var inventoryTotal = dto.InventoryItems.Sum(item => item.TotalCost);
+                var newTotalCost = originalLaborCost + inventoryTotal;
+
+                _logger.LogInformation("Calculating total maintenance cost. Labor: {LaborCost}, Inventory: {InventoryTotal}, Total: {TotalCost}",
+                    originalLaborCost, inventoryTotal, newTotalCost);
+
+                dto.Cost = newTotalCost;
+            }
+
             // Map DTO to Entity
             var maintenance = dto.Adapt<Domain.Entities.Maintenance>();
 
@@ -56,9 +85,9 @@ namespace Maintenance.Application.Services
             // Repository handles ID and timestamps
             var created = await _repository.AddAsync(maintenance);
 
-            _logger.LogInformation("Maintenance {MaintenanceId} created successfully", created.MaintenanceId);
+            _logger.LogInformation("Maintenance {MaintenanceId} created successfully with total cost {TotalCost}",
+                created.MaintenanceId, created.Cost);
 
-            // Map Entity to ResponseDto
             return created.Adapt<MaintenanceResponseDto>();
         }
 
@@ -93,13 +122,55 @@ namespace Maintenance.Application.Services
                 throw new ArgumentException("Service date cannot be in the past");
             }
 
-            // Mapster will map only non-null values (IgnoreNullValues = true)
-            dto.Adapt(existing);
+            // Handle cost calculation for updates
+            decimal? originalLaborCost = dto.Cost ?? existing.Cost;
 
-            // Handle inventory items if provided
+            // If updating inventory items, recalculate total cost
             if (dto.InventoryItems != null)
             {
-                // Clear existing inventory items and add new ones
+                // Auto-calculate inventory item total costs
+                foreach (var item in dto.InventoryItems)
+                {
+                    var calculatedTotal = item.Quantity * item.UnitCost;
+
+                    if (item.TotalCost != calculatedTotal)
+                    {
+                        _logger.LogWarning("Auto-correcting inventory item total cost during update. Item: {InventoryId}, Provided: {Provided}, Calculated: {Calculated}",
+                            item.InventoryId, item.TotalCost, calculatedTotal);
+
+                        item.TotalCost = calculatedTotal;
+                    }
+                }
+
+                // NEW: If Cost was not explicitly provided, recalculate it
+                if (!dto.Cost.HasValue)
+                {
+                    // Use existing cost as base labor cost, subtract any existing inventory costs
+                    var existingInventoryTotal = existing.InventoryItems?.Sum(item => item.TotalCost) ?? 0;
+                    var baseLaborCost = existing.Cost - existingInventoryTotal;
+
+                    // Calculate new total with updated inventory
+                    var newInventoryTotal = dto.InventoryItems.Sum(item => item.TotalCost);
+                    dto.Cost = baseLaborCost + newInventoryTotal;
+
+                    _logger.LogInformation("Recalculating maintenance cost. Base Labor: {LaborCost}, New Inventory Total: {InventoryTotal}, New Total: {TotalCost}",
+                        baseLaborCost, newInventoryTotal, dto.Cost);
+                }
+                else
+                {
+                    // Cost was explicitly provided, add inventory total to it
+                    var newInventoryTotal = dto.InventoryItems.Sum(item => item.TotalCost);
+                    dto.Cost = dto.Cost.Value + newInventoryTotal;
+
+                    _logger.LogInformation("Updating maintenance cost. Provided Labor: {LaborCost}, Inventory Total: {InventoryTotal}, New Total: {TotalCost}",
+                        originalLaborCost, newInventoryTotal, dto.Cost);
+                }
+            }
+
+            dto.Adapt(existing);
+
+            if (dto.InventoryItems != null)
+            {
                 existing.InventoryItems.Clear();
                 existing.InventoryItems = dto.InventoryItems.Select(item => new Domain.Entities.MaintenanceInventoryItem
                 {
@@ -112,7 +183,8 @@ namespace Maintenance.Application.Services
 
             var updated = await _repository.UpdateAsync(existing);
 
-            _logger.LogInformation("Maintenance {MaintenanceId} updated successfully", id);
+            _logger.LogInformation("Maintenance {MaintenanceId} updated successfully with total cost {TotalCost}",
+                id, updated?.Cost);
 
             return updated?.Adapt<MaintenanceResponseDto>();
         }
