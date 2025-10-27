@@ -1,0 +1,71 @@
+# .dockerignore - Optimize Docker build by excluding unnecessary files
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+azure-pipelines.yml
+
+# IDEs
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.DS_Store
+Thumbs.db
+
+# Build outputs (we only need source code, not pre-built binaries)
+**/bin/
+**/obj/
+**/out/
+**/publish/
+
+# Documentation
+*.md
+README.md
+docs/
+
+# Tests
+**/*.Tests/
+**/*.Test/
+**/tests/
+**/test/
+
+# Package files
+*.nupkg
+*.snupkg
+
+# Logs
+*.log
+logs/
+
+# OS files
+**/.DS_Store
+**/Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Node modules (if any frontend)
+**/node_modules/
+
+# Environment files (should be set via Render environment variables)
+**/.env
+**/.env.*
+!**/.env.example
+
+# Other
+*.http
+*.rest
+

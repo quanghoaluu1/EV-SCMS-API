@@ -1,0 +1,292 @@
+# Docker Compose for EV-SCMS Microservices
+# Use this for local development and testing
+#
+# Usage:
+#   Start all services:     docker-compose up -d
+#   View logs:              docker-compose logs -f [service-name]
+#   Stop all services:      docker-compose down
+#   Rebuild service:        docker-compose up -d --build [service-name]
+
+version: '3.8'
+
+services:
+  # API Gateway (Ocelot)
+  api-gateway:
+    build:
+      context: .
+      dockerfile: ApiGateway/Dockerfile
+    container_name: ev-scms-api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+    depends_on:
+      - auth-api
+      - booking-api
+      - customer-api
+      - vehicle-api
+      - staff-api
+    networks:
+      - ev-scms-network
+    restart: unless-stopped
+
+  # Auth Service
+  auth-api:
+    build:
+      context: .
+      dockerfile: Services/Auth/Dockerfile
+    container_name: ev-scms-auth-api
+    ports:
+      - "8081:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=AuthDb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True
+      - JwtSettings__SecretKey=YourSuperSecretKeyForJWT_MustBeAtLeast32Characters!
+      - JwtSettings__Issuer=ev-scms-auth
+      - JwtSettings__Audience=ev-scms-api
+      - JwtSettings__ExpirationMinutes=60
+    depends_on:
+      - sqlserver
+      - rabbitmq
+    networks:
+      - ev-scms-network
+    restart: unless-stopped
+
+  # Booking Service
+  booking-api:
+    build:
+      context: .
+      dockerfile: Services/Booking/Dockerfile
+    container_name: ev-scms-booking-api
+    ports:
+      - "8082:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=BookingDb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+    depends_on:
+      - sqlserver
+      - rabbitmq
+    networks:
+      - ev-scms-network
+    restart: unless-stopped
+
+  # Customer Service
+  customer-api:
+    build:
+      context: .
+      dockerfile: Services/Customer/Dockerfile
+    container_name: ev-scms-customer-api
+    ports:
+      - "8083:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=CustomerDb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True
+    depends_on:
+      - sqlserver
+    networks:
+      - ev-scms-network
+    restart: unless-stopped
+
+  # Inventory Service
+  inventory-api:
+    build:
+      context: .
+      dockerfile: Services/Inventory/Dockerfile
+    container_name: ev-scms-inventory-api
+    ports:
+      - "8084:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=InventoryDb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True
+    depends_on:
+      - sqlserver
+    networks:
+      - ev-scms-network
+    restart: unless-stopped
+
+  # Maintenance Service
+  maintenance-api:
+    build:
+      context: .
+      dockerfile: Services/Maintenance/Dockerfile
+    container_name: ev-scms-maintenance-api
+    ports:
+      - "8085:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=MaintenanceDb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True
+    depends_on:
+      - sqlserver
+    networks:
+      - ev-scms-network
+    restart: unless-stopped
+
+  # Notification Service
+  notification-api:
+    build:
+      context: .
+      dockerfile: Services/Notification/Dockerfile
+    container_name: ev-scms-notification-api
+    ports:
+      - "8086:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=NotificationDb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+    depends_on:
+      - sqlserver
+      - rabbitmq
+    networks:
+      - ev-scms-network
+    restart: unless-stopped
+
+  # Payment Service
+  payment-api:
+    build:
+      context: .
+      dockerfile: Services/Payment/Dockerfile
+    container_name: ev-scms-payment-api
+    ports:
+      - "8087:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=PaymentDb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True
+      - PaymentGateway__ApiKey=test_api_key
+      - PaymentGateway__SecretKey=test_secret_key
+    depends_on:
+      - sqlserver
+    networks:
+      - ev-scms-network
+    restart: unless-stopped
+
+  # Report Service
+  report-api:
+    build:
+      context: .
+      dockerfile: Services/Report/Dockerfile
+    container_name: ev-scms-report-api
+    ports:
+      - "8088:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=ReportDb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True
+    depends_on:
+      - sqlserver
+    networks:
+      - ev-scms-network
+    restart: unless-stopped
+
+  # Staff Service
+  staff-api:
+    build:
+      context: .
+      dockerfile: Services/Staff/Dockerfile
+    container_name: ev-scms-staff-api
+    ports:
+      - "8089:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=StaffDb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True
+    depends_on:
+      - sqlserver
+    networks:
+      - ev-scms-network
+    restart: unless-stopped
+
+  # Vehicle Service
+  vehicle-api:
+    build:
+      context: .
+      dockerfile: Services/Vehicle/Dockerfile
+    container_name: ev-scms-vehicle-api
+    ports:
+      - "8090:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=VehicleDb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True
+    depends_on:
+      - sqlserver
+    networks:
+      - ev-scms-network
+    restart: unless-stopped
+
+  # SQL Server Database
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: ev-scms-sqlserver
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong@Passw0rd
+      - MSSQL_PID=Developer
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - ev-scms-network
+    restart: unless-stopped
+
+  # RabbitMQ Message Broker
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: ev-scms-rabbitmq
+    ports:
+      - "5672:5672"   # AMQP port
+      - "15672:15672" # Management UI
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - ev-scms-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Redis Cache (Optional - uncomment if needed)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: ev-scms-redis
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis-data:/data
+  #   networks:
+  #     - ev-scms-network
+  #   restart: unless-stopped
+
+networks:
+  ev-scms-network:
+    driver: bridge
+    name: ev-scms-network
+
+volumes:
+  sqlserver-data:
+    name: ev-scms-sqlserver-data
+  rabbitmq-data:
+    name: ev-scms-rabbitmq-data
+  # redis-data:
+  #   name: ev-scms-redis-data
+

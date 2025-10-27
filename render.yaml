@@ -1,0 +1,291 @@
+# =============================================================================
+# Render.com Blueprint - EV-SCMS Microservices
+# =============================================================================
+#
+# Deploy all services with this file:
+# 1. Push this render.yaml to the root of your GitHub repository
+# 2. Go to Render Dashboard → New → Blueprint
+# 3. Connect your GitHub repository
+# 4. Render will detect this render.yaml and build all services automatically
+#
+# All services will:
+# - Auto-deploy from main branch on push
+# - Use Docker with their respective Dockerfiles
+# - Expose port 8080
+# - Run on Free tier (services spin down after 15 min of inactivity)
+#
+# IMPORTANT: After deployment, configure sensitive environment variables
+# (marked with sync: false) manually in each service's dashboard.
+#
+# =============================================================================
+
+services:
+  # =============================================================================
+  # API Gateway (Ocelot) - Main Entry Point
+  # =============================================================================
+  - type: web
+    name: ev-scms-api-gateway
+    env: docker
+    dockerfilePath: ApiGateway/Dockerfile
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+
+  # =============================================================================
+  # Auth Service - Authentication & Authorization
+  # =============================================================================
+  - type: web
+    name: ev-scms-auth-api
+    env: docker
+    dockerfilePath: Services/Auth/Dockerfile
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      - key: ConnectionStrings__DefaultConnection
+        sync: false # Configure in Render dashboard
+      - key: JwtSettings__SecretKey
+        sync: false # Configure in Render dashboard (use: openssl rand -base64 32)
+      - key: JwtSettings__Issuer
+        value: ev-scms-auth
+      - key: JwtSettings__Audience
+        value: ev-scms-api
+      - key: JwtSettings__ExpirationMinutes
+        value: "60"
+
+  # =============================================================================
+  # Booking Service
+  # =============================================================================
+  - type: web
+    name: ev-scms-booking-api
+    env: docker
+    dockerfilePath: Services/Booking/Dockerfile
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      - key: ConnectionStrings__DefaultConnection
+        sync: false # Configure in Render dashboard
+      - key: RabbitMQ__Host
+        sync: false # Configure in Render dashboard
+      - key: RabbitMQ__Port
+        value: "5672"
+      - key: RabbitMQ__Username
+        sync: false # Configure in Render dashboard
+      - key: RabbitMQ__Password
+        sync: false # Configure in Render dashboard
+
+  # =============================================================================
+  # Customer Service
+  # =============================================================================
+  - type: web
+    name: ev-scms-customer-api
+    env: docker
+    dockerfilePath: Services/Customer/Dockerfile
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      - key: ConnectionStrings__DefaultConnection
+        sync: false # Configure in Render dashboard
+
+  # =============================================================================
+  # Inventory Service
+  # =============================================================================
+  - type: web
+    name: ev-scms-inventory-api
+    env: docker
+    dockerfilePath: Services/Inventory/Dockerfile
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      - key: ConnectionStrings__DefaultConnection
+        sync: false # Configure in Render dashboard
+
+  # =============================================================================
+  # Maintenance Service
+  # =============================================================================
+  - type: web
+    name: ev-scms-maintenance-api
+    env: docker
+    dockerfilePath: Services/Maintenance/Dockerfile
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      - key: ConnectionStrings__DefaultConnection
+        sync: false # Configure in Render dashboard
+
+  # =============================================================================
+  # Notification Service
+  # =============================================================================
+  - type: web
+    name: ev-scms-notification-api
+    env: docker
+    dockerfilePath: Services/Notification/Dockerfile
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      - key: ConnectionStrings__DefaultConnection
+        sync: false # Configure in Render dashboard
+      - key: RabbitMQ__Host
+        sync: false # Configure in Render dashboard
+      - key: RabbitMQ__Port
+        value: "5672"
+      - key: RabbitMQ__Username
+        sync: false # Configure in Render dashboard
+      - key: RabbitMQ__Password
+        sync: false # Configure in Render dashboard
+      - key: Email__SmtpServer
+        sync: false # Configure in Render dashboard
+      - key: Email__SmtpPort
+        value: "587"
+      - key: Email__Username
+        sync: false # Configure in Render dashboard
+      - key: Email__Password
+        sync: false # Configure in Render dashboard
+
+  # =============================================================================
+  # Payment Service
+  # =============================================================================
+  - type: web
+    name: ev-scms-payment-api
+    env: docker
+    dockerfilePath: Services/Payment/Dockerfile
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      - key: ConnectionStrings__DefaultConnection
+        sync: false # Configure in Render dashboard
+      - key: PaymentGateway__ApiKey
+        sync: false # Configure in Render dashboard
+      - key: PaymentGateway__SecretKey
+        sync: false # Configure in Render dashboard
+
+  # =============================================================================
+  # Report Service
+  # =============================================================================
+  - type: web
+    name: ev-scms-report-api
+    env: docker
+    dockerfilePath: Services/Report/Dockerfile
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      - key: ConnectionStrings__DefaultConnection
+        sync: false # Configure in Render dashboard
+
+  # =============================================================================
+  # Staff Service
+  # =============================================================================
+  - type: web
+    name: ev-scms-staff-api
+    env: docker
+    dockerfilePath: Services/Staff/Dockerfile
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      - key: ConnectionStrings__DefaultConnection
+        sync: false # Configure in Render dashboard
+
+  # =============================================================================
+  # Vehicle Service
+  # =============================================================================
+  - type: web
+    name: ev-scms-vehicle-api
+    env: docker
+    dockerfilePath: Services/Vehicle/Dockerfile
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      - key: ConnectionStrings__DefaultConnection
+        sync: false # Configure in Render dashboard
+
+# =============================================================================
+# Optional: Database Services
+# =============================================================================
+# Uncomment to add managed PostgreSQL database
+#
+# databases:
+#   - name: ev-scms-postgres
+#     plan: free
+#     region: oregon
+#     databaseName: evscms
+#     user: evscms_user
+#
+# After deployment, connection string will be available in Render dashboard
+# and can be used for ConnectionStrings__DefaultConnection environment variable
+# =============================================================================
+
