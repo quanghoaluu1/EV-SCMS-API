@@ -28,7 +28,7 @@ services:
     env: docker
     dockerfilePath: ApiGateway/Dockerfile
     plan: free
-    region: oregon
+    region: singapore
     branch: main
     autoDeploy: true
     envVars:
@@ -45,7 +45,7 @@ services:
     env: docker
     dockerfilePath: Services/Auth/Dockerfile
     plan: free
-    region: oregon
+    region: singapore
     branch: main
     autoDeploy: true
     healthCheckPath: /health
@@ -73,7 +73,7 @@ services:
     env: docker
     dockerfilePath: Services/Booking/Dockerfile
     plan: free
-    region: oregon
+    region: singapore
     branch: main
     autoDeploy: true
     healthCheckPath: /health
@@ -94,7 +94,7 @@ services:
     env: docker
     dockerfilePath: Services/Customer/Dockerfile
     plan: free
-    region: oregon
+    region: singapore
     branch: main
     autoDeploy: true
     healthCheckPath: /health
@@ -114,7 +114,7 @@ services:
     env: docker
     dockerfilePath: Services/Inventory/Dockerfile
     plan: free
-    region: oregon
+    region: singapore
     branch: main
     autoDeploy: true
     healthCheckPath: /health
@@ -134,7 +134,7 @@ services:
     env: docker
     dockerfilePath: Services/Maintenance/Dockerfile
     plan: free
-    region: oregon
+    region: singapore
     branch: main
     autoDeploy: true
     healthCheckPath: /health
@@ -154,7 +154,7 @@ services:
     env: docker
     dockerfilePath: Services/Notification/Dockerfile
     plan: free
-    region: oregon
+    region: singapore
     branch: main
     autoDeploy: true
     healthCheckPath: /health
@@ -176,7 +176,7 @@ services:
     env: docker
     dockerfilePath: Services/Payment/Dockerfile
     plan: free
-    region: oregon
+    region: singapore
     branch: main
     autoDeploy: true
     healthCheckPath: /health
@@ -202,7 +202,7 @@ services:
     env: docker
     dockerfilePath: Services/Report/Dockerfile
     plan: free
-    region: oregon
+    region: singapore
     branch: main
     autoDeploy: true
     healthCheckPath: /health
@@ -222,7 +222,7 @@ services:
     env: docker
     dockerfilePath: Services/Staff/Dockerfile
     plan: free
-    region: oregon
+    region: singapore
     branch: main
     autoDeploy: true
     healthCheckPath: /health
@@ -242,7 +242,7 @@ services:
     env: docker
     dockerfilePath: Services/Vehicle/Dockerfile
     plan: free
-    region: oregon
+    region: singapore
     branch: main
     autoDeploy: true
     healthCheckPath: /health
