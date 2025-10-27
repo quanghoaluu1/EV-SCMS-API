@@ -11,6 +11,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true).AddEnvironmentVariables();
 builder.Services.AddOcelot();
+Console.WriteLine($"[DEBUG] VEHICLE_API_HOST = {Environment.GetEnvironmentVariable("VEHICLE_API_HOST")}");
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -19,7 +20,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+Console.WriteLine($"[DEBUG] VEHICLE_API_HOST = {Environment.GetEnvironmentVariable("VEHICLE_API_HOST")}");
 await app.UseOcelot();
 app.UseHttpsRedirection();
 
