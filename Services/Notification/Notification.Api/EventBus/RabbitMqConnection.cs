@@ -21,9 +21,7 @@ public class RabbitMqConnection : IRabbitMqConnection
 
         var factory = new ConnectionFactory()
         {
-            HostName = _configuration["RabbitMQ:HostName"],
-            UserName = _configuration["RabbitMQ:UserName"],
-            Password = _configuration["RabbitMQ:Password"]
+            Uri = new Uri(_configuration["RabbitMQ:ConnectionString"])
         };
         _connection = await factory.CreateConnectionAsync();
         return _connection;
