@@ -131,7 +131,6 @@
             ],
             "UpstreamPathTemplate": "/api/Report/{everything}",
             "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
-        }
         },
       {
         "DownstreamPathTemplate": "/api/Payment/{everything}",
