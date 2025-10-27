@@ -50,6 +50,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.MapGet("/health", () => Results.Ok("Healthy ✅"));
 app.UseCors("AllowAll");
 app.MapHub<NotificationHub>("/notifyHub");
 app.UseHttpsRedirection();

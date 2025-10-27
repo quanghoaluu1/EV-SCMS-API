@@ -33,6 +33,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.MapGet("/health", () => Results.Ok("Healthy ✅"));
 
 app.UseHttpsRedirection();
 

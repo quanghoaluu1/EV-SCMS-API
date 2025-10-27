@@ -367,3 +367,5 @@ FodyWeavers.xsd
 
 # IntelliJ IDEA
 .idea/
+docker-compose.yml
+docker-compose.yml
