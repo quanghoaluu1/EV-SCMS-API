@@ -64,6 +64,10 @@ services:
         value: ev-scms-api
       - key: Jwt__ExpiresInMinutes
         value: "120"
+      - key: StaffHost
+        sync: false # Configure in Render dashboard
+      - key: CustomerHost
+        sync: false # Configure in Render dashboard
 
   # =============================================================================
   # Booking Service
@@ -84,7 +88,12 @@ services:
         value: http://+:8080
       - key: ConnectionStrings__DefaultConnection
         sync: false # Configure in Render dashboard
-
+      - key: CustomerHost
+        sync: false # Configure in Render dashboard
+      - key: VehicleHost
+        sync: false # Configure in Render dashboard
+      - key: StaffHost
+        sync: false # Configure in Render dashboard
 
   # =============================================================================
   # Customer Service
@@ -104,6 +113,8 @@ services:
       - key: ASPNETCORE_URLS
         value: http://+:8080
       - key: ConnectionStrings__DefaultConnection
+        sync: false # Configure in Render dashboard
+      - key: AuthHost
         sync: false # Configure in Render dashboard
 
   # =============================================================================
@@ -144,6 +155,14 @@ services:
       - key: ASPNETCORE_URLS
         value: http://+:8080
       - key: ConnectionStrings__DefaultConnection
+        sync: false # Configure in Render dashboard
+      - key: CustomerHost
+        sync: false # Configure in Render dashboard
+      - key: VehicleHost
+        sync: false # Configure in Render dashboard
+      - key: StaffHost
+        sync: false # Configure in Render dashboard
+      - key: BookingHost
         sync: false # Configure in Render dashboard
 
   # =============================================================================
@@ -193,6 +212,10 @@ services:
         sync: false # Configure in Render dashboard
       - key: Payos__CHECKSUM_KEY
         sync: false # Configure in Render dashboard
+      - key: CustomerHost
+        sync: false # Configure in Render dashboard
+      - key: BookingHost
+        sync: false # Configure in Render dashboard
 
   # =============================================================================
   # Report Service
@@ -213,6 +236,10 @@ services:
         value: http://+:8080
       # - key: ConnectionStrings__DefaultConnection
       #   sync: false # Configure in Render dashboard
+      - key: BookingHost
+        sync: false # Configure in Render dashboard
+      - key: MaintenanceHost
+        sync: false # Configure in Render dashboard
 
   # =============================================================================
   # Staff Service
@@ -233,6 +260,8 @@ services:
         value: http://+:8080
       - key: ConnectionStrings__DefaultConnection
         sync: false # Configure in Render dashboard
+      - key: AuthHost
+        sync: false # Configure in Render dashboard
 
   # =============================================================================
   # Vehicle Service
@@ -252,6 +281,8 @@ services:
       - key: ASPNETCORE_URLS
         value: http://+:8080
       - key: ConnectionStrings__DefaultConnection
+        sync: false # Configure in Render dashboard
+      - key: CustomerHost
         sync: false # Configure in Render dashboard
 
 # =============================================================================

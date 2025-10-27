@@ -8,13 +8,11 @@ namespace Messaging;
 public class RabbitMqMessageBus : IMessageBus
 {
     private readonly IConnectionFactory _connectionFactory;
-    public RabbitMqMessageBus(string hostName, string userName, string password)
+    public RabbitMqMessageBus(string uri)
     {
         _connectionFactory = new ConnectionFactory
         {
-            HostName = hostName,
-            UserName = userName,
-            Password = password
+            Uri = new Uri(uri)
         };
     }
     

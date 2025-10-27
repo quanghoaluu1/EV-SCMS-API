@@ -14,8 +14,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Configure GRPC clients
-var bookingServiceUrl = builder.Configuration.GetConnectionString("BookingService") ?? "https://localhost:7001";
-var maintenanceServiceUrl = builder.Configuration.GetConnectionString("MaintenanceService") ?? "https://localhost:7002";
+var bookingServiceUrl = builder.Configuration.GetConnectionString("BookingHost") ?? "https://localhost:7001";
+var maintenanceServiceUrl = builder.Configuration.GetConnectionString("MaintenanceHost") ?? "https://localhost:7002";
 
 builder.Services.AddGrpcClient<BookingGrpcService.BookingGrpcServiceClient>(options =>
 {

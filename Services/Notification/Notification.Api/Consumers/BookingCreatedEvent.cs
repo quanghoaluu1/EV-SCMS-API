@@ -14,10 +14,12 @@ public class BookingCreatedEvent
 public class BookingCreatedConsumer
 {
     private readonly RabbitMqConsumer _consumer;
+    private readonly IConfiguration _configuration;
 
-    public BookingCreatedConsumer()
+    public BookingCreatedConsumer(IConfiguration configuration)
     {
-        _consumer = new RabbitMqConsumer("localhost", "admin", "12345");
+        _configuration = configuration;
+        _consumer = new RabbitMqConsumer(_configuration["RabbitMQ:ConnectionString"] ?? "localhost");
     }
     public async Task StartAsync()
     {

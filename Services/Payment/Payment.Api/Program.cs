@@ -16,11 +16,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddGrpcClient<BookingGrpc.BookingGrpcService.BookingGrpcServiceClient>(o =>
 {
-    o.Address = new Uri("https://localhost:7041");
+    o.Address = new Uri(builder.Configuration.GetConnectionString("BookingHost"));
 });
 builder.Services.AddGrpcClient<CustomerGrpc.CustomerService.CustomerServiceClient>(o =>
 {
-    o.Address = new Uri("https://localhost:7040");
+    o.Address = new Uri(builder.Configuration.GetConnectionString("CustomerHost"));
 });
 builder.Services.AddScoped<IBookingGrpcGateway, BookingGrpcGateway>();
 builder.Services.AddScoped<ICustomerGrpcGateway, CustomerGrpcGateway>();

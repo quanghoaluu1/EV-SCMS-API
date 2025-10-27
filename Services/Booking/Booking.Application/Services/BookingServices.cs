@@ -7,7 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Booking.Infrastructure.IServices;
 using Messaging;
+using Microsoft.Extensions.Configuration;
 using static Booking.Application.DTOs.BookingDTOs;
 
 namespace Booking.Application.Services
@@ -16,11 +18,13 @@ namespace Booking.Application.Services
     {
         private readonly IBookingRepository _repository;
         private readonly IMessageBus _messageBus;
+        private readonly IConfiguration _configuration;
 
-        public BookingServices(IBookingRepository repository)
+        public BookingServices(IBookingRepository repository, IConfiguration configuration)
         {
             _repository = repository;
-            _messageBus = new RabbitMqMessageBus("localhost", "admin", "12345");
+            _configuration = configuration;
+            _messageBus = new RabbitMqMessageBus(_configuration["RabbitMQ:ConnectionString"] ?? "localhost");
         }
 
         public async Task<BookingResponseDto> CreateAsync(BookingCreateDto dto)

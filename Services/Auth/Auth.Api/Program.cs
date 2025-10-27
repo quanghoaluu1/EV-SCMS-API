@@ -13,11 +13,11 @@ using StaffGrpc;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddGrpcClient<StaffGrpc.Staff.StaffClient>(o =>
 {
-    o.Address = new Uri("https://localhost:7242");
+    o.Address = new Uri(builder.Configuration.GetConnectionString("StaffHost"));
 });
 builder.Services.AddGrpcClient<CustomerGrpc.CustomerService.CustomerServiceClient>(o =>
 {
-    o.Address = new Uri("https://localhost:7040");
+    o.Address = new Uri(builder.Configuration.GetConnectionString("CustomerHost"));
 });
 builder.Services.AddScoped<IStaffGrpcGateway,StaffGrpcGateway>();
 builder.Services.AddScoped<ICustomerGrpcGateway, CustomerGrpcGateway>();
