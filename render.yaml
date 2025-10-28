@@ -36,6 +36,26 @@ services:
         value: Production
       - key: ASPNETCORE_URLS
         value: http://+:8080
+      - key: API_GATEWAY_HOST
+        value: https://ev-scms-api-gateway.onrender.com
+      - key: AUTH_API_HOST
+        value: ev-scms-auth-api.onrender.com
+      - key: BOOKING_API_HOST
+        value: ev-scms-booking-api.onrender.com
+      - key: CUSTOMER_API_HOST
+        value: ev-scms-customer-api.onrender.com
+      - key: INVENTORY_API_HOST
+        value: ev-scms-inventory-api.onrender.com
+      - key: MAINTENANCE_API_HOST
+        value: ev-scms-maintenance-api.onrender.com
+      - key: PAYMENT_API_HOST
+        value: ev-scms-payment-api.onrender.com
+      - key: REPORT_API_HOST
+        value: ev-scms-report-api.onrender.com
+      - key: STAFF_API_HOST
+        value: ev-scms-staff-api.onrender.com
+      - key: VEHICLE_API_HOST
+        value: ev-scms-vehicle-api.onrender.com
 
   # =============================================================================
   # Auth Service - Authentication & Authorization
