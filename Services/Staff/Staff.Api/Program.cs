@@ -25,7 +25,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddGrpcClient<AuthGrpc.Auth.AuthClient>(o =>
 {
-    o.Address = new Uri(builder.Configuration.GetConnectionString("AuthHost"));
+    o.Address = new Uri(builder.Configuration["AuthHost"]);
 });
 builder.Services.AddScoped<IAuthGrpcGateway, AuthGrpcGateway>();
 builder.Services.AddGrpc();

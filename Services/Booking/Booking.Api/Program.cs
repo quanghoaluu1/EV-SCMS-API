@@ -30,7 +30,7 @@ builder.Services.AddGrpc();
 // Add gRPC clients for external service validation
 builder.Services.AddGrpcClient<CustomerService.CustomerServiceClient>(options =>
 {
-    options.Address = new Uri("https://localhost:7040"); // Customer service URL
+    options.Address = new Uri(builder.Configuration["CustomerHost"]); // Customer service URL
 })
 .ConfigurePrimaryHttpMessageHandler(() =>
 {
@@ -42,7 +42,7 @@ builder.Services.AddGrpcClient<CustomerService.CustomerServiceClient>(options =>
 
 builder.Services.AddGrpcClient<VehicleGrpcService.VehicleGrpcServiceClient>(options =>
 {
-    options.Address = new Uri("https://localhost:7039"); // Vehicle service URL
+    options.Address = new Uri(builder.Configuration["VehicleHost"]); // Vehicle service URL
 })
 .ConfigurePrimaryHttpMessageHandler(() =>
 {
@@ -54,7 +54,7 @@ builder.Services.AddGrpcClient<VehicleGrpcService.VehicleGrpcServiceClient>(opti
 
 builder.Services.AddGrpcClient<Staff.StaffClient>(options =>
 {
-    options.Address = new Uri("https://localhost:7242"); // Staff service URL
+    options.Address = new Uri(builder.Configuration["StaffHost"]); // Staff service URL
 })
 .ConfigurePrimaryHttpMessageHandler(() =>
 {

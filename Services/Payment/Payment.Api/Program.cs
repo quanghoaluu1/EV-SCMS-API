@@ -16,11 +16,21 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddGrpcClient<BookingGrpc.BookingGrpcService.BookingGrpcServiceClient>(o =>
 {
-    o.Address = new Uri(builder.Configuration.GetConnectionString("BookingHost"));
+    var bookingHost = builder.Configuration["BookingHost"];
+    if (string.IsNullOrEmpty(bookingHost))
+    {
+        throw new InvalidOperationException("BookingHost environment variable is not set.");
+    }
+    o.Address = new Uri(bookingHost);
 });
 builder.Services.AddGrpcClient<CustomerGrpc.CustomerService.CustomerServiceClient>(o =>
 {
-    o.Address = new Uri(builder.Configuration.GetConnectionString("CustomerHost"));
+    var customerHost = builder.Configuration["CustomerHost"];
+    if (string.IsNullOrEmpty(customerHost))
+    {
+        throw new InvalidOperationException("BookingHost environment variable is not set.");
+    }
+    o.Address = new Uri(customerHost);
 });
 builder.Services.AddScoped<IBookingGrpcGateway, BookingGrpcGateway>();
 builder.Services.AddScoped<ICustomerGrpcGateway, CustomerGrpcGateway>();

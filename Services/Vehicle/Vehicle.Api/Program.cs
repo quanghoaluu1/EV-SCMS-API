@@ -24,7 +24,7 @@ builder.Services.AddGrpc();
 // Add gRPC client for Customer service with improved configuration
 builder.Services.AddGrpcClient<CustomerService.CustomerServiceClient>(options =>
 {
-    options.Address = new Uri("https://localhost:7040");
+    options.Address = new Uri(builder.Configuration["CustomerHost"]);
 })
 .ConfigurePrimaryHttpMessageHandler(() =>
 {
