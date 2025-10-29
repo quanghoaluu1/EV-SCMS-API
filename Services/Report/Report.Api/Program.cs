@@ -13,13 +13,13 @@ builder.Services.AddSwaggerGen();
 // Add HttpClient for external service communication
 builder.Services.AddHttpClient<IBookingGrpcGateway, BookingGrpcGateway>(client =>
 {
-    client.BaseAddress = new Uri("https://ev-scms-booking-api.onrender.com");
+    client.BaseAddress = new Uri(builder.Configuration["BookingHost"]);
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 
 builder.Services.AddHttpClient<IMaintenanceGrpcGateway, MaintenanceGrpcGateway>(client =>
 {
-    client.BaseAddress = new Uri("https://ev-scms-maintenance-api.onrender.com");
+    client.BaseAddress = new Uri(builder.Configuration["MaintenanceHost"]);
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 
