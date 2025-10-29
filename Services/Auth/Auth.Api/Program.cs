@@ -13,13 +13,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add HttpClient for external service communication
 builder.Services.AddHttpClient<IStaffGrpcGateway, StaffGrpcGateway>(client =>
 {
-    client.BaseAddress = new Uri("https://ev-scms-staff-api.onrender.com");
+    client.BaseAddress = new Uri(builder.Configuration["StaffHost"]);
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 
 builder.Services.AddHttpClient<ICustomerGrpcGateway, CustomerGrpcGateway>(client =>
 {
-    client.BaseAddress = new Uri("https://ev-scms-customer-api.onrender.com");
+    client.BaseAddress = new Uri(builder.Configuration["CustomerHost"]);
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 
