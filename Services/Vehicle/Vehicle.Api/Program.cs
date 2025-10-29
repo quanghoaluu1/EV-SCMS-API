@@ -7,8 +7,6 @@ using Vehicle.Infrashtructure.IRepository;
 using Vehicle.Infrashtructure.Repository;
 using Vehicle.Infrastructure.IService;
 using Vehicle.Infrastructure.Service;
-using VehicleGrpc.API.Services;
-using CustomerGrpc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,31 +16,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add gRPC services
-builder.Services.AddGrpc();
-
-// Add gRPC client for Customer service with improved configuration
-builder.Services.AddGrpcClient<CustomerService.CustomerServiceClient>(options =>
+// Add HttpClient for external service communication
+builder.Services.AddHttpClient<ICustomerGrpcGateway, CustomerGrpcGateway>(client =>
 {
-    options.Address = new Uri(builder.Configuration["CustomerHost"]);
-})
-.ConfigurePrimaryHttpMessageHandler(() =>
-{
-    var handler = new HttpClientHandler();
-    // For development - ignore SSL certificate errors
-    handler.ServerCertificateCustomValidationCallback = 
-        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-    return handler;
-})
-.ConfigureChannel(options =>
-{
-    // Configure gRPC channel options
-    options.UnsafeUseInsecureChannelCallCredentials = true;
-    options.MaxReceiveMessageSize = 4 * 1024 * 1024; // 4 MB
-    options.MaxSendMessageSize = 4 * 1024 * 1024; // 4 MB
+    client.BaseAddress = new Uri("https://ev-scms-customer-api.onrender.com");
+    client.Timeout = TimeSpan.FromSeconds(30);
 });
-
-builder.Services.AddScoped<ICustomerGrpcGateway, CustomerGrpcGateway>();
 
 builder.Services.AddDbContext<VehicleServiceDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -61,9 +40,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.MapGet("/health", () => Results.Ok("Healthy ✅"));
-
-// Map gRPC services
-app.MapGrpcService<VehicleGrpcService>();
 
 app.UseHttpsRedirection();
 

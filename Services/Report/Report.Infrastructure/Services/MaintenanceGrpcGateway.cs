@@ -1,20 +1,20 @@
-using Grpc.Core;
-using MaintenanceGrpc;
 using Microsoft.Extensions.Logging;
 using Report.Application.IServices;
+using System.Net.Http;
+using System.Net.Http.Json;
 
 namespace Report.Infrastructure.Services
 {
     public class MaintenanceGrpcGateway : IMaintenanceGrpcGateway
     {
-        private readonly MaintenanceGrpcService.MaintenanceGrpcServiceClient _client;
+        private readonly HttpClient _httpClient;
         private readonly ILogger<MaintenanceGrpcGateway> _logger;
 
         public MaintenanceGrpcGateway(
-            MaintenanceGrpcService.MaintenanceGrpcServiceClient client,
+            HttpClient httpClient,
             ILogger<MaintenanceGrpcGateway> logger)
         {
-            _client = client;
+            _httpClient = httpClient;
             _logger = logger;
         }
 
@@ -24,42 +24,38 @@ namespace Report.Infrastructure.Services
             {
                 _logger.LogInformation("Calling Maintenance service to get maintenance statistics");
 
-                var request = new GetMaintenanceStatsRequest();
-                var deadline = DateTime.UtcNow.AddSeconds(30);
-                var callOptions = new CallOptions(deadline: deadline);
+                var response = await _httpClient.GetAsync("api/stats/maintenance");
 
-                var response = await _client.GetMaintenanceStatsAsync(request, callOptions);
-
-                _logger.LogInformation("Maintenance service responded: Success={Success}, Total={Total}",
-                    response.Success, response.Total);
-
-                return new MaintenanceStatsResult
+                if (response.IsSuccessStatusCode)
                 {
-                    Success = response.Success,
-                    Message = response.Message,
-                    Total = response.Total,
-                    Pending = response.Pending,
-                    InProgress = response.InProgress,
-                    Completed = response.Completed,
-                    Cancelled = response.Cancelled
-                };
+                    var stats = await response.Content.ReadFromJsonAsync<MaintenanceStatsResult>();
+                    
+                    _logger.LogInformation("Maintenance service responded: Success={Success}, Total={Total}",
+                        stats?.Success ?? false, stats?.Total ?? 0);
+
+                    return stats ?? new MaintenanceStatsResult
+                    {
+                        Success = false,
+                        Message = "Failed to parse response"
+                    };
+                }
+                else
+                {
+                    _logger.LogError("Maintenance service returned error status: {StatusCode}", response.StatusCode);
+                    return new MaintenanceStatsResult
+                    {
+                        Success = false,
+                        Message = $"Maintenance service error: {response.StatusCode}"
+                    };
+                }
             }
-            catch (RpcException ex) when (ex.StatusCode == StatusCode.Unavailable)
+            catch (HttpRequestException ex)
             {
-                _logger.LogError(ex, "Maintenance service is unavailable");
+                _logger.LogError(ex, "HTTP error when calling Maintenance service");
                 return new MaintenanceStatsResult
                 {
                     Success = false,
                     Message = "Maintenance service is currently unavailable. Please ensure the Maintenance service is running."
-                };
-            }
-            catch (RpcException ex)
-            {
-                _logger.LogError(ex, "gRPC error when calling Maintenance service");
-                return new MaintenanceStatsResult
-                {
-                    Success = false,
-                    Message = $"Maintenance service error: {ex.Status.Detail}"
                 };
             }
             catch (Exception ex)

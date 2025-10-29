@@ -8,7 +8,6 @@ using Infrastructure.Repository;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Staff.Api.Converters;
-using StaffGrpc.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,12 +22,13 @@ builder.Services.AddControllers()
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddGrpcClient<AuthGrpc.Auth.AuthClient>(o =>
+
+// Add HttpClient for external service communication
+builder.Services.AddHttpClient<IAuthGrpcGateway, AuthGrpcGateway>(client =>
 {
-    o.Address = new Uri(builder.Configuration["AuthHost"]);
+    client.BaseAddress = new Uri("https://ev-scms-auth-api.onrender.com");
+    client.Timeout = TimeSpan.FromSeconds(30);
 });
-builder.Services.AddScoped<IAuthGrpcGateway, AuthGrpcGateway>();
-builder.Services.AddGrpc();
 builder.Services.AddDbContext<StaffDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IStaffRepository, StaffRepository>();
@@ -49,7 +49,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.MapGet("/health", () => Results.Ok("Healthy ✅"));
-app.MapGrpcService<StaffGrpcService>();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

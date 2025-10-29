@@ -54,7 +54,7 @@ namespace Customer.Application.Services
         {
             var customer = await _repository.GetByIdAsync(customerId);
             var userReply = await _authGrpcGateway.GetUserById(customer.UserId);
-            if (userReply == null || !userReply.Success)
+            if (userReply == null || !userReply.IsSuccess)
             {
                 return new ResultDto<CustomerResponseDto>()
                 {
@@ -66,8 +66,8 @@ namespace Customer.Application.Services
             var customerDto = customer?.Adapt<CustomerResponseDto>();
             if (customerDto != null)
             {
-                customerDto.Email = userReply.Email;
-                customerDto.FullName = userReply.FullName;
+                customerDto.Email = userReply.Data.Email;
+                customerDto.FullName = userReply.Data.FullName;
             }
 
             return new ResultDto<CustomerResponseDto>()
@@ -93,10 +93,10 @@ namespace Customer.Application.Services
             {
                 var userReply = await _authGrpcGateway.GetUserById(customerDto.UserId);
                 Console.WriteLine("User Reply: " + (userReply != null ? userReply.ToString() : "null"));
-                if (userReply?.Success == true)
+                if (userReply?.IsSuccess == true)
                 {
-                    customerDto.FullName = userReply.FullName;
-                    customerDto.Email = userReply.Email;
+                    customerDto.FullName = userReply.Data.FullName;
+                    customerDto.Email = userReply.Data.Email;
                 }
             });
             await Task.WhenAll(tasks);

@@ -1,4 +1,3 @@
-using Customer.Api.Services;
 using Customer.Application.IServices;
 using Customer.Application.Services;
 using Customer.Infrastructure;
@@ -14,13 +13,13 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddGrpcClient<AuthGrpc.Auth.AuthClient>(o =>
+
+// Add HttpClient for external service communication
+builder.Services.AddHttpClient<IAuthGrpcGateway, AuthGrpcGateway>(client =>
 {
-    o.Address = new Uri(builder.Configuration["AuthHost"]);
+    client.BaseAddress = new Uri("https://ev-scms-auth-api.onrender.com");
+    client.Timeout = TimeSpan.FromSeconds(30);
 });
-builder.Services.AddScoped<IAuthGrpcGateway, AuthGrpcGateway>();
-// Add gRPC services
-builder.Services.AddGrpc();
 
 builder.Services.AddDbContext<CustomerServiceDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -36,9 +35,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.MapGet("/health", () => Results.Ok("Healthy ✅"));
-
-// Map gRPC services
-app.MapGrpcService<CustomerGrpcService>();
 
 app.UseHttpsRedirection();
 

@@ -1,75 +1,90 @@
 ﻿using Booking.Infrastructure.IServices;
-using CustomerGrpc;
-using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Booking.Infrastructure.Services
 {
     public class CustomerGrpcGateway : ICustomerGrpcGateway
     {
-        private readonly CustomerService.CustomerServiceClient _client;
+        private readonly HttpClient _httpClient;
         private readonly ILogger<CustomerGrpcGateway> _logger;
 
-        public CustomerGrpcGateway(CustomerService.CustomerServiceClient client, ILogger<CustomerGrpcGateway> logger)
+        public CustomerGrpcGateway(HttpClient httpClient, ILogger<CustomerGrpcGateway> logger)
         {
-            _client = client;
+            _httpClient = httpClient;
             _logger = logger;
         }
 
-        public async Task<GetCustomerByIdReply> GetCustomerById(Guid customerId)
+        public async Task<CustomerResponse> GetCustomerById(Guid customerId)
         {
             try
             {
                 _logger.LogInformation("Calling Customer service to validate customer {CustomerId}", customerId);
 
-                var request = new GetCustomerByIdRequest
+                var response = await _httpClient.GetAsync($"api/Customer/{customerId}");
+
+                if (response.IsSuccessStatusCode)
                 {
-                    CustomerId = customerId.ToString()
-                };
+                    var content = await response.Content.ReadAsStringAsync();
+                    var jsonDoc = JsonDocument.Parse(content);
+                    var root = jsonDoc.RootElement;
+                    
+                    _logger.LogInformation("Customer service responded successfully");
 
-                var deadline = DateTime.UtcNow.AddSeconds(30);
-                var callOptions = new CallOptions(deadline: deadline);
-
-                var response = await _client.GetCustomerByIdAsync(request, callOptions);
-
-                _logger.LogInformation("Customer service responded: Success={Success}, Message={Message}",
-                    response.Success, response.Message);
-
-                return response;
+                    return new CustomerResponse
+                    {
+                        Success = true,
+                        Message = "Customer found",
+                        CustomerId = customerId.ToString(),
+                        UserId = root.TryGetProperty("userId", out var userId) ? userId.ToString() : string.Empty,
+                        Address = root.TryGetProperty("address", out var address) ? address.GetString() ?? string.Empty : string.Empty,
+                        Status = root.TryGetProperty("status", out var status) ? status.GetString() ?? string.Empty : string.Empty
+                    };
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    _logger.LogWarning("Customer not found: {CustomerId}", customerId);
+                    return new CustomerResponse
+                    {
+                        Success = false,
+                        Message = "Customer not found"
+                    };
+                }
+                else
+                {
+                    _logger.LogError("Customer service returned error status: {StatusCode}", response.StatusCode);
+                    return new CustomerResponse
+                    {
+                        Success = false,
+                        Message = $"Customer service error: {response.StatusCode}"
+                    };
+                }
             }
-            catch (RpcException ex) when (ex.StatusCode == StatusCode.Unavailable)
+            catch (HttpRequestException ex)
             {
-                _logger.LogError(ex, "Customer service is unavailable");
-                return new GetCustomerByIdReply
+                _logger.LogError(ex, "HTTP error when calling Customer service");
+                return new CustomerResponse
                 {
                     Success = false,
                     Message = "Customer service is currently unavailable. Please ensure the Customer service is running."
                 };
             }
-            catch (RpcException ex)
-            {
-                _logger.LogError(ex, "gRPC error when calling Customer service");
-                return new GetCustomerByIdReply
-                {
-                    Success = false,
-                    Message = $"Customer service error: {ex.Status.Detail}"
-                };
-            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unexpected error when calling Customer service");
-                return new GetCustomerByIdReply
+                return new CustomerResponse
                 {
                     Success = false,
                     Message = $"Unexpected error: {ex.Message}"
                 };
             }
         }
-
     }
 }

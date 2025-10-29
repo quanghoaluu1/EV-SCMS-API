@@ -1,25 +1,59 @@
-﻿
-using BookingGrpc;
-using Payment.Infrastructure.Interfaces;
+﻿using Payment.Infrastructure.Interfaces;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace Payment.Infrastructure.Services;
 
 public class BookingGrpcGateway : IBookingGrpcGateway
 {
-    private readonly BookingGrpcService.BookingGrpcServiceClient _client;
+    private readonly HttpClient _httpClient;
     
-    public BookingGrpcGateway(BookingGrpcService.BookingGrpcServiceClient client)
+    public BookingGrpcGateway(HttpClient httpClient)
     {
-        _client = client;
+        _httpClient = httpClient;
     }
     
-    public async Task<GetBookingByIdReply> GetBookingById(Guid bookingId)
+    public async Task<BookingResponse> GetBookingById(Guid bookingId)
     {
-        var request = new GetBookingByIdRequest
+        try
         {
-            BookingId = bookingId.ToString()
-        };
-        
-        return await _client.GetBookingByIdAsync(request);
+            var response = await _httpClient.GetAsync($"api/Booking/{bookingId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var jsonDoc = JsonDocument.Parse(content);
+                var root = jsonDoc.RootElement;
+                
+                var data = root.TryGetProperty("data", out var dataElement) ? dataElement : root;
+
+                return new BookingResponse
+                {
+                    Success = true,
+                    Message = "Booking found",
+                    BookingId = bookingId.ToString(),
+                    CustomerId = data.TryGetProperty("customerId", out var custId) ? custId.ToString() : string.Empty,
+                    VehicleId = data.TryGetProperty("vehicleId", out var vehId) ? vehId.ToString() : string.Empty,
+                    Status = data.TryGetProperty("status", out var status) ? status.GetString() ?? string.Empty : string.Empty
+                };
+            }
+            else
+            {
+                return new BookingResponse
+                {
+                    Success = false,
+                    Message = $"Booking not found: {response.StatusCode}"
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            return new BookingResponse
+            {
+                Success = false,
+                Message = $"Error getting booking: {ex.Message}"
+            };
+        }
     }
 }

@@ -1,22 +1,57 @@
-﻿using CustomerGrpc;
-using Payment.Infrastructure.Interfaces;
+﻿using Payment.Infrastructure.Interfaces;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace Payment.Infrastructure.Services;
 
 public class CustomerGrpcGateway : ICustomerGrpcGateway
 {
-    private readonly CustomerService.CustomerServiceClient _client;
-    public CustomerGrpcGateway(CustomerGrpc.CustomerService.CustomerServiceClient client)
+    private readonly HttpClient _httpClient;
+
+    public CustomerGrpcGateway(HttpClient httpClient)
     {
-        _client = client;
+        _httpClient = httpClient;
     }
-    
-    public async Task<GetCustomerByIdReply> GetCustomerById(Guid customerId)
+
+    public async Task<CustomerResponse> GetCustomerById(Guid customerId)
     {
-        var request = new GetCustomerByIdRequest
+        try
         {
-            CustomerId = customerId.ToString()
-        };
-        return await _client.GetCustomerByIdAsync(request);
+            var response = await _httpClient.GetAsync($"api/Customer/{customerId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var jsonDoc = JsonDocument.Parse(content);
+                var root = jsonDoc.RootElement;
+
+                return new CustomerResponse
+                {
+                    Success = true,
+                    Message = "Customer found",
+                    CustomerId = customerId.ToString(),
+                    UserId = root.TryGetProperty("userId", out var userId) ? userId.ToString() : string.Empty,
+                    Address = root.TryGetProperty("address", out var address) ? address.GetString() ?? string.Empty : string.Empty,
+                    Status = root.TryGetProperty("status", out var status) ? status.GetString() ?? string.Empty : string.Empty
+                };
+            }
+            else
+            {
+                return new CustomerResponse
+                {
+                    Success = false,
+                    Message = $"Customer not found: {response.StatusCode}"
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            return new CustomerResponse
+            {
+                Success = false,
+                Message = $"Error getting customer: {ex.Message}"
+            };
+        }
     }
 }

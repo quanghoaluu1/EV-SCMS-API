@@ -14,26 +14,19 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddGrpcClient<BookingGrpc.BookingGrpcService.BookingGrpcServiceClient>(o =>
+
+// Add HttpClient for external service communication
+builder.Services.AddHttpClient<IBookingGrpcGateway, BookingGrpcGateway>(client =>
 {
-    var bookingHost = builder.Configuration["BookingHost"];
-    if (string.IsNullOrEmpty(bookingHost))
-    {
-        throw new InvalidOperationException("BookingHost environment variable is not set.");
-    }
-    o.Address = new Uri(bookingHost);
+    client.BaseAddress = new Uri("https://ev-scms-booking-api.onrender.com");
+    client.Timeout = TimeSpan.FromSeconds(30);
 });
-builder.Services.AddGrpcClient<CustomerGrpc.CustomerService.CustomerServiceClient>(o =>
+
+builder.Services.AddHttpClient<ICustomerGrpcGateway, CustomerGrpcGateway>(client =>
 {
-    var customerHost = builder.Configuration["CustomerHost"];
-    if (string.IsNullOrEmpty(customerHost))
-    {
-        throw new InvalidOperationException("BookingHost environment variable is not set.");
-    }
-    o.Address = new Uri(customerHost);
+    client.BaseAddress = new Uri("https://ev-scms-customer-api.onrender.com");
+    client.Timeout = TimeSpan.FromSeconds(30);
 });
-builder.Services.AddScoped<IBookingGrpcGateway, BookingGrpcGateway>();
-builder.Services.AddScoped<ICustomerGrpcGateway, CustomerGrpcGateway>();
 builder.Services.AddDbContext<PaymentDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();

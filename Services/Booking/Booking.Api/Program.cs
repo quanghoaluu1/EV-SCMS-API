@@ -6,12 +6,8 @@ using Booking.Infrastructure.IRepository;
 using Booking.Infrastructure.IServices;
 using Booking.Infrastructure.Repository;
 using Booking.Infrastructure.Services;
-using Booking.Api.Services;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
-using CustomerGrpc;
-using VehicleGrpc;
-using StaffGrpc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,50 +20,24 @@ builder.Services.AddScoped<IBookingService, BookingServices>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddControllers();
 
-// Add gRPC services
-builder.Services.AddGrpc();
-
-// Add gRPC clients for external service validation
-builder.Services.AddGrpcClient<CustomerService.CustomerServiceClient>(options =>
+// Add HttpClient for external service communication
+builder.Services.AddHttpClient<ICustomerGrpcGateway, CustomerGrpcGateway>(client =>
 {
-    options.Address = new Uri(builder.Configuration["CustomerHost"]); // Customer service URL
-})
-.ConfigurePrimaryHttpMessageHandler(() =>
-{
-    var handler = new HttpClientHandler();
-    handler.ServerCertificateCustomValidationCallback =
-        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-    return handler;
+    client.BaseAddress = new Uri("https://ev-scms-customer-api.onrender.com");
+    client.Timeout = TimeSpan.FromSeconds(30);
 });
 
-builder.Services.AddGrpcClient<VehicleGrpcService.VehicleGrpcServiceClient>(options =>
+builder.Services.AddHttpClient<IVehicleGrpcGateway, VehicleGrpcGateway>(client =>
 {
-    options.Address = new Uri(builder.Configuration["VehicleHost"]); // Vehicle service URL
-})
-.ConfigurePrimaryHttpMessageHandler(() =>
-{
-    var handler = new HttpClientHandler();
-    handler.ServerCertificateCustomValidationCallback =
-        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-    return handler;
+    client.BaseAddress = new Uri("https://ev-scms-vehicle-api.onrender.com");
+    client.Timeout = TimeSpan.FromSeconds(30);
 });
 
-builder.Services.AddGrpcClient<Staff.StaffClient>(options =>
+builder.Services.AddHttpClient<IStaffGrpcGateway, StaffGrpcGateway>(client =>
 {
-    options.Address = new Uri(builder.Configuration["StaffHost"]); // Staff service URL
-})
-.ConfigurePrimaryHttpMessageHandler(() =>
-{
-    var handler = new HttpClientHandler();
-    handler.ServerCertificateCustomValidationCallback =
-        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-    return handler;
+    client.BaseAddress = new Uri("https://ev-scms-staff-api.onrender.com");
+    client.Timeout = TimeSpan.FromSeconds(30);
 });
-
-// Register gRPC gateways
-builder.Services.AddScoped<ICustomerGrpcGateway, CustomerGrpcGateway>();
-builder.Services.AddScoped<IVehicleGrpcGateway, VehicleGrpcGateway>();
-builder.Services.AddScoped<IStaffGrpcGateway, StaffGrpcGateway>();
 
 var config = TypeAdapterConfig.GlobalSettings;
 MappingConfig.RegisterMappings(config);
@@ -86,8 +56,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.MapGet("/health", () => Results.Ok("Healthy ✅"));
-// Map gRPC services
-app.MapGrpcService<BookingGrpcService>();
 
 app.UseHttpsRedirection();
 

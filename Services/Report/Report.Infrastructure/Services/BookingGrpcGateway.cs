@@ -1,20 +1,20 @@
-using BookingGrpc;
-using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Report.Application.IServices;
+using System.Net.Http;
+using System.Net.Http.Json;
 
 namespace Report.Infrastructure.Services
 {
     public class BookingGrpcGateway : IBookingGrpcGateway
     {
-        private readonly BookingGrpcService.BookingGrpcServiceClient _client;
+        private readonly HttpClient _httpClient;
         private readonly ILogger<BookingGrpcGateway> _logger;
 
         public BookingGrpcGateway(
-            BookingGrpcService.BookingGrpcServiceClient client,
+            HttpClient httpClient,
             ILogger<BookingGrpcGateway> logger)
         {
-            _client = client;
+            _httpClient = httpClient;
             _logger = logger;
         }
 
@@ -24,46 +24,38 @@ namespace Report.Infrastructure.Services
             {
                 _logger.LogInformation("Calling Booking service to get booking statistics");
 
-                var request = new GetBookingStatsRequest();
-                var deadline = DateTime.UtcNow.AddSeconds(30);
-                var callOptions = new CallOptions(deadline: deadline);
+                var response = await _httpClient.GetAsync("api/stats/bookings");
 
-                var response = await _client.GetBookingStatsAsync(request, callOptions);
-
-                _logger.LogInformation("Booking service responded: Success={Success}, Total={Total}",
-                    response.Success, response.Total);
-
-                return new BookingStatsResult
+                if (response.IsSuccessStatusCode)
                 {
-                    Success = response.Success,
-                    Message = response.Message,
-                    Total = response.Total,
-                    Pending = response.Pending,
-                    InProgress = response.InProgress,
-                    Completed = response.Completed,
-                    Cancelled = response.Cancelled,
-                    Today = response.Today,
-                    ThisWeek = response.ThisWeek,
-                    ThisMonth = response.ThisMonth,
-                    CompletionRate = response.CompletionRate
-                };
+                    var stats = await response.Content.ReadFromJsonAsync<BookingStatsResult>();
+                    
+                    _logger.LogInformation("Booking service responded: Success={Success}, Total={Total}",
+                        stats?.Success ?? false, stats?.Total ?? 0);
+
+                    return stats ?? new BookingStatsResult
+                    {
+                        Success = false,
+                        Message = "Failed to parse response"
+                    };
+                }
+                else
+                {
+                    _logger.LogError("Booking service returned error status: {StatusCode}", response.StatusCode);
+                    return new BookingStatsResult
+                    {
+                        Success = false,
+                        Message = $"Booking service error: {response.StatusCode}"
+                    };
+                }
             }
-            catch (RpcException ex) when (ex.StatusCode == StatusCode.Unavailable)
+            catch (HttpRequestException ex)
             {
-                _logger.LogError(ex, "Booking service is unavailable");
+                _logger.LogError(ex, "HTTP error when calling Booking service");
                 return new BookingStatsResult
                 {
                     Success = false,
                     Message = "Booking service is currently unavailable. Please ensure the Booking service is running."
-                };
-            }
-            catch (RpcException ex)
-            {
-                _logger.LogError(ex, "gRPC error when calling Booking service");
-                return new BookingStatsResult
-                {
-                    Success = false,
-                    Message = $"Booking service error: {ex.Status.Detail}"
                 };
             }
             catch (Exception ex)
@@ -83,44 +75,38 @@ namespace Report.Infrastructure.Services
             {
                 _logger.LogInformation("Calling Booking service to get revenue statistics");
 
-                var request = new GetRevenueRequest();
-                var deadline = DateTime.UtcNow.AddSeconds(30);
-                var callOptions = new CallOptions(deadline: deadline);
+                var response = await _httpClient.GetAsync("api/stats/revenue");
 
-                var response = await _client.GetRevenueAsync(request, callOptions);
-
-                _logger.LogInformation("Booking service responded: Success={Success}, Total={Total}",
-                    response.Success, response.Total);
-
-                return new RevenueResult
+                if (response.IsSuccessStatusCode)
                 {
-                    Success = response.Success,
-                    Message = response.Message,
-                    Total = response.Total,
-                    ThisMonth = response.ThisMonth,
-                    ThisWeek = response.ThisWeek,
-                    Today = response.Today,
-                    Paid = response.Paid,
-                    Unpaid = response.Unpaid,
-                    AveragePerBooking = response.AveragePerBooking
-                };
+                    var revenue = await response.Content.ReadFromJsonAsync<RevenueResult>();
+                    
+                    _logger.LogInformation("Booking service responded: Success={Success}, Total={Total}",
+                        revenue?.Success ?? false, revenue?.Total ?? 0);
+
+                    return revenue ?? new RevenueResult
+                    {
+                        Success = false,
+                        Message = "Failed to parse response"
+                    };
+                }
+                else
+                {
+                    _logger.LogError("Booking service returned error status: {StatusCode}", response.StatusCode);
+                    return new RevenueResult
+                    {
+                        Success = false,
+                        Message = $"Booking service error: {response.StatusCode}"
+                    };
+                }
             }
-            catch (RpcException ex) when (ex.StatusCode == StatusCode.Unavailable)
+            catch (HttpRequestException ex)
             {
-                _logger.LogError(ex, "Booking service is unavailable");
+                _logger.LogError(ex, "HTTP error when calling Booking service");
                 return new RevenueResult
                 {
                     Success = false,
                     Message = "Booking service is currently unavailable. Please ensure the Booking service is running."
-                };
-            }
-            catch (RpcException ex)
-            {
-                _logger.LogError(ex, "gRPC error when calling Booking service");
-                return new RevenueResult
-                {
-                    Success = false,
-                    Message = $"Booking service error: {ex.Status.Detail}"
                 };
             }
             catch (Exception ex)

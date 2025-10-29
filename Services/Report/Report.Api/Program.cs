@@ -1,10 +1,7 @@
-using BookingGrpc;
-using MaintenanceGrpc;
 using Report.Application.IServices;
 using Report.Application.Services;
 using Report.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Grpc.Net.ClientFactory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,48 +10,21 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configure GRPC clients
-var bookingServiceUrl = builder.Configuration["BookingHost"] ?? "https://localhost:7001";
-var maintenanceServiceUrl = builder.Configuration["MaintenanceHost"] ?? "https://localhost:7002";
-
-builder.Services.AddGrpcClient<BookingGrpcService.BookingGrpcServiceClient>(options =>
+// Add HttpClient for external service communication
+builder.Services.AddHttpClient<IBookingGrpcGateway, BookingGrpcGateway>(client =>
 {
-    options.Address = new Uri(bookingServiceUrl);
-})
-.ConfigurePrimaryHttpMessageHandler(() =>
-{
-    var handler = new HttpClientHandler();
-    // Allow untrusted certificates for development
-    if (builder.Environment.IsDevelopment())
-    {
-        handler.ServerCertificateCustomValidationCallback = 
-            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-    }
-    return handler;
+    client.BaseAddress = new Uri("https://ev-scms-booking-api.onrender.com");
+    client.Timeout = TimeSpan.FromSeconds(30);
 });
 
-builder.Services.AddGrpcClient<MaintenanceGrpcService.MaintenanceGrpcServiceClient>(options =>
+builder.Services.AddHttpClient<IMaintenanceGrpcGateway, MaintenanceGrpcGateway>(client =>
 {
-    options.Address = new Uri(maintenanceServiceUrl);
-})
-.ConfigurePrimaryHttpMessageHandler(() =>
-{
-    var handler = new HttpClientHandler();
-    // Allow untrusted certificates for development
-    if (builder.Environment.IsDevelopment())
-    {
-        handler.ServerCertificateCustomValidationCallback = 
-            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-    }
-    return handler;
+    client.BaseAddress = new Uri("https://ev-scms-maintenance-api.onrender.com");
+    client.Timeout = TimeSpan.FromSeconds(30);
 });
 
 // Register application services
 builder.Services.AddScoped<IReportService, ReportService>();
-
-// Register infrastructure services (GRPC gateways)
-builder.Services.AddScoped<IBookingGrpcGateway, BookingGrpcGateway>();
-builder.Services.AddScoped<IMaintenanceGrpcGateway, MaintenanceGrpcGateway>();
 
 // Add logging
 builder.Services.AddLogging();
