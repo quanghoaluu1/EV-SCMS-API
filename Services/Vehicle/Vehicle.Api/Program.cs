@@ -19,7 +19,7 @@ builder.Services.AddSwaggerGen();
 // Add HttpClient for external service communication
 builder.Services.AddHttpClient<ICustomerGrpcGateway, CustomerGrpcGateway>(client =>
 {
-    client.BaseAddress = new Uri("https://ev-scms-customer-api.onrender.com");
+    client.BaseAddress = new Uri(builder.Configuration["CustomerHost"]);
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 

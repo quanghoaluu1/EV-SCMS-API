@@ -8,6 +8,7 @@ using Booking.Infrastructure.Repository;
 using Booking.Infrastructure.Services;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,24 +19,30 @@ builder.Services.AddDbContext<BookingServiceDbContext>(options =>
 
 builder.Services.AddScoped<IBookingService, BookingServices>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
-builder.Services.AddControllers();
+
+// Configure JSON serialization to use string enums
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 // Add HttpClient for external service communication
 builder.Services.AddHttpClient<ICustomerGrpcGateway, CustomerGrpcGateway>(client =>
 {
-    client.BaseAddress = new Uri("https://ev-scms-customer-api.onrender.com");
+    client.BaseAddress = new Uri(builder.Configuration["CustomerHost"]);
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 
 builder.Services.AddHttpClient<IVehicleGrpcGateway, VehicleGrpcGateway>(client =>
 {
-    client.BaseAddress = new Uri("https://ev-scms-vehicle-api.onrender.com");
+    client.BaseAddress = new Uri(builder.Configuration["VehicleHost"]);
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 
 builder.Services.AddHttpClient<IStaffGrpcGateway, StaffGrpcGateway>(client =>
 {
-    client.BaseAddress = new Uri("https://ev-scms-staff-api.onrender.com");
+    client.BaseAddress = new Uri(builder.Configuration["StaffHost"]);
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 
