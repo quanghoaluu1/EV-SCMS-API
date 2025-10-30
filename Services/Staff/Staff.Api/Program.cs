@@ -26,7 +26,7 @@ builder.Services.AddSwaggerGen();
 // Add HttpClient for external service communication
 builder.Services.AddHttpClient<IAuthGrpcGateway, AuthGrpcGateway>(client =>
 {
-    client.BaseAddress = new Uri("https://ev-scms-auth-api.onrender.com");
+    client.BaseAddress = new Uri(builder.Configuration["AuthHost"]);
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 builder.Services.AddDbContext<StaffDbContext>(options =>
