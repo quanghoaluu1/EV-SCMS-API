@@ -24,7 +24,7 @@ namespace Booking.Application.Services
         {
             _repository = repository;
             _configuration = configuration;
-            _messageBus = new RabbitMqMessageBus(_configuration["RabbitMQ:ConnectionString"] ?? "localhost");
+            //_messageBus = new RabbitMqMessageBus(_configuration["RabbitMQ:ConnectionString"] ?? "localhost");
         }
 
         public async Task<BookingResponseDto> CreateAsync(BookingCreateDto dto)
@@ -40,17 +40,17 @@ namespace Booking.Application.Services
             var booking = dto.Adapt<Domain.Entities.Booking>();
             var created = await _repository.AddAsync(booking);
             
-            await _messageBus.Publish("booking_created", new
-            {
-                EventName = "BookingCreated",
-                Data = System.Text.Json.JsonSerializer.Serialize(new
-                {
-                    BookingId = created.BookingId,
-                    CustomerId = created.CustomerId,
-                    ScheduledDate = created.ScheduledDate,
-                    Status = created.Status.ToString()
-                })
-            });
+            //await _messageBus.Publish("booking_created", new
+            //{
+            //    EventName = "BookingCreated",
+            //    Data = System.Text.Json.JsonSerializer.Serialize(new
+            //    {
+            //        BookingId = created.BookingId,
+            //        CustomerId = created.CustomerId,
+            //        ScheduledDate = created.ScheduledDate,
+            //        Status = created.Status.ToString()
+            //    })
+            //});
             
             return created.Adapt<BookingResponseDto>();
         }

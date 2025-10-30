@@ -46,7 +46,7 @@ namespace Maintenance.Infrastructure.Services
                         BookingId = bookingId.ToString(),
                         CustomerId = data.TryGetProperty("customerId", out var custId) ? custId.ToString() : string.Empty,
                         VehicleId = data.TryGetProperty("vehicleId", out var vehId) ? vehId.ToString() : string.Empty,
-                        Status = data.TryGetProperty("status", out var status) ? status.GetString() ?? string.Empty : string.Empty
+                        Status = GetStatusAsString(data)
                     };
                 }
                 else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -86,6 +86,32 @@ namespace Maintenance.Infrastructure.Services
                     Message = $"Unexpected error: {ex.Message}"
                 };
             }
+        }
+
+        private string GetStatusAsString(JsonElement data)
+        {
+            if (data.TryGetProperty("status", out var status))
+            {
+                if (status.ValueKind == JsonValueKind.Number)
+                {
+                    // Handle enum as number (0=Pending, 1=Processing, 2=Completed, 3=Cancelled)
+                    var statusValue = status.GetInt32();
+                    return statusValue switch
+                    {
+                        0 => "Pending",
+                        1 => "Processing", 
+                        2 => "Completed",
+                        3 => "Cancelled",
+                        _ => "Unknown"
+                    };
+                }
+                else if (status.ValueKind == JsonValueKind.String)
+                {
+                    // Handle enum as string (new format after JsonStringEnumConverter)
+                    return status.GetString() ?? string.Empty;
+                }
+            }
+            return string.Empty;
         }
     }
 }
