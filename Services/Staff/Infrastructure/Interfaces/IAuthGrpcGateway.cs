@@ -7,10 +7,18 @@ public interface IAuthGrpcGateway
 
 public class GetUserByIdResponse
 {
-    public bool Success { get; set; }
+    public bool IsSuccess { get; set; }
     public string Message { get; set; } = string.Empty;
-    public string UserId { get; set; } = string.Empty;
+    public UserData? Data { get; set; }
+}
+
+public class UserData
+{
+    public string Id { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string FullName { get; set; } = string.Empty;
-    public string Role { get; set; } = string.Empty;
+    public string PhoneNumber { get; set; } = string.Empty;
+    public string Status { get; set; } = string.Empty;
+    public int Role { get; set; }
+    public DateTime CreatedAt { get; set; }
 }

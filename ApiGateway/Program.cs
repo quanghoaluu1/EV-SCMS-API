@@ -12,32 +12,32 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//// Read ocelot.json and replace placeholders with environment variables
-// var ocelotConfigPath = Path.Combine(Directory.GetCurrentDirectory(), "ocelot.json");
-// var ocelotConfig = File.ReadAllText(ocelotConfigPath);
-//
-// // Replace all #{VAR_NAME} placeholders with actual environment variables
-// ocelotConfig = Regex.Replace(ocelotConfig, @"#\{([^}]+)\}", match =>
-// {
-//     var envVarName = match.Groups[1].Value;
-//     var envVarValue = Environment.GetEnvironmentVariable(envVarName);
-//     
-//     if (string.IsNullOrEmpty(envVarValue))
-//     {
-//         Console.WriteLine($"[WARNING] Environment variable {envVarName} is not set!");
-//         return match.Value; // Keep placeholder if env var not found
-//     }
-//     
-//     Console.WriteLine($"[DEBUG] Replaced {envVarName} = {envVarValue}");
-//     return envVarValue;
-// });
+// Read ocelot.json and replace placeholders with environment variables
+var ocelotConfigPath = Path.Combine(Directory.GetCurrentDirectory(), "ocelot.json");
+var ocelotConfig = File.ReadAllText(ocelotConfigPath);
 
-//// Write the processed config to a temporary file
-// var tempOcelotPath = Path.Combine(Directory.GetCurrentDirectory(), "ocelot.processed.json");
-// File.WriteAllText(tempOcelotPath, ocelotConfig);
+// Replace all #{VAR_NAME} placeholders with actual environment variables
+ocelotConfig = Regex.Replace(ocelotConfig, @"#\{([^}]+)\}", match =>
+{
+    var envVarName = match.Groups[1].Value;
+    var envVarValue = Environment.GetEnvironmentVariable(envVarName);
+    
+    if (string.IsNullOrEmpty(envVarValue))
+    {
+        Console.WriteLine($"[WARNING] Environment variable {envVarName} is not set!");
+        return match.Value; // Keep placeholder if env var not found
+    }
+    
+    Console.WriteLine($"[DEBUG] Replaced {envVarName} = {envVarValue}");
+    return envVarValue;
+});
+
+// Write the processed config to a temporary file
+var tempOcelotPath = Path.Combine(Directory.GetCurrentDirectory(), "ocelot.processed.json");
+File.WriteAllText(tempOcelotPath, ocelotConfig);
 
 // Load the processed configuration
-builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true).AddEnvironmentVariables();
+builder.Configuration.AddJsonFile("ocelot.processed.json", optional: false, reloadOnChange: true).AddEnvironmentVariables();
 builder.Services.AddOcelot();
 
 var app = builder.Build();

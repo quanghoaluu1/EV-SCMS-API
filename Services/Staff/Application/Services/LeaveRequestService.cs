@@ -28,7 +28,7 @@ public class LeaveRequestService : ILeaveRequestService
         if (lr == null) return null;
         var dto = lr.Adapt<LeaveRequestDto>();
         var userReply = await _authGrpcGateway.GetUserById(lr.Staff.UserId);
-        if (!userReply.Success)
+        if (!userReply.IsSuccess)
         {
             return new ResultDto<LeaveRequestDto>()
             {
@@ -42,10 +42,10 @@ public class LeaveRequestService : ILeaveRequestService
         {
             StaffId = lr.StaffId,
             UserId = lr.Staff.UserId,
-            FullName = userReply.FullName,
-            Email = userReply.Email,
+            FullName = userReply.Data.FullName,
+            Email = userReply.Data.Email,
             PhoneNumber = string.Empty,
-            Role = userReply.Role
+            Role = userReply.Data.Role
         };
         dto.Staff = staffdto;
         return new ResultDto<LeaveRequestDto>()
@@ -79,7 +79,7 @@ public class LeaveRequestService : ILeaveRequestService
 
             var userReply = await _authGrpcGateway.GetUserById(leave.Staff.UserId);
 
-            if (!userReply.Success)
+            if (!userReply.IsSuccess)
             {
                 dto.Staff = new StaffDto
                 {
@@ -88,7 +88,7 @@ public class LeaveRequestService : ILeaveRequestService
                     FullName = "(Unknown User)",
                     Email = string.Empty,
                     PhoneNumber = string.Empty,
-                    Role = "Unknown"
+                    Role = -1
                 };
                 continue;
             }
@@ -97,9 +97,9 @@ public class LeaveRequestService : ILeaveRequestService
             {
                 StaffId = leave.StaffId,
                 UserId = leave.Staff.UserId,
-                FullName = userReply.FullName,
-                Email = userReply.Email,
-                Role = userReply.Role
+                FullName = userReply.Data.FullName,
+                Email = userReply.Data.Email,
+                Role = userReply.Data.Role
             };
         }
 
@@ -133,7 +133,7 @@ public class LeaveRequestService : ILeaveRequestService
 
             var userReply = await _authGrpcGateway.GetUserById(leave.Staff.UserId);
 
-            if (!userReply.Success)
+            if (!userReply.IsSuccess)
             {
                 dto.Staff = new StaffDto
                 {
@@ -142,7 +142,7 @@ public class LeaveRequestService : ILeaveRequestService
                     FullName = "(Unknown User)",
                     Email = string.Empty,
                     PhoneNumber = string.Empty,
-                    Role = "Unknown"
+                    Role = -1
                 };
                 continue;
             }
@@ -151,9 +151,9 @@ public class LeaveRequestService : ILeaveRequestService
             {
                 StaffId = leave.StaffId,
                 UserId = leave.Staff.UserId,
-                FullName = userReply.FullName,
-                Email = userReply.Email,
-                Role = userReply.Role
+                FullName = userReply.Data.FullName,
+                Email = userReply.Data.Email,
+                Role = userReply.Data.Role
             };
         }
 
@@ -187,7 +187,7 @@ public class LeaveRequestService : ILeaveRequestService
 
             var userReply = await _authGrpcGateway.GetUserById(leave.Staff.UserId);
 
-            if (!userReply.Success)
+            if (!userReply.IsSuccess)
             {
                 dto.Staff = new StaffDto
                 {
@@ -196,7 +196,7 @@ public class LeaveRequestService : ILeaveRequestService
                     FullName = "(Unknown User)",
                     Email = string.Empty,
                     PhoneNumber = string.Empty,
-                    Role = "Unknown"
+                    Role = -1
                 };
                 continue;
             }
@@ -205,9 +205,9 @@ public class LeaveRequestService : ILeaveRequestService
             {
                 StaffId = leave.StaffId,
                 UserId = leave.Staff.UserId,
-                FullName = userReply.FullName,
-                Email = userReply.Email,
-                Role = userReply.Role
+                FullName = userReply.Data.FullName,
+                Email = userReply.Data.Email,
+                Role = userReply.Data.Role
             };
         }
 
@@ -241,7 +241,7 @@ public class LeaveRequestService : ILeaveRequestService
 
             var userReply = await _authGrpcGateway.GetUserById(leave.Staff.UserId);
 
-            if (!userReply.Success)
+            if (!userReply.IsSuccess)
             {
                 dto.Staff = new StaffDto
                 {
@@ -250,7 +250,7 @@ public class LeaveRequestService : ILeaveRequestService
                     FullName = "(Unknown User)",
                     Email = string.Empty,
                     PhoneNumber = string.Empty,
-                    Role = "Unknown"
+                    Role = -1
                 };
                 continue;
             }
@@ -259,9 +259,9 @@ public class LeaveRequestService : ILeaveRequestService
             {
                 StaffId = leave.StaffId,
                 UserId = leave.Staff.UserId,
-                FullName = userReply.FullName,
-                Email = userReply.Email,
-                Role = userReply.Role
+                FullName = userReply.Data.FullName,
+                Email = userReply.Data.Email,
+                Role = userReply.Data.Role
             };
         }
 
@@ -303,7 +303,7 @@ public class LeaveRequestService : ILeaveRequestService
         var leave = await _leaveRepository.GetByIdAsync(entity.Id);
         var userReply = await _authGrpcGateway.GetUserById(leave.Staff.UserId);
 
-        if (!userReply.Success)
+        if (!userReply.IsSuccess)
         {
             lrdto.Staff = new StaffDto
             {
@@ -312,7 +312,7 @@ public class LeaveRequestService : ILeaveRequestService
                 FullName = "(Unknown User)",
                 Email = string.Empty,
                 PhoneNumber = string.Empty,
-                Role = "Unknown"
+                Role = -1
             };
         }
 
@@ -320,9 +320,9 @@ public class LeaveRequestService : ILeaveRequestService
         {
             StaffId = leave.StaffId,
             UserId = leave.Staff.UserId,
-            FullName = userReply.FullName,
-            Email = userReply.Email,
-            Role = userReply.Role
+            FullName = userReply.Data.FullName,
+            Email = userReply.Data.Email,
+            Role = userReply.Data.Role
         };
         return new ResultDto<LeaveRequestDto>()
         {
@@ -362,15 +362,15 @@ public class LeaveRequestService : ILeaveRequestService
         var staff = await _staffRepository.GetByIdAsync(staffId);
         if (staff == null) return null;
         var user = await _authGrpcGateway.GetUserById(staff.UserId);
-        if (user == null || !user.Success) return null;
+        if (user == null || !user.IsSuccess) return null;
         return new StaffDto
         {
             StaffId = staffId,
             UserId = staff.UserId,
-            FullName = user.FullName,
-            Email = user.Email,
-            PhoneNumber = string.Empty,
-            Role = user.Role
+            FullName = user.Data.FullName,
+            Email = user.Data.Email,
+            PhoneNumber = user.Data.PhoneNumber,
+            Role = user.Data.Role
         };
     }
 

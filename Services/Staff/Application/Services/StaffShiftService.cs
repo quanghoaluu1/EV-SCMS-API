@@ -119,15 +119,15 @@ public class StaffShiftService : IStaffShiftService
         var staff = await _staffRepository.GetByIdAsync(staffId);
         if (staff == null) return null;
         var user = await _authGrpcGateway.GetUserById(staff.UserId);
-        if (user == null || !user.Success) return null;
+        if (user == null || !user.IsSuccess) return null;
         return new StaffDto
         {
             StaffId = staffId,
             UserId = staff.UserId,
-            FullName = user.FullName,
-            Email = user.Email,
+            FullName = user.Data.FullName,
+            Email = user.Data.Email,
             PhoneNumber = string.Empty,
-            Role = user.Role
+            Role = user.Data.Role
         };
     }
 
@@ -164,7 +164,7 @@ public class StaffShiftService : IStaffShiftService
         foreach (var staff in available)
         {
             var user = await _authGrpcGateway.GetUserById(staff.UserId);
-            if (user == null || !user.Success)
+            if (user == null || !user.IsSuccess)
             {
                 result.Add(new StaffDto
                 {
@@ -173,7 +173,7 @@ public class StaffShiftService : IStaffShiftService
                     FullName = "(Unknown User)",
                     Email = string.Empty,
                     PhoneNumber = string.Empty,
-                    Role = "Unknown"
+                    Role = -1
                 });
                 continue;
             }
@@ -181,10 +181,10 @@ public class StaffShiftService : IStaffShiftService
             {
                 StaffId = staff.Id,
                 UserId = staff.UserId,
-                FullName = user.FullName,
-                Email = user.Email,
+                FullName = user.Data.FullName,
+                Email = user.Data.Email,
                 PhoneNumber = string.Empty,
-                Role = user.Role
+                Role = user.Data.Role
             });
         }
 

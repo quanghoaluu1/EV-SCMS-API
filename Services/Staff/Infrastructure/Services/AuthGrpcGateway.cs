@@ -18,28 +18,24 @@ public class AuthGrpcGateway : IAuthGrpcGateway
     {
         try
         {
-            var response = await _httpClient.GetAsync($"api/Auth/user/{userId}");
-
-            if (response.IsSuccessStatusCode)
+            var response = await _httpClient.GetAsync($"api/Auth/id?userId={userId}");
+            var userResponse = await response.Content.ReadFromJsonAsync<GetUserByIdResponse>();
+            Console.WriteLine("userResponse:" + JsonSerializer.Serialize(userResponse));
+            
+            if (userResponse is { IsSuccess: true, Data: not null })
             {
-                var content = await response.Content.ReadAsStringAsync();
-                var jsonDoc = JsonDocument.Parse(content);
-                var root = jsonDoc.RootElement;
-
                 return new GetUserByIdResponse
                 {
-                    Success = true,
+                    IsSuccess = true,
                     Message = "User found",
-                    UserId = root.TryGetProperty("userId", out var uid) ? uid.ToString() : string.Empty,
-                    Email = root.TryGetProperty("email", out var email) ? email.GetString() ?? string.Empty : string.Empty,
-                    Role = root.TryGetProperty("role", out var role) ? role.GetString() ?? string.Empty : string.Empty
+                    Data = userResponse.Data
                 };
             }
             else
             {
                 return new GetUserByIdResponse
                 {
-                    Success = false,
+                    IsSuccess = false,
                     Message = $"User not found: {response.StatusCode}"
                 };
             }
@@ -48,7 +44,7 @@ public class AuthGrpcGateway : IAuthGrpcGateway
         {
             return new GetUserByIdResponse
             {
-                Success = false,
+                IsSuccess = false,
                 Message = $"Error getting user: {ex.Message}"
             };
         }

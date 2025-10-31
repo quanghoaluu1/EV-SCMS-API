@@ -34,7 +34,7 @@ public class StaffService : IStaffService
             }
 
             var userReply = await _authGrpcGateway.GetUserById(staff.UserId);
-            if (userReply == null || !userReply.Success)
+            if (userReply == null || !userReply.IsSuccess)
             {
                 return new ResultDto<StaffDto>()
                 {
@@ -53,10 +53,10 @@ public class StaffService : IStaffService
                 {
                     StaffId = staff.Id,
                     UserId = staff.UserId,
-                    FullName = userReply.FullName,
-                    Email = userReply.Email,
+                    FullName = userReply.Data.FullName,
+                    Email = userReply.Data.Email,
                     PhoneNumber = string.Empty,
-                    Role = userReply.Role
+                    Role = userReply.Data.Role
                 }
             };
         }
@@ -76,7 +76,7 @@ public class StaffService : IStaffService
             }
 
             var userReply = await _authGrpcGateway.GetUserById(staff.UserId);
-            if (userReply == null || !userReply.Success)
+            if (userReply == null || !userReply.IsSuccess)
             {
                 return new ResultDto<StaffDto>()
                 {
@@ -95,10 +95,10 @@ public class StaffService : IStaffService
                 {
                     StaffId = staff.Id,
                     UserId = staff.UserId,
-                    FullName = userReply.FullName,
-                    Email = userReply.Email,
-                    PhoneNumber = string.Empty,
-                    Role = userReply.Role
+                    FullName = userReply.Data.FullName,
+                    Email = userReply.Data.Email,
+                    PhoneNumber = userReply.Data.PhoneNumber,
+                    Role = userReply.Data.Role
                 }
             };
         }
@@ -111,11 +111,11 @@ public class StaffService : IStaffService
             var tasks = staffDtos.Select(async staffDto =>
             {
                 var userReply = await _authGrpcGateway.GetUserById(staffDto.UserId);
-                if (userReply?.Success == true)
+                if (userReply?.IsSuccess == true)
                 {
-                    staffDto.FullName = userReply.FullName;
-                    staffDto.Email = userReply.Email;
-                    staffDto.Role = userReply.Role;
+                    staffDto.FullName = userReply.Data.FullName;
+                    staffDto.Email = userReply.Data.Email;
+                    staffDto.Role = userReply.Data.Role;
                 }
             });
 
