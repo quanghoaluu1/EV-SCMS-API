@@ -11,6 +11,7 @@ using Common.Redis;
 using Common.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +32,10 @@ builder.Services.Configure<SendGridSettings>(
 builder.Services.Configure<OtpSettings>(
     builder.Configuration.GetSection("OtpSettings"));
 builder.Services.Configure<RedisSettings>(
-    builder.Configuration.GetSection("Redis"));
+    builder.Configuration.GetSection("RedisSettings"));
+string connectionString = builder.Configuration.GetSection("RedisSettings").GetValue<string>("ConnectionString")
+                          ?? throw new ArgumentNullException("Redis connection string is not configured.");
+builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(connectionString));
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IOtpService, OtpService>();
 builder.Services.AddScoped<IRedisService, RedisService>();
