@@ -14,4 +14,5 @@ public interface IRedisService
     Task<bool> RemoveFromSetAsync(string key, string value);
     Task<List<string>> GetSetMembersAsync(string key);
     Task<bool> SetExpiryAsync(string key, TimeSpan expiry);
+    Task<TimeSpan?> GetTtlAsync(string key);
 }
