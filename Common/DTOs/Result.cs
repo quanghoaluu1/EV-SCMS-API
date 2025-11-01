@@ -1,4 +1,4 @@
-namespace Auth.Application.DTOs;
+namespace Common.DTOs;
 
 public class Result<T>
 {

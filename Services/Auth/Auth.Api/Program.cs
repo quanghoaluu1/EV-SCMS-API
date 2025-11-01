@@ -1,10 +1,14 @@
-using Auth.Application.IServices;
+using Auth.Application.Interfaces;
 using Auth.Application.Services;
+using Auth.Application.Settings;
 using Auth.Domain.Entities;
 using Auth.Infrastructure;
 using Auth.Infrastructure.GrpcClients;
 using Auth.Infrastructure.Interfaces;
 using Auth.Infrastructure.Repository;
+using Chat.Domain.Settings;
+using Common.Redis;
+using Common.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,6 +26,15 @@ builder.Services.AddHttpClient<ICustomerGrpcGateway, CustomerGrpcGateway>(client
     client.BaseAddress = new Uri(builder.Configuration["CustomerHost"]);
     client.Timeout = TimeSpan.FromSeconds(30);
 });
+builder.Services.Configure<SendGridSettings>(
+    builder.Configuration.GetSection("SendGrid"));
+builder.Services.Configure<OtpSettings>(
+    builder.Configuration.GetSection("OtpSettings"));
+builder.Services.Configure<RedisSettings>(
+    builder.Configuration.GetSection("Redis"));
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IOtpService, OtpService>();
+builder.Services.AddScoped<IRedisService, RedisService>();
 
 // Add services to the container.
 builder.Services.AddControllers();
