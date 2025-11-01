@@ -1,4 +1,4 @@
-﻿namespace Chat.Domain.DTOs;
+﻿namespace Auth.Application.DTOs.Otp;
 
 public class OtpResponse
 {

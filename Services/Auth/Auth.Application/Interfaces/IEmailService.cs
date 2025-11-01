@@ -1,4 +1,4 @@
-﻿namespace Chat.Application.IServices;
+﻿namespace Auth.Application.Interfaces;
 
 public interface IEmailService
 {

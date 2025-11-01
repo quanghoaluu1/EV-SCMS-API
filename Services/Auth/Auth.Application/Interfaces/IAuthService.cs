@@ -1,8 +1,8 @@
 using Auth.Application.DTOs;
 using Auth.Application.DTOs.Auth;
-using Auth.Domain.Enums;
+using Common.DTOs;
 
-namespace Auth.Application.IServices;
+namespace Auth.Application.Interfaces;
 
 public interface IAuthService
 {

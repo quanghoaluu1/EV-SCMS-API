@@ -1,6 +1,6 @@
-﻿using Chat.Domain.Enums;
+﻿using Auth.Domain.Enums;
 
-namespace Chat.Domain.DTOs;
+namespace Auth.Application.DTOs.Otp;
 
 public class VerifyOtpRequest
 {

@@ -1,4 +1,4 @@
-﻿namespace Chat.Domain.Settings;
+﻿namespace Common.Settings;
 
 public class RedisSettings
 {

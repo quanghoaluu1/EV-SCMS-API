@@ -1,20 +1,18 @@
-﻿using Chat.Application.Interfaces;
-using Chat.Domain.Settings;
+﻿using Common.Settings;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
-namespace Chat.Application.Services;
+namespace Common.Redis;
 
 public class RedisService : IRedisService
 {
-    private readonly IConnectionMultiplexer _redis;
     private readonly IDatabase _database;
     private readonly string _instanceName;
 
     public RedisService(IOptions<RedisSettings> settings)
     {
-        _redis = ConnectionMultiplexer.Connect(settings.Value.ConnectionString);
-        _database = _redis.GetDatabase();
+        var redis = ConnectionMultiplexer.Connect(settings.Value.ConnectionString);
+        _database = redis.GetDatabase();
         _instanceName = settings.Value.InstanceName;
     }
 
@@ -86,6 +84,10 @@ public class RedisService : IRedisService
     public async Task<bool> SetExpiryAsync(string key, TimeSpan expiry)
     {
         return await _database.KeyExpireAsync(GetKey(key), expiry);
+    }
+    public async Task<int> StringIncrementAsync(string key, int value)
+    {
+        return (int)await _database.StringIncrementAsync(GetKey(key), value);
     }
 
 }

@@ -1,6 +1,6 @@
-﻿using Chat.Domain.Enums;
+﻿using Auth.Domain.Enums;
 
-namespace Chat.Domain.Entities;
+namespace Auth.Domain.Entities;
 
 public class OtpData
 {

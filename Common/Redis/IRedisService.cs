@@ -1,4 +1,4 @@
-﻿namespace Chat.Application.Interfaces;
+﻿namespace Common.Redis;
 
 public interface IRedisService
 {

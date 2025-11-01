@@ -1,9 +1,9 @@
-﻿using Chat.Application.IServices;
-using Chat.Domain.DTOs;
-using Chat.Domain.Enums;
+﻿using Auth.Application.DTOs.Otp;
+using Auth.Application.Interfaces;
+using Auth.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Chat.WebApi.Controllers;
+namespace Auth.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -32,11 +32,7 @@ public class OtpController : ControllerBase
             });
         }
         var result = await _otpService.SendOtpAsync(request.Email, request.Purpose);
-        if (!result.Success && result.CooldownSeconds.HasValue)
-        {
-            return StatusCode(429, result);
-        }
-        return Ok(result);
+        return result is { Success: false, CooldownSeconds: not null } ? StatusCode(429, result) : Ok(result);
     }
     
     [HttpPost("verify")]

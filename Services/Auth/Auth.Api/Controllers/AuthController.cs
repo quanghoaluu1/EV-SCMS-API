@@ -1,6 +1,6 @@
 using Auth.Application.DTOs;
 using Auth.Application.DTOs.Auth;
-using Auth.Application.IServices;
+using Auth.Application.Interfaces;
 using Auth.Domain.Enums;
 using Auth.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;

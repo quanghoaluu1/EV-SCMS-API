@@ -1,15 +1,16 @@
 ﻿using System.Security.Cryptography;
 using System.Text.Json;
-using Chat.Application.Interfaces;
-using Chat.Application.IServices;
-using Chat.Domain.DTOs;
-using Chat.Domain.Entities;
-using Chat.Domain.Enums;
+using Auth.Application.DTOs.Otp;
+using Auth.Application.Interfaces;
+using Auth.Application.Settings;
+using Auth.Domain.Entities;
+using Auth.Domain.Enums;
 using Chat.Domain.Settings;
+using Common.Redis;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Chat.Application.Services;
+namespace Auth.Application.Services;
 
 public class OtpService : IOtpService
 {

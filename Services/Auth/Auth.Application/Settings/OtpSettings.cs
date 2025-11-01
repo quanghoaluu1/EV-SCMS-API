@@ -1,4 +1,4 @@
-﻿namespace Chat.Domain.Settings;
+﻿namespace Auth.Application.Settings;
 
 public class OtpSettings
 {

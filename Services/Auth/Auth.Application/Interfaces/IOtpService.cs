@@ -1,7 +1,7 @@
-﻿using Chat.Domain.DTOs;
-using Chat.Domain.Enums;
+﻿using Auth.Application.DTOs.Otp;
+using Auth.Domain.Enums;
 
-namespace Chat.Application.IServices;
+namespace Auth.Application.Interfaces;
 
 public interface IOtpService
 {

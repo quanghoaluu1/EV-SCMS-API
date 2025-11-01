@@ -1,11 +1,11 @@
-﻿using Chat.Application.IServices;
+﻿using Auth.Application.Interfaces;
 using Chat.Domain.Settings;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
-namespace Chat.Application.Services;
+namespace Auth.Application.Services;
 
 public class EmailService : IEmailService
 {
