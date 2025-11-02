@@ -1,6 +1,6 @@
 namespace Chat.Domain.Enums;
 
-public enum ConservationStatus
+public enum ConversationStatus
 {
     Active,
     Waiting //chờ assign staff 

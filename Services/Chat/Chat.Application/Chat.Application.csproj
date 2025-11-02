@@ -13,11 +13,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\Common\Common.csproj" />
       <ProjectReference Include="..\Chat.Domain\Chat.Domain.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Interfaces\" />
-      <Folder Include="Services\" />
+      <ProjectReference Include="..\Chat.Infrastructure\Chat.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

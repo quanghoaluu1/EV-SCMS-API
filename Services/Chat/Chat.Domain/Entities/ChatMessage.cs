@@ -9,10 +9,12 @@ public class ChatMessage
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
-    [BsonElement("conservationId")]
-    public string ConservationId { get; set; } = string.Empty;
+    [BsonElement("conversationId")]
+    public string ConversationId { get; set; } = string.Empty;
     [BsonElement("senderId")]
     public string SenderId { get; set; } = string.Empty;
+    [BsonElement("senderName")]
+    public string SenderName { get; set; } = string.Empty;
     [BsonElement("senderType")]
     public SenderType SenderType { get; set; }
     [BsonElement("content")]
