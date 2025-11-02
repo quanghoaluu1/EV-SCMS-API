@@ -13,40 +13,41 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder =>
+    options.AddPolicy("CorsPolicy", policy =>
     {
-        builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader();
+        policy.WithOrigins("http://localhost:5173")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
     });
 });
 
-// Read ocelot.json and replace placeholders with environment variables
-var ocelotConfigPath = Path.Combine(Directory.GetCurrentDirectory(), "ocelot.json");
-var ocelotConfig = File.ReadAllText(ocelotConfigPath);  
-
-// Replace all #{VAR_NAME} placeholders with actual environment variables
-ocelotConfig = Regex.Replace(ocelotConfig, @"#\{([^}]+)\}", match =>
-{
-    var envVarName = match.Groups[1].Value;
-    var envVarValue = Environment.GetEnvironmentVariable(envVarName);
-    
-    if (string.IsNullOrEmpty(envVarValue))
-    {
-        Console.WriteLine($"[WARNING] Environment variable {envVarName} is not set!");
-        return match.Value; // Keep placeholder if env var not found
-    }
-    
-    Console.WriteLine($"[DEBUG] Replaced {envVarName} = {envVarValue}");
-    return envVarValue;
-});
-
-// Write the processed config to a temporary file
-var tempOcelotPath = Path.Combine(Directory.GetCurrentDirectory(), "ocelot.processed.json");
-File.WriteAllText(tempOcelotPath, ocelotConfig);
+// // Read ocelot.json and replace placeholders with environment variables
+// var ocelotConfigPath = Path.Combine(Directory.GetCurrentDirectory(), "ocelot.json");
+// var ocelotConfig = File.ReadAllText(ocelotConfigPath);  
+//
+// // Replace all #{VAR_NAME} placeholders with actual environment variables
+// ocelotConfig = Regex.Replace(ocelotConfig, @"#\{([^}]+)\}", match =>
+// {
+//     var envVarName = match.Groups[1].Value;
+//     var envVarValue = Environment.GetEnvironmentVariable(envVarName);
+//     
+//     if (string.IsNullOrEmpty(envVarValue))
+//     {
+//         Console.WriteLine($"[WARNING] Environment variable {envVarName} is not set!");
+//         return match.Value; // Keep placeholder if env var not found
+//     }
+//     
+//     Console.WriteLine($"[DEBUG] Replaced {envVarName} = {envVarValue}");
+//     return envVarValue;
+// });
+//
+// // Write the processed config to a temporary file
+// var tempOcelotPath = Path.Combine(Directory.GetCurrentDirectory(), "ocelot.processed.json");
+// File.WriteAllText(tempOcelotPath, ocelotConfig);
 
 // Load the processed configuration
-builder.Configuration.AddJsonFile("ocelot.processed.json", optional: false, reloadOnChange: true).AddEnvironmentVariables();
+builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true).AddEnvironmentVariables();
 builder.Services.AddOcelot();
 
 var app = builder.Build();
@@ -58,7 +59,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.Urls.Add("https://0.0.0.0:7088");
-app.UseCors("AllowAll");
+app.UseCors("CorsPolicy");
 await app.UseOcelot();
 app.UseHttpsRedirection();
 
