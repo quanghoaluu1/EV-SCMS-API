@@ -51,6 +51,14 @@ public class ConversationRepository : IConversationRepository
             .ToListAsync();
     }
 
+    public Task<List<Conversation>> GetAllConversationAsync()
+    {
+        return _conversations
+            .Find(_ => true)
+            .SortByDescending(x => x.UpdatedAt)
+            .ToListAsync();
+    }
+
     public async Task<bool> UpdateConversationAsync(Conversation conversation)
     {
         conversation.UpdatedAt = DateTime.UtcNow;
@@ -63,7 +71,8 @@ public class ConversationRepository : IConversationRepository
         var update = Builders<Conversation>.Update
             .Set(x => x.AssignedStaffId, staffId)
             .Set(x => x.AssignedStaffName, staffName)
-            .Set(x => x.Type, SenderType.Staff)  // ✅ Đổi từ HumanSupport sang Staff
+            .Set(x => x.Type, ConversationType.Staff)  // ✅ Đổi từ HumanSupport sang Staff
+            .Set(x => x.Status, ConversationStatus.Active) // ✅ Đổi trạng thái thành Active khi có staff nhận
             .Set(x => x.UpdatedAt, DateTime.UtcNow);
 
         var result = await _conversations.UpdateOneAsync(x => x.Id == conversationId, update);
@@ -109,5 +118,13 @@ public class ConversationRepository : IConversationRepository
 
         var result = await _conversations.UpdateOneAsync(x => x.Id == conversationId, update);
         return result.ModifiedCount > 0;
+    }
+
+    public async Task<List<Conversation>> GetWaitingConversationsAsync()
+    {
+        return await _conversations
+            .Find(x => x.Status == ConversationStatus.Waiting)
+            .SortBy(x => x.CreatedAt) // Oldest first
+            .ToListAsync();
     }
 }

@@ -4,6 +4,7 @@ using Chat.Domain.DTOs;
 using Chat.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 
 namespace Chat.WebApi.Hubs;
 
@@ -28,20 +29,24 @@ public class ChatHub : Hub
     {
         var userId = GetUserId();
         var userName = GetUserName();
-
+        var userRole = GetUserRole();
         if (!string.IsNullOrEmpty(userId))
         {
             await _presenceService.SetUserOnlineAsync(userId, Context.ConnectionId);
-            
-            // Notify others about online status
+
+            // Join role-based group
+            await Groups.AddToGroupAsync(Context.ConnectionId, $"role_{userRole}");
+
+            // Notify others
             await Clients.Others.SendAsync("UserOnline", new
             {
                 UserId = userId,
                 UserName = userName,
+                Role = userRole,
                 Timestamp = DateTime.UtcNow
             });
 
-            _logger.LogInformation($"User {userId} connected with connection {Context.ConnectionId}");
+            _logger.LogInformation($"User {userId} ({userRole}) connected");
         }
 
         await base.OnConnectedAsync();
@@ -83,6 +88,13 @@ public class ChatHub : Hub
         {
             await _chatService.MarkMessagesAsReadAsync(conversationId, userId);
         }
+        await Clients.OthersInGroup(conversationId).SendAsync("UserJoinedConversation", new
+        {
+            ConversationId = conversationId,
+            UserId = userId,
+            UserName = GetUserName(),
+            Timestamp = DateTime.UtcNow
+        });
     }
 
     // Leave conversation room
@@ -92,6 +104,12 @@ public class ChatHub : Hub
         
         var userId = GetUserId();
         _logger.LogInformation($"User {userId} left conversation {conversationId}");
+        await Clients.OthersInGroup(conversationId).SendAsync("UserLeftConversation", new
+        {
+            ConversationId = conversationId,
+            UserId = userId,
+            Timestamp = DateTime.UtcNow
+        });
     }
 
     // Send message
@@ -185,32 +203,111 @@ public class ChatHub : Hub
     }
 
     // Transfer to staff (customer can request)
-    public async Task RequestTransferToStaff(string conversationId, string reason)
+    public async Task RequestTransferToStaff(string conversationId)
     {
         try
         {
-            var request = new TransferToStaffRequest
-            {
-                ConversationId = conversationId,
-                Reason = reason
-            };
+            var userId = GetUserId();
+            var conversation = await _chatService.GetConversationAsync(conversationId);
 
-            var success = await _chatService.TransferToStaffAsync(request);
+            if (conversation == null || conversation.CustomerId != userId)
+            {
+                await Clients.Caller.SendAsync("Error", "Unauthorized");
+                return;
+            }
+
+            var success = await _chatService.RequestTransferToStaffAsync(conversationId);
 
             if (success)
             {
-                await Clients.Group(conversationId).SendAsync("ConversationTransferred", new
+                // Notify customer
+                await Clients.Caller.SendAsync("TransferRequested", new
                 {
                     ConversationId = conversationId,
-                    Reason = reason,
+                    Message = "Đang kết nối bạn với nhân viên tư vấn...",
                     Timestamp = DateTime.UtcNow
                 });
+
+                // Notify all managers
+                await Clients.Group("role_Manager").SendAsync("NewWaitingConversation", new
+                {
+                    ConversationId = conversationId,
+                    CustomerId = conversation.CustomerId,
+                    CustomerName = conversation.CustomerName,
+                    Timestamp = DateTime.UtcNow
+                });
+
+                _logger.LogInformation($"Transfer requested for conversation {conversationId}");
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error transferring conversation");
-            await Clients.Caller.SendAsync("Error", "Failed to transfer conversation");
+            _logger.LogError(ex, "Error requesting transfer");
+            await Clients.Caller.SendAsync("Error", "Failed to request transfer");
+        }
+    }
+    
+    public async Task AssignStaffToConversation(string conversationId, string staffId, string staffName)
+    {
+        try
+        {
+            var userRole = GetUserRole();
+
+            if (userRole != "Manager")
+            {
+                await Clients.Caller.SendAsync("Error", "Only managers can assign staff");
+                return;
+            }
+
+            var request = new AssignStaffRequest
+            {
+                ConversationId = conversationId,
+                StaffId = staffId,
+                StaffName = staffName
+            };
+
+            var success = await _chatService.AssignStaffToConversationAsync(request);
+
+            if (success)
+            {
+                // Notify the assigned staff
+                var staffConnectionId = await _presenceService.GetConnectionIdAsync(staffId);
+                if (!string.IsNullOrEmpty(staffConnectionId))
+                {
+                    await Clients.Client(staffConnectionId).SendAsync("ConversationAssigned", new
+                    {
+                        ConversationId = conversationId,
+                        Message = "Bạn đã được gán vào cuộc hội thoại mới",
+                        Timestamp = DateTime.UtcNow
+                    });
+                }
+
+                // Notify customer
+                await Clients.Group(conversationId).SendAsync("StaffAssigned", new
+                {
+                    ConversationId = conversationId,
+                    StaffId = staffId,
+                    StaffName = staffName,
+                    Message = $"Nhân viên {staffName} đã tham gia cuộc hội thoại",
+                    Timestamp = DateTime.UtcNow
+                });
+
+                // Notify all managers
+                await Clients.Group("role_Manager").SendAsync("ConversationAssignmentUpdated", new
+                {
+                    ConversationId = conversationId,
+                    StaffId = staffId,
+                    StaffName = staffName,
+                    Timestamp = DateTime.UtcNow
+                });
+
+                _logger.LogInformation($"Staff {staffName} assigned to conversation {conversationId}");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error assigning staff");
+            await Clients.Caller.SendAsync("Error", "Failed to assign staff");
         }
     }
 
@@ -250,9 +347,15 @@ public class ChatHub : Hub
 
         return role?.ToLower() switch
         {
-            "staff" => SenderType.Staff,
-            "admin" => SenderType.Staff,
+            "ServiceAdvisor" => SenderType.Staff,
+            "Manager" => SenderType.Staff,
             _ => SenderType.Customer
         };
+    }
+
+    private string? GetUserRole()
+    {
+        return Context.User?.FindFirst(ClaimTypes.Role)?.Value 
+                          ?? Context.User?.FindFirst("role")?.Value;
     }
 }

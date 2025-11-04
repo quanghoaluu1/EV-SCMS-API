@@ -100,7 +100,21 @@ public class ConversationsController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
-
+    [HttpGet("waiting")]
+    [Authorize(Roles = "Manager")]
+    public async Task<ActionResult<List<Conversation>>> GetWaitingConversations()
+    {
+        try
+        {
+            var conversations = await _chatService.GetWaitingConversationsAsync();
+            return Ok(conversations);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting waiting conversations");
+            return StatusCode(500, "Internal server error");
+        }
+    }
     // POST: api/conversations/{id}/transfer
     [HttpPost("{id}/transfer")]
     public async Task<ActionResult> TransferToStaff(string id, [FromBody] TransferToStaffRequest request)
@@ -145,6 +159,79 @@ public class ConversationsController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
+    [HttpGet("all")]
+    [Authorize(Roles = "Manager")]
+    public async Task<ActionResult<List<Conversation>>> GetAllConversations()
+    {
+        var conversations = await _chatService.GetAllConversationsAsync();
+        return Ok(conversations);
+    }
+    
+    // [HttpPost("{id}/assign")]
+    // [Authorize(Roles = "Manager")]
+    // public async Task<ActionResult> AssignConversation(string id, [FromBody] AssignRequest request)
+    // {
+    //     var success = await _chatService.AssignConversationAsync(id, request.StaffId);
+    //     if (!success) return BadRequest("Không thể gán hội thoại.");
+    //     return Ok();
+    // }
+    [HttpGet("my-assigned")]
+    [Authorize(Roles = "ServiceAdvisor")]
+    public async Task<ActionResult<List<Conversation>>> GetMyAssignedConversations()
+    {
+        var staffId = GetUserId(); // Lấy từ JWT
+        var conversations = await _chatService.GetMyAssignedConversationsAsync(staffId);
+        return Ok(conversations);
+    }
+    [HttpPost("{id}/request-staff")]
+    public async Task<ActionResult> RequestTransferToStaff(string id)
+    {
+        try
+        {
+            var userId = GetUserId();
+            var conversation = await _chatService.GetConversationAsync(id);
+
+            if (conversation == null)
+                return NotFound();
+
+            // Only customer can request transfer for their own conversation
+            if (conversation.CustomerId != userId)
+                return Forbid();
+
+            var success = await _chatService.RequestTransferToStaffAsync(id);
+
+            if (success)
+                return Ok(new { message = "Request sent. Waiting for staff assignment." });
+
+            return BadRequest(new { message = "Failed to request staff transfer" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error requesting staff transfer");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+    [HttpPost("{id}/assign")]
+    [Authorize(Roles = "Manager")]
+    public async Task<ActionResult> AssignStaff(string id, [FromBody] AssignStaffRequest request)
+    {
+        try
+        {
+            request.ConversationId = id;
+
+            var success = await _chatService.AssignStaffToConversationAsync(request);
+
+            if (success)
+                return Ok(new { message = "Staff assigned successfully" });
+
+            return BadRequest(new { message = "Failed to assign staff" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error assigning staff");
+            return StatusCode(500, "Internal server error");
+        }
+    }
 
     // Helper methods
     private string GetUserId()
@@ -161,8 +248,7 @@ public class ConversationsController : ControllerBase
 
         return role?.ToLower() switch
         {
-            "staff" => SenderType.Staff,
-            "admin" => SenderType.Staff,
+            "ServiceAdvisor" or "Manager" => SenderType.Staff,
             _ => SenderType.Customer
         };
     }

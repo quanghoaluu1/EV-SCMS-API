@@ -13,4 +13,10 @@ public interface IChatService
     Task<bool> TransferToStaffAsync(TransferToStaffRequest request);
     Task<bool> MarkMessagesAsReadAsync(string conversationId, string userId);
     Task<Conversation?> GetConversationAsync(string conversationId);
+    Task<List<Conversation>> GetAllConversationsAsync();
+    Task<bool> AssignStaffToConversationAsync(AssignStaffRequest request);
+    Task<List<Conversation>> GetMyAssignedConversationsAsync(string staffId);
+    Task<List<Conversation>> GetWaitingConversationsAsync();
+    Task<List<Conversation>> GetStaffConversationsAsync(string staffId);
+    Task<bool> RequestTransferToStaffAsync(string conversationId);
 }

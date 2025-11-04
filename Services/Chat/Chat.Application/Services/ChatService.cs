@@ -3,6 +3,8 @@ using Chat.Domain.DTOs;
 using Chat.Domain.Entities;
 using Chat.Domain.Enums;
 using Chat.Infrastructure.Interfaces;
+using Chat.WebApi.Hubs;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
 namespace Chat.Application.Services;
@@ -14,18 +16,23 @@ public class ChatService : IChatService
     private readonly IAiChatService _aiBotService;
     // private readonly INotificationService _notificationService;
     private readonly ILogger<ChatService> _logger;
-
+    private readonly IHubContext<ChatHub> _chatHubContext;
+    private readonly IStaffHttpGateway _staffHttpGateway;
     public ChatService(
         IChatRepository chatRepository,
         IConversationRepository conversationRepository,
         IAiChatService aiBotService,
-        ILogger<ChatService> logger)
+        ILogger<ChatService> logger,
+        IHubContext<ChatHub> chatHubContext,
+        IStaffHttpGateway staffHttpGateway)
     {
         _chatRepository = chatRepository;
         _conversationRepository = conversationRepository;
         _aiBotService = aiBotService;
         // _notificationService = notificationService;
         _logger = logger;
+        _chatHubContext = chatHubContext;
+        _staffHttpGateway = staffHttpGateway;
     }
 
     public async Task<Conversation> CreateConversationAsync(CreateConversationRequest request)
@@ -84,23 +91,8 @@ public class ChatService : IChatService
         // Nếu là customer message và conversation type là AIBot
         var conversation = await _conversationRepository.GetConversationByIdAsync(request.ConversationId);
         
-        if (senderType == SenderType.Customer && conversation?.Type == SenderType.AiBot)
+        if (senderType == SenderType.Customer && conversation?.Type == ConversationType.AiBot)
         {
-            // Check xem có cần transfer sang human không
-            var shouldTransfer = await _aiBotService.ShouldTransferToHumanAsync(request.Content);
-            
-            if (shouldTransfer)
-            {
-                // Tự động transfer
-                var transferRequest = new TransferToStaffRequest
-                {
-                    ConversationId = request.ConversationId,
-                    Reason = "AI Bot detected complex query"
-                };
-                await TransferToStaffAsync(transferRequest);
-            }
-            else
-            {
                 // AI Bot response
                 _ = Task.Run(async () =>
                 {
@@ -130,7 +122,6 @@ public class ChatService : IChatService
                         _logger.LogError(ex, "Error generating AI response");
                     }
                 });
-            }
         }
 
         // Send notification nếu recipient offline
@@ -157,7 +148,43 @@ public class ChatService : IChatService
 
         return new List<Conversation>();
     }
+    
+    public async Task<List<Conversation>> GetWaitingConversationsAsync()
+    {
+        return await _conversationRepository.GetWaitingConversationsAsync();
+    }
+    
+    public async Task<List<Conversation>> GetStaffConversationsAsync(string staffId)
+    {
+        return await _conversationRepository.GetConversationsByStaffIdAsync(staffId);
+    }
 
+    public async Task<bool> RequestTransferToStaffAsync(string conversationId)
+    {
+        var conversation = await _conversationRepository.GetConversationByIdAsync(conversationId);
+        if (conversation == null) return false;
+
+        // Update status to Waiting
+        await _conversationRepository.UpdateStatusAsync(conversationId, ConversationStatus.Waiting);
+
+        // Create system message
+        var systemMessage = new ChatMessage
+        {
+            ConversationId = conversationId,
+            SenderId = "system",
+            SenderName = "System",
+            SenderType = SenderType.System,
+            Content = "Cảm ơn bạn đã liên hệ! Chúng tôi đang kết nối bạn với nhân viên tư vấn. Vui lòng chờ trong giây lát hoặc tiếp tục chat với AI Assistant.",
+            Timestamp = DateTime.UtcNow
+        };
+
+        await _chatRepository.CreateMessageAsync(systemMessage);
+        await _conversationRepository.UpdateLastMessageAsync(conversationId, systemMessage.Content);
+
+        _logger.LogInformation($"Conversation {conversationId} requested transfer to staff");
+
+        return true;
+    }
     public async Task<bool> TransferToStaffAsync(TransferToStaffRequest request)
     {
         // TODO: Implement staff assignment logic (round-robin, least busy, etc.)
@@ -166,10 +193,11 @@ public class ChatService : IChatService
         var conversation = await _conversationRepository.GetConversationByIdAsync(request.ConversationId);
         if (conversation == null) return false;
 
-        var staffId = request.StaffId ?? "auto-assigned-staff"; // TODO: Get available staff
-        var staffName = "Support Staff"; // TODO: Get staff name from User service
-
-        await _conversationRepository.AssignStaffAsync(request.ConversationId, staffId, staffName);
+        conversation.Type = ConversationType.Staff;
+        conversation.Status = ConversationStatus.Waiting;
+        conversation.UpdatedAt = DateTime.UtcNow;
+        
+        await _conversationRepository.UpdateConversationAsync(conversation);
 
         // Tạo system message
         var systemMessage = new ChatMessage
@@ -177,15 +205,47 @@ public class ChatService : IChatService
             ConversationId = request.ConversationId,
             SenderId = "system",
             SenderName = "System",
-            SenderType = SenderType.AiBot,
-            Content = $"Cuộc hội thoại đã được chuyển đến {staffName}. Lý do: {request.Reason}",
+            SenderType = SenderType.System,
+            Content = $"Cuộc hội thoại đã được chuyển đến nhân viên. Lý do: {request.Reason}",
             Timestamp = DateTime.UtcNow
         };
 
         await _chatRepository.CreateMessageAsync(systemMessage);
 
-        // Notify staff
-        // await _notificationService.SendTransferNotificationAsync(staffId, request.ConversationId);
+        await _chatHubContext.Clients.Group("Managers").SendAsync("NewPendingConversation",conversation);
+        await _chatHubContext.Clients.Group(request.ConversationId).SendAsync("ReceiveMessage", systemMessage);
+        return true;
+    }
+    
+    public async Task<bool> AssignStaffToConversationAsync(AssignStaffRequest request)
+    {
+        var conversation = await _conversationRepository.GetConversationByIdAsync(request.ConversationId);
+        if (conversation == null) return false;
+
+        // Assign staff and change type to Staff
+        await _conversationRepository.AssignStaffAsync(
+            request.ConversationId,
+            request.StaffId,
+            request.StaffName);
+
+        // Update status back to Active
+        await _conversationRepository.UpdateStatusAsync(request.ConversationId, ConversationStatus.Active);
+
+        // Create system message
+        var systemMessage = new ChatMessage
+        {
+            ConversationId = request.ConversationId,
+            SenderId = "system",
+            SenderName = "System",
+            SenderType = SenderType.System,
+            Content = $"Nhân viên tư vấn {request.StaffName} đã tham gia cuộc hội thoại. Bạn có thể bắt đầu trao đổi!",
+            Timestamp = DateTime.UtcNow
+        };
+
+        await _chatRepository.CreateMessageAsync(systemMessage);
+        await _conversationRepository.UpdateLastMessageAsync(request.ConversationId, systemMessage.Content);
+        
+        _logger.LogInformation($"Staff {request.StaffName} assigned to conversation {request.ConversationId}");
 
         return true;
     }
@@ -210,5 +270,15 @@ public class ChatService : IChatService
     public async Task<Conversation?> GetConversationAsync(string conversationId)
     {
         return await _conversationRepository.GetConversationByIdAsync(conversationId);
+    }
+    public async Task<List<Conversation>> GetAllConversationsAsync()
+    {
+        return await _conversationRepository.GetAllConversationAsync();
+    }
+    public async Task<List<Conversation>> GetMyAssignedConversationsAsync(string userId)
+    {
+        var staff = await _staffHttpGateway.GetStaffByUserId(Guid.Parse(userId));
+        var staffId = staff.Data.StaffId;
+        return await _conversationRepository.GetConversationsByStaffIdAsync(staffId);
     }
 }

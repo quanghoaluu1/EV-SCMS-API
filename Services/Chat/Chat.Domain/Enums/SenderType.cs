@@ -4,5 +4,6 @@ public enum SenderType
 {
     Customer,
     Staff,
-    AiBot
+    AiBot,
+    System
 }

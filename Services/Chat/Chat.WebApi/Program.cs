@@ -5,6 +5,7 @@ using Chat.Application.Services;
 using Chat.Domain.Settings;
 using Chat.Infrastructure.Interfaces;
 using Chat.Infrastructure.Repositories;
+using Chat.Infrastructure.Services;
 using Chat.WebApi.Hubs;
 using Common.Redis;
 using Common.Settings;
@@ -37,6 +38,11 @@ builder.Services.AddScoped<IChatService,ChatService>();
 builder.Services.AddScoped<IAiChatService, AiChatService>();
 builder.Services.AddSingleton<IPresenceService, PresenceService>();
 // builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddHttpClient<IStaffHttpGateway, StaffHttpGateway>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["StaffHost"]);
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
 builder.Services.AddSignalR(options =>
 {
     options.EnableDetailedErrors = true;

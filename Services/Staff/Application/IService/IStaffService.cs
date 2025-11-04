@@ -12,4 +12,5 @@ public interface IStaffService
     Task<StaffDto> CreateStaffAsync(CreateStaffDto dto);
     Task<bool> UpdateStaffAsync(Guid id, UpdateStaffDto dto);
     Task<bool> DeleteStaffAsync(Guid id);
+    Task<ResultDto<List<StaffDto>>> GetAllStaffByRoleAsync(int role);
 }

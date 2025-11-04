@@ -20,7 +20,7 @@ public class Conversation
     [BsonElement("status")]
     public ConversationStatus Status { get; set; }
     [BsonElement("type")]
-    public SenderType Type { get; set; }
+    public ConversationType Type { get; set; }
     [BsonElement("createdAt")]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
@@ -39,8 +39,12 @@ public class Conversation
     [BsonElement("tags")]
     public List<string> Tags { get; set; } = new();
 
-    [BsonIgnore] public bool IsAIBot => Type == SenderType.AiBot;
+    [BsonIgnore]
+    public bool IsWaitingForStaff => Status == ConversationStatus.Waiting;
 
     [BsonIgnore]
-    public bool IsHumanSupport => Type == SenderType.Staff;
+    public bool HasAssignedStaff => !string.IsNullOrEmpty(AssignedStaffId);
+
+    [BsonIgnore]
+    public bool IsActive => Status == ConversationStatus.Active;
 }

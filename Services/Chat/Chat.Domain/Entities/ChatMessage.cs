@@ -25,4 +25,15 @@ public class ChatMessage
     public bool IsRead { get; set; } = false;
     [BsonElement("readAt")]
     public DateTime? ReadAt { get; set; } = null;
+    [BsonIgnore]
+    public bool IsSystemMessage => SenderType == SenderType.System;
+
+    [BsonIgnore]
+    public bool IsFromAI => SenderType == SenderType.AiBot;
+
+    [BsonIgnore]
+    public bool IsFromStaff => SenderType == SenderType.Staff;
+
+    [BsonIgnore]
+    public bool IsFromCustomer => SenderType == SenderType.Customer;
 }
