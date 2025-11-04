@@ -88,6 +88,69 @@ namespace Maintenance.Infrastructure.Services
             }
         }
 
+        public async Task<BookingUpdateResponse> UpdateBookingStatusAsync(Guid bookingId, string newStatus)
+        {
+            try
+            {
+                _logger.LogInformation("Updating booking status for {BookingId} to {NewStatus}", bookingId, newStatus);
+
+                // The booking API expects the status as a JSON value in the request body
+                var requestBody = JsonSerializer.Serialize(newStatus);
+                var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PatchAsync($"api/Booking/{bookingId}/status", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    _logger.LogInformation("Booking status updated successfully for {BookingId}", bookingId);
+
+                    return new BookingUpdateResponse
+                    {
+                        Success = true,
+                        Message = "Booking status updated successfully",
+                        BookingId = bookingId.ToString(),
+                        NewStatus = newStatus
+                    };
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    _logger.LogError("Failed to update booking status. Status: {StatusCode}, Content: {Content}",
+                        response.StatusCode, errorContent);
+
+                    return new BookingUpdateResponse
+                    {
+                        Success = false,
+                        Message = $"Failed to update booking status: {response.StatusCode}",
+                        BookingId = bookingId.ToString(),
+                        NewStatus = newStatus
+                    };
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "HTTP error when updating booking status for {BookingId}", bookingId);
+                return new BookingUpdateResponse
+                {
+                    Success = false,
+                    Message = "Booking service is currently unavailable for status update",
+                    BookingId = bookingId.ToString(),
+                    NewStatus = newStatus
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error when updating booking status for {BookingId}", bookingId);
+                return new BookingUpdateResponse
+                {
+                    Success = false,
+                    Message = $"Unexpected error updating booking status: {ex.Message}",
+                    BookingId = bookingId.ToString(),
+                    NewStatus = newStatus
+                };
+            }
+        }
+
         private string GetStatusAsString(JsonElement data)
         {
             if (data.TryGetProperty("status", out var status))
