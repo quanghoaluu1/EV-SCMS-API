@@ -11,10 +11,4 @@
       <PackageReference Include="NRedisStack" Version="1.1.1" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Reference Include="Microsoft.Extensions.Options">
-        <HintPath>..\..\..\.nuget\packages\microsoft.extensions.options\8.0.2\lib\net8.0\Microsoft.Extensions.Options.dll</HintPath>
-      </Reference>
-    </ItemGroup>
-
 </Project>
