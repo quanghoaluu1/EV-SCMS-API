@@ -703,7 +703,7 @@ namespace Maintenance.Api.Controllers
         }
 
         /// <summary>
-        /// Update maintenance status
+        /// Update maintenance status and related booking status
         /// </summary>
         /// <param name="id">Maintenance ID</param>
         /// <param name="dto">Status update data</param>
@@ -715,8 +715,9 @@ namespace Maintenance.Api.Controllers
             {
                 _logger.LogInformation("Updating maintenance status: {MaintenanceId} to {Status}", id, dto.Status);
 
-                var success = await _maintenanceService.UpdateStatusAsync(id, dto.Status);
-                if (!success)
+                // First, get the maintenance record to find the related booking
+                var maintenance = await _maintenanceService.GetByIdAsync(id);
+                if (maintenance == null)
                 {
                     _logger.LogInformation("Maintenance not found for status update: {MaintenanceId}", id);
                     return NotFound(new
@@ -727,15 +728,48 @@ namespace Maintenance.Api.Controllers
                     });
                 }
 
+                // Update maintenance status
+                var success = await _maintenanceService.UpdateStatusAsync(id, dto.Status);
+                if (!success)
+                {
+                    _logger.LogError("Failed to update maintenance status: {MaintenanceId}", id);
+                    return StatusCode(500, new
+                    {
+                        Success = false,
+                        Message = "Failed to update maintenance status",
+                        MaintenanceId = id
+                    });
+                }
+
                 _logger.LogInformation("Maintenance status updated successfully: {MaintenanceId} to {Status}", id, dto.Status);
 
-                return Ok(new
+                // Map maintenance status to booking status and update booking
+                var bookingUpdateResult = await UpdateRelatedBookingStatus(maintenance.BookingId, dto.Status);
+                
+                var response = new
                 {
                     Success = true,
                     Message = "Maintenance status updated successfully",
                     MaintenanceId = id,
-                    NewStatus = dto.Status.ToString()
-                });
+                    NewStatus = dto.Status.ToString(),
+                    BookingUpdate = bookingUpdateResult
+                };
+
+                if (!bookingUpdateResult.Success)
+                {
+                    _logger.LogWarning("Maintenance status updated but booking status update failed: {BookingId}", maintenance.BookingId);
+                    return Ok(new
+                    {
+                        Success = true,
+                        Message = "Maintenance status updated successfully, but booking status update failed",
+                        MaintenanceId = id,
+                        NewStatus = dto.Status.ToString(),
+                        BookingUpdate = bookingUpdateResult,
+                        Warning = "Booking status was not updated"
+                    });
+                }
+
+                return Ok(response);
             }
             catch (Exception ex)
             {
@@ -747,6 +781,65 @@ namespace Maintenance.Api.Controllers
                     Error = "ServerError"
                 });
             }
+        }
+
+        /// <summary>
+        /// Update the related booking status based on maintenance status
+        /// </summary>
+        /// <param name="bookingId">Booking ID to update</param>
+        /// <param name="maintenanceStatus">Current maintenance status</param>
+        /// <returns>Booking update result</returns>
+        private async Task<BookingUpdateResponse> UpdateRelatedBookingStatus(Guid bookingId, MaintenanceEnums maintenanceStatus)
+        {
+            try
+            {
+                // Map maintenance status to booking status
+                var bookingStatus = MapMaintenanceStatusToBookingStatus(maintenanceStatus);
+                
+                _logger.LogInformation("Updating related booking {BookingId} to status {BookingStatus} based on maintenance status {MaintenanceStatus}", 
+                    bookingId, bookingStatus, maintenanceStatus);
+
+                // Update booking status via gateway
+                var result = await _bookingGrpcGateway.UpdateBookingStatusAsync(bookingId, bookingStatus);
+                
+                if (result.Success)
+                {
+                    _logger.LogInformation("Related booking status updated successfully: {BookingId} to {BookingStatus}", bookingId, bookingStatus);
+                }
+                else
+                {
+                    _logger.LogWarning("Failed to update related booking status: {BookingId}. Message: {Message}", bookingId, result.Message);
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating related booking status: {BookingId}", bookingId);
+                return new BookingUpdateResponse
+                {
+                    Success = false,
+                    Message = $"Error updating booking status: {ex.Message}",
+                    BookingId = bookingId.ToString()
+                };
+            }
+        }
+
+        /// <summary>
+        /// Map maintenance status to corresponding booking status
+        /// </summary>
+        /// <param name="maintenanceStatus">Maintenance status</param>
+        /// <returns>Corresponding booking status string</returns>
+        private string MapMaintenanceStatusToBookingStatus(MaintenanceEnums maintenanceStatus)
+        {
+            return maintenanceStatus switch
+            {
+                MaintenanceEnums.Pending => "Pending",          
+                MaintenanceEnums.InProgress => "Processing",     
+                MaintenanceEnums.Completed => "Completed",     
+                MaintenanceEnums.Cancelled => "Cancelled",    
+                _ => "Pending"
+            };
         }
 
         /// <summary>
