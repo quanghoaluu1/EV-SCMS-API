@@ -160,6 +160,7 @@ Trả lời chỉ một từ khóa phân loại:";
 
         var response = await _httpClient.PostAsync(url, content);
         var responseJson = await response.Content.ReadAsStringAsync();
+        Console.WriteLine("Result:", responseJson);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -168,7 +169,7 @@ Trả lời chỉ một từ khóa phân loại:";
         }
 
         var result = JsonSerializer.Deserialize<JsonElement>(responseJson);
-        
+        Console.WriteLine("Result:", result);
         var textResponse = result
             .GetProperty("candidates")[0]
             .GetProperty("content")

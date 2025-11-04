@@ -240,6 +240,7 @@ public class ConversationsController : ControllerBase
             ?? User.FindFirst("sub")?.Value 
             ?? string.Empty;
     }
+    
 
     private SenderType GetUserType()
     {

@@ -51,7 +51,7 @@ public class StaffHttpGateway : IStaffHttpGateway
     {
         try
         {
-            var response = await _httpClient.GetAsync($"api/Staff/userId/{userId}");
+            var response = await _httpClient.GetAsync($"api/Staff/userId?userId={userId}");
 
             if (response.IsSuccessStatusCode)
             {
