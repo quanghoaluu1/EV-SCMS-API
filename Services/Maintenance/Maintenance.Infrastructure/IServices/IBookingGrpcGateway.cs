@@ -9,6 +9,8 @@ namespace Maintenance.Infrastructure.IServices
     public interface IBookingGrpcGateway
     {
         Task<BookingResponse> GetBookingById(Guid bookingId);
+        Task<BookingUpdateResponse> UpdateBookingStatusAsync(Guid bookingId, string newStatus);
+
     }
 
     public class BookingResponse
@@ -19,5 +21,13 @@ namespace Maintenance.Infrastructure.IServices
         public string CustomerId { get; set; } = string.Empty;
         public string VehicleId { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
+    }
+
+    public class BookingUpdateResponse
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public string BookingId { get; set; } = string.Empty;
+        public string NewStatus { get; set; } = string.Empty;
     }
 }
