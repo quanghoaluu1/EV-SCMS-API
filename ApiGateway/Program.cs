@@ -4,15 +4,16 @@ using System.Text.RegularExpressions;
 using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
-// if (builder.Environment.IsProduction())
-// {
-//     builder.WebHost.ConfigureKestrel(options =>
-//     {
-//         options.ListenAnyIP(5000); // No HTTPS in Render
-//     });
-// }
-// Add services to the container.
-Env.Load();
+builder.Configuration
+    .SetBasePath(builder.Environment.ContentRootPath)
+    .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
+    .AddEnvironmentVariables();
+builder.Services.AddOcelot(builder.Configuration);
+
+// //Bỏ comment cái này để xài localhost và comment cái trên lại
+// builder.Configuration.AddJsonFile("ocelot.processed.json", optional: false, reloadOnChange: true).AddEnvironmentVariables();
+// builder.Services.AddOcelot();
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -28,34 +29,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-// // Read ocelot.json and replace placeholders with environment variables
-// var ocelotConfigPath = Path.Combine(Directory.GetCurrentDirectory(), "ocelot.json");
-// var ocelotConfig = File.ReadAllText(ocelotConfigPath);  
-//
-// // Replace all #{VAR_NAME} placeholders with actual environment variables
-// ocelotConfig = Regex.Replace(ocelotConfig, @"#\{([^}]+)\}", match =>
-// {
-//     var envVarName = match.Groups[1].Value;
-//     var envVarValue = Environment.GetEnvironmentVariable(envVarName);
-//     
-//     if (string.IsNullOrEmpty(envVarValue))
-//     {
-//         Console.WriteLine($"[WARNING] Environment variable {envVarName} is not set!");
-//         return match.Value; // Keep placeholder if env var not found
-//     }
-//     
-//     Console.WriteLine($"[DEBUG] Replaced {envVarName} = {envVarValue}");
-//     return envVarValue;
-// });
-//
-// // Write the processed config to a temporary file
-// var tempOcelotPath = Path.Combine(Directory.GetCurrentDirectory(), "ocelot.processed.json");
-// File.WriteAllText(tempOcelotPath, ocelotConfig);
-
-// Load the processed configuration
-builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true).AddEnvironmentVariables();
-builder.Services.AddOcelot();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -67,7 +40,6 @@ if (app.Environment.IsDevelopment())
 }
 app.UseCors("CorsPolicy");
 await app.UseOcelot();
-// app.UseHttpsRedirection(); // Render handles HTTPS at load balancer level
 
 app.UseAuthorization();
 

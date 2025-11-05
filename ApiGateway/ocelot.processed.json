@@ -4,7 +4,7 @@
       "DownstreamPathTemplate": "/api/Auth/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "#{AUTH_API_HOST}", "Port": 7212 }
+        { "Host": "localhost", "Port": 7212 }
       ],
       "UpstreamPathTemplate": "/api/Auth/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
@@ -13,7 +13,7 @@
       "DownstreamPathTemplate": "/api/Staff/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "#{STAFF_API_HOST}", "Port": 7242 }
+        { "Host": "localhost", "Port": 7242 }
       ],
       "UpstreamPathTemplate": "/api/Staff/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
@@ -22,7 +22,7 @@
       "DownstreamPathTemplate": "/api/LeaveRequest/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "#{STAFF_API_HOST}", "Port": 7242 }
+        { "Host": "localhost", "Port": 7242 }
       ],
       "UpstreamPathTemplate": "/api/LeaveRequest/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
@@ -31,7 +31,7 @@
       "DownstreamPathTemplate": "/api/Shift/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "#{STAFF_API_HOST}", "Port": 7242 }
+        { "Host": "localhost", "Port": 7242 }
       ],
       "UpstreamPathTemplate": "/api/Shift/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
@@ -40,7 +40,7 @@
       "DownstreamPathTemplate": "/api/StaffShift/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "#{STAFF_API_HOST}", "Port": 7242 }
+        { "Host": "localhost", "Port": 7242 }
       ],
       "UpstreamPathTemplate": "/api/StaffShift/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
@@ -49,7 +49,7 @@
       "DownstreamPathTemplate": "/api/Customer/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "#{CUSTOMER_API_HOST}", "Port": 7040 }
+        { "Host": "localhost", "Port": 7040 }
       ],
       "UpstreamPathTemplate": "/api/Customer/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ]
@@ -58,7 +58,7 @@
       "DownstreamPathTemplate": "/api/Vehicle/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "#{VEHICLE_API_HOST}", "Port": 7039 }
+        { "Host": "localhost", "Port": 7039 }
       ],
       "UpstreamPathTemplate": "/api/Vehicle/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
@@ -67,7 +67,7 @@
       "DownstreamPathTemplate": "/api/Maintenance/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "#{MAINTENANCE_API_HOST}", "Port": 7043 }
+        { "Host": "localhost", "Port": 7043 }
       ],
       "UpstreamPathTemplate": "/api/Maintenance/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ]
@@ -76,7 +76,7 @@
       "DownstreamPathTemplate": "/api/Booking/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "#{BOOKING_API_HOST}", "Port": 7041 }
+        { "Host": "localhost", "Port": 7041 }
       ],
       "UpstreamPathTemplate": "/api/Booking/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ]
@@ -85,7 +85,7 @@
       "DownstreamPathTemplate": "/api/Inventory/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "#{INVENTORY_API_HOST}", "Port": 7159 }
+        { "Host": "localhost", "Port": 7159 }
       ],
       "UpstreamPathTemplate": "/api/Inventory/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
@@ -94,7 +94,7 @@
       "DownstreamPathTemplate": "/api/Report/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "#{REPORT_API_HOST}", "Port": 7089 }
+        { "Host": "localhost", "Port": 7089 }
       ],
       "UpstreamPathTemplate": "/api/Report/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
@@ -103,13 +103,22 @@
       "DownstreamPathTemplate": "/api/Payment/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "#{PAYMENT_API_HOST}", "Port": 7115 }
+        { "Host": "localhost", "Port": 7115 }
       ],
       "UpstreamPathTemplate": "/api/Payment/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/conversations/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 7200 }
+      ],
+      "UpstreamPathTemplate": "/api/conversations/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "#{API_GATEWAY_HOST}"
+    "BaseUrl": "https://localhost:7080"
   }
 }
