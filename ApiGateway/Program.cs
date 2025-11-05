@@ -4,10 +4,9 @@ using System.Text.RegularExpressions;
 using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Configuration
-    .SetBasePath(builder.Environment.ContentRootPath)
-    .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
-    .AddEnvironmentVariables();
+var environment = builder.Environment.EnvironmentName;
+builder.Configuration.AddJsonFile($"ocelot.{environment}.json", optional: true, reloadOnChange: true);
+builder.Configuration.AddJsonFile("ocelot.json", optional: true, reloadOnChange: true);
 builder.Services.AddOcelot(builder.Configuration);
 
 // //Bỏ comment cái này để xài localhost và comment cái trên lại
