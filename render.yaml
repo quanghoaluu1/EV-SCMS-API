@@ -162,7 +162,7 @@ services:
         sync: false # Configure in Render dashboard (Redis connection string)
       - key: RedisSettings__InstanceName
         value: ChatService
-      - key: JwtSettings__SecretKey
+      - key: JwtSettings__Key
         sync: false # Configure in Render dashboard (use: openssl rand -base64 32)
       - key: JwtSettings__Issuer
         value: evscms-issuer
