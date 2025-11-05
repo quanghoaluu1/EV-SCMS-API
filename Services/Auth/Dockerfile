@@ -1,11 +1,12 @@
 # Deploy on Render: connect this repo, select this folder as root, Render will build using this Dockerfile.
-# Note: Build context should be the repository root to access shared projects (GrpcContract, Messaging)
+# Note: Build context should be the repository root to access shared projects (GrpcContract, Messaging, Common)
 
 # Stage 1: Build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copy shared projects
+COPY ["Common/Common.csproj", "Common/"]
 COPY ["GrpcContract/GrpcContract.csproj", "GrpcContract/"]
 COPY ["Messaging/Messaging.csproj", "Messaging/"]
 
@@ -19,6 +20,7 @@ COPY ["Services/Auth/Auth.Infrastructure/Auth.Infrastructure.csproj", "Services/
 RUN dotnet restore "Services/Auth/Auth.Api/Auth.Api.csproj"
 
 # Copy source code
+COPY ["Common/", "Common/"]
 COPY ["GrpcContract/", "GrpcContract/"]
 COPY ["Messaging/", "Messaging/"]
 COPY ["Services/Auth/", "Services/Auth/"]
@@ -51,4 +53,3 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:8080/health || exit 1
 
 ENTRYPOINT ["dotnet", "Auth.Api.dll"]
-

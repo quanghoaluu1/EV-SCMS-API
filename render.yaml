@@ -42,12 +42,16 @@ services:
         value: ev-scms-auth-api.onrender.com
       - key: BOOKING_API_HOST
         value: ev-scms-booking-api.onrender.com
+      - key: CHAT_API_HOST
+        value: ev-scms-chat-api.onrender.com
       - key: CUSTOMER_API_HOST
         value: ev-scms-customer-api.onrender.com
       - key: INVENTORY_API_HOST
         value: ev-scms-inventory-api.onrender.com
       - key: MAINTENANCE_API_HOST
         value: ev-scms-maintenance-api.onrender.com
+      - key: NOTIFICATION_API_HOST
+        value: ev-scms-notification-api.onrender.com
       - key: PAYMENT_API_HOST
         value: ev-scms-payment-api.onrender.com
       - key: REPORT_API_HOST
@@ -76,14 +80,32 @@ services:
         value: http://+:8080
       - key: ConnectionStrings__DefaultConnection
         sync: false # Configure in Render dashboard
+      - key: RedisSettings__ConnectionString
+        sync: false # Configure in Render dashboard (Redis connection string)
+      - key: RedisSettings__InstanceName
+        value: AuthApiInstance
       - key: Jwt__Key
         sync: false # Configure in Render dashboard (use: openssl rand -base64 32)
       - key: Jwt__Issuer
-        value: ev-scms-auth
+        value: evscms-issuer
       - key: Jwt__Audience
-        value: ev-scms-api
+        value: evscms-audience
       - key: Jwt__ExpiresInMinutes
         value: "120"
+      - key: SendGrid__ApiKey
+        sync: false # Configure in Render dashboard
+      - key: SendGrid__FromEmail
+        sync: false # Configure in Render dashboard
+      - key: SendGrid__FromName
+        sync: false # Configure in Render dashboard
+      - key: OtpSettings__OtpLength
+        value: "6"
+      - key: OtpSettings__ExpiryMinutes
+        value: "5"
+      - key: OtpSettings__MaxAttempts
+        value: "3"
+      - key: OtpSettings__ResendCooldownSeconds
+        value: "60"
       - key: StaffHost
         sync: false # Configure in Render dashboard
       - key: CustomerHost
@@ -112,6 +134,46 @@ services:
         sync: false # Configure in Render dashboard
       - key: VehicleHost
         sync: false # Configure in Render dashboard
+      - key: StaffHost
+        sync: false # Configure in Render dashboard
+
+  # =============================================================================
+  # Chat Service - Real-time Chat with AI Support
+  # =============================================================================
+  - type: web
+    name: ev-scms-chat-api
+    env: docker
+    dockerfilePath: Services/Chat/Dockerfile
+    plan: free
+    region: singapore
+    branch: main
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      - key: MongoDbSettings__ConnectionString
+        sync: false # Configure in Render dashboard (MongoDB connection string)
+      - key: MongoDbSettings__DatabaseName
+        value: chatdb
+      - key: RedisSettings__ConnectionString
+        sync: false # Configure in Render dashboard (Redis connection string)
+      - key: RedisSettings__InstanceName
+        value: ChatService
+      - key: JwtSettings__SecretKey
+        sync: false # Configure in Render dashboard (use: openssl rand -base64 32)
+      - key: JwtSettings__Issuer
+        value: evscms-issuer
+      - key: JwtSettings__Audience
+        value: evscms-audience
+      - key: JwtSettings__ExpiresInMinutes
+        value: "120"
+      - key: GeminiSettings__ApiKey
+        sync: false # Configure in Render dashboard (Google Gemini API key)
+      - key: GeminiSettings__ModelId
+        value: gemini-pro
       - key: StaffHost
         sync: false # Configure in Render dashboard
 
@@ -204,8 +266,8 @@ services:
         value: http://+:8080
       # - key: ConnectionStrings__DefaultConnection
       #   sync: false # Configure in Render dashboard
-      - key: RabbitMQ__ConnectionString
-        sync: false # Configure in Render dashboard
+      # - key: RabbitMQ__ConnectionString
+      #   sync: false # Configure in Render dashboard
 
   # =============================================================================
   # Payment Service
@@ -320,4 +382,3 @@ services:
 # After deployment, connection string will be available in Render dashboard
 # and can be used for ConnectionStrings__DefaultConnection environment variable
 # =============================================================================
-

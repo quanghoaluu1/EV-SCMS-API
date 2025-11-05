@@ -244,6 +244,6 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "❌ MongoDB connection: FAILED");
     }
 }
-
+app.MapGet("/health", () => Results.Ok("Healthy ✅"));
 Console.WriteLine("Chat Service is running...");
 app.Run();
