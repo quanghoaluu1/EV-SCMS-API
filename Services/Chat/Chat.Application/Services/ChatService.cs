@@ -116,6 +116,21 @@ public class ChatService : IChatService
 
                         await _chatRepository.CreateMessageAsync(botMessage);
                         await _conversationRepository.UpdateLastMessageAsync(request.ConversationId, aiResponse);
+                        
+                        _logger.LogInformation($"✅ AI response saved for conversation {request.ConversationId}");
+
+                        // ✅ BROADCAST AI MESSAGE VIA SIGNALR
+                        await _chatHubContext.Clients.Group(request.ConversationId).SendAsync("ReceiveMessage", new
+                        {
+                            botMessage.Id,
+                            botMessage.ConversationId,
+                            botMessage.SenderId,
+                            botMessage.SenderName,
+                            botMessage.SenderType,
+                            botMessage.Content,
+                            botMessage.Timestamp,
+                            IsRead = false
+                        });
                     }
                     catch (Exception ex)
                     {

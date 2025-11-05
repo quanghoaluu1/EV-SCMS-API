@@ -11,7 +11,14 @@ public class MongoDbContext : IMongoDbContext
 
     public MongoDbContext(IOptions<MongoDbSettings> settings)
     {
-        var client = new MongoClient(settings.Value.ConnectionString);
+        
+        var mongoUrl = new MongoUrl(settings.Value.ConnectionString);
+
+        var mongoSettings = MongoClientSettings.FromUrl(mongoUrl);
+    
+        mongoSettings.ServerSelectionTimeout = TimeSpan.FromSeconds(10);
+        
+        var client = new MongoClient(mongoSettings);
         _database = client.GetDatabase(settings.Value.DatabaseName);
     }
     public IMongoCollection<T> GetCollection<T>(string name)
