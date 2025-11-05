@@ -4,7 +4,13 @@ using System.Text.RegularExpressions;
 using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
-
+// if (builder.Environment.IsProduction())
+// {
+//     builder.WebHost.ConfigureKestrel(options =>
+//     {
+//         options.ListenAnyIP(5000); // No HTTPS in Render
+//     });
+// }
 // Add services to the container.
 Env.Load();
 builder.Services.AddControllers();
@@ -57,11 +63,11 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.Urls.Add("https://0.0.0.0:7088"); // HTTPS only in Development
 }
-app.Urls.Add("https://0.0.0.0:7088");
 app.UseCors("CorsPolicy");
 await app.UseOcelot();
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection(); // Render handles HTTPS at load balancer level
 
 app.UseAuthorization();
 
