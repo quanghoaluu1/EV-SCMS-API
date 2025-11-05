@@ -233,24 +233,15 @@ public class OtpService : IOtpService
 
     public async Task<int?> GetRemainingCooldownAsync(string email, OtpPurpose purpose)
     {
-        try
+        var cooldownKey = GetCooldownKey(email, purpose);
+        var ttl = await _redisService.GetTtlAsync(cooldownKey);
+
+        if (ttl.HasValue && ttl.Value.TotalSeconds > 0)
         {
-            var cooldownKey = GetCooldownKey(email, purpose);
-            var cooldownStr = await _redisService.GetStringAsync(cooldownKey);
-
-            if (string.IsNullOrEmpty(cooldownStr))
-                return null;
-
-            var cooldownStart = DateTime.Parse(cooldownStr);
-            var elapsed = (DateTime.UtcNow - cooldownStart).TotalSeconds;
-            var remaining = _otpSettings.ResendCooldownSeconds - (int)elapsed;
-
-            return remaining > 0 ? remaining : null;
+            return (int)ttl.Value.TotalSeconds;
         }
-        catch
-        {
-            return null;
-        }
+
+        return null;
     }
     
     private string GenerateOtp(int length)

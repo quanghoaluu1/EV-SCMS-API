@@ -88,4 +88,15 @@ public class AuthController : ControllerBase
         }
         return Ok(result);
     }
+
+    [HttpGet("role")]
+    public async Task<IActionResult> GetUsersByRole(RoleEnum role)
+    {
+        var result = await _authService.GetUsersByRoleAsync(role);
+        if (!result.IsSuccess)
+        {
+            return BadRequest(result);
+        }
+        return Ok(result);
+    }
 }

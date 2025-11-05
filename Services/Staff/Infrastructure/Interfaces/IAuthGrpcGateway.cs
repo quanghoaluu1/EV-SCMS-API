@@ -2,14 +2,15 @@
 
 public interface IAuthGrpcGateway
 { 
-    Task<GetUserByIdResponse> GetUserById(Guid userId);
+    Task<ApiResponse<UserData>> GetUserById(Guid userId);
+    Task<ApiResponse<List<UserData>>> GetUserByRole(int role);
 }
 
-public class GetUserByIdResponse
+public class ApiResponse<T>
 {
     public bool IsSuccess { get; set; }
     public string Message { get; set; } = string.Empty;
-    public UserData? Data { get; set; }
+    public T? Data { get; set; }
 }
 
 public class UserData

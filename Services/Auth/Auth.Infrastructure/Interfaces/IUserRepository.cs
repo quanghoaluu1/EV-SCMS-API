@@ -10,4 +10,5 @@ public interface IUserRepository
     Task<bool> ExistsByEmail(string email);
     Task<bool> ChangeRole(Guid userId, RoleEnum role);
     Task<User?> GetUserById(Guid id);
+    Task<List<User>> GetUsersByRole(RoleEnum role);
 }

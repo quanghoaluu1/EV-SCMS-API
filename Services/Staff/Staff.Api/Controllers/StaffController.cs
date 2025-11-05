@@ -60,4 +60,15 @@ public class StaffController : ControllerBase
         if (!deleted) return NotFound();
         return NoContent();
     }
+
+    [HttpGet("role/{role}")]
+    public async Task<IActionResult> GetAllByRole(int role)
+    {
+        var staffs = await _staffService.GetAllStaffByRoleAsync(role);
+        if (!staffs.IsSuccess)
+        {
+            return BadRequest(staffs.Message);
+        }
+        return Ok(staffs);
+    }
 }

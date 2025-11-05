@@ -90,4 +90,10 @@ public class RedisService : IRedisService
         return (int)await _database.StringIncrementAsync(GetKey(key), value);
     }
 
+    public async Task<TimeSpan?> GetTtlAsync(string key)
+    {
+        var ttl = await _database.KeyTimeToLiveAsync(key);
+        return ttl;
+    }
+
 }

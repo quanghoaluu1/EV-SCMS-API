@@ -46,5 +46,10 @@ public class UserRepository : IUserRepository
     {
         return await _context.User.FirstOrDefaultAsync(u => u.Id == id);
     }
+    
+    public async Task<List<User>> GetUsersByRole(RoleEnum role)
+    {
+        return await _context.User.Where(u => u.Role == role).ToListAsync();
+    }
 
 }

@@ -311,6 +311,30 @@ public class AuthService : IAuthService
             };
         }
     }
+    
+    public async Task<Result<List<UserDto>>> GetUsersByRoleAsync(RoleEnum role)
+    {
+        try
+        {
+            var users = await _userRepository.GetUsersByRole(role);
+            var userDtos = users.Adapt<List<UserDto>>();
+            return new Result<List<UserDto>>()
+            {
+                IsSuccess = true,
+                Message = "Users found",
+                Data = userDtos
+            };
+        }
+        catch (Exception ex)
+        {
+            return new Result<List<UserDto>>()
+            {
+                IsSuccess = false,
+                Message = $"An error occurred while getting users: {ex.Message}",
+                Data = null
+            };
+        }
+    }
 
     private string GenerateToken(User user)
     {
