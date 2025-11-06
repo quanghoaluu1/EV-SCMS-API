@@ -173,7 +173,7 @@ services:
       - key: GeminiSettings__ApiKey
         sync: false # Configure in Render dashboard (Google Gemini API key)
       - key: GeminiSettings__ModelId
-        value: gemini-pro
+        value: gemini-2.5-flash
       - key: StaffHost
         sync: false # Configure in Render dashboard
 
