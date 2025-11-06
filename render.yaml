@@ -1,23 +1,4 @@
-# =============================================================================
-# Render.com Blueprint - EV-SCMS Microservices
-# =============================================================================
-#
-# Deploy all services with this file:
-# 1. Push this render.yaml to the root of your GitHub repository
-# 2. Go to Render Dashboard → New → Blueprint
-# 3. Connect your GitHub repository
-# 4. Render will detect this render.yaml and build all services automatically
-#
-# All services will:
-# - Auto-deploy from main branch on push
-# - Use Docker with their respective Dockerfiles
-# - Expose port 8080
-# - Run on Free tier (services spin down after 15 min of inactivity)
-#
-# IMPORTANT: After deployment, configure sensitive environment variables
-# (marked with sync: false) manually in each service's dashboard.
-#
-# =============================================================================
+
 
 services:
   # =============================================================================
@@ -26,7 +7,9 @@ services:
   - type: web
     name: evscms-api-gateway
     env: docker
+    rootDir: ./ApiGateway
     dockerfilePath: ApiGateway/Dockerfile
+    dockerContext: . 
     plan: free
     region: singapore
     branch: main
@@ -67,7 +50,9 @@ services:
   - type: web
     name: evscms-auth-api
     env: docker
+    rootDir: ./Services/Auth
     dockerfilePath: Services/Auth/Dockerfile
+    dockerContext: . 
     plan: free
     region: singapore
     branch: main
@@ -117,6 +102,8 @@ services:
   - type: web
     name: evscms-booking-api
     env: docker
+    rootDir: ./Services/Booking
+    dockerContext: . 
     dockerfilePath: Services/Booking/Dockerfile
     plan: free
     region: singapore
@@ -143,6 +130,8 @@ services:
   - type: web
     name: evscms-chat-api
     env: docker
+    rootDir: ./Services/Chat
+    dockerContext: . 
     dockerfilePath: Services/Chat/Dockerfile
     plan: free
     region: singapore
@@ -183,6 +172,8 @@ services:
   - type: web
     name: evscms-customer-api
     env: docker
+    rootDir: ./Services/Customer
+    dockerContext: . 
     dockerfilePath: Services/Customer/Dockerfile
     plan: free
     region: singapore
@@ -205,6 +196,8 @@ services:
   - type: web
     name: evscms-inventory-api
     env: docker
+    rootDir: ./Services/Inventory
+    dockerContext: . 
     dockerfilePath: Services/Inventory/Dockerfile
     plan: free
     region: singapore
@@ -225,6 +218,8 @@ services:
   - type: web
     name: evscms-maintenance-api
     env: docker
+    rootDir: ./Services/Maintenance
+    dockerContext: . 
     dockerfilePath: Services/Maintenance/Dockerfile
     plan: free
     region: singapore
@@ -253,6 +248,8 @@ services:
   - type: web
     name: evscms-notification-api
     env: docker
+    rootDir: ./Services/Notification
+    dockerContext: . 
     dockerfilePath: Services/Notification/Dockerfile
     plan: free
     region: singapore
@@ -275,6 +272,8 @@ services:
   - type: web
     name: evscms-payment-api
     env: docker
+    rootDir: ./Services/Payment
+    dockerContext: . 
     dockerfilePath: Services/Payment/Dockerfile
     plan: free
     region: singapore
@@ -305,6 +304,8 @@ services:
   - type: web
     name: evscms-report-api
     env: docker
+    rootDir: ./Services/Report
+    dockerContext: . 
     dockerfilePath: Services/Report/Dockerfile
     plan: free
     region: singapore
@@ -329,6 +330,8 @@ services:
   - type: web
     name: evscms-staff-api
     env: docker
+    rootDir: ./Services/Staff
+    dockerContext: . 
     dockerfilePath: Services/Staff/Dockerfile
     plan: free
     region: singapore
@@ -351,6 +354,8 @@ services:
   - type: web
     name: evscms-vehicle-api
     env: docker
+    rootDir: ./Services/Vehicle
+    dockerContext: . 
     dockerfilePath: Services/Vehicle/Dockerfile
     plan: free
     region: singapore
@@ -366,19 +371,3 @@ services:
         sync: false # Configure in Render dashboard
       - key: CustomerHost
         sync: false # Configure in Render dashboard
-
-# =============================================================================
-# Optional: Database Services
-# =============================================================================
-# Uncomment to add managed PostgreSQL database
-#
-# databases:
-#   - name: evscms-postgres
-#     plan: free
-#     region: oregon
-#     databaseName: evscms
-#     user: evscms_user
-#
-# After deployment, connection string will be available in Render dashboard
-# and can be used for ConnectionStrings__DefaultConnection environment variable
-# =============================================================================
