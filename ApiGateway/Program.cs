@@ -4,19 +4,10 @@ using System.Text.RegularExpressions;
 using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
-// var environment = builder.Environment.EnvironmentName;
-// builder.Configuration.AddJsonFile($"ocelot.{environment}.json", optional: true, reloadOnChange: true);
-builder.Configuration.AddJsonFile("ocelot.json", optional: true, reloadOnChange: true);
-builder.Services.AddOcelot(builder.Configuration);
 
-// //Bỏ comment cái này để xài localhost và comment cái trên lại
-// builder.Configuration.AddJsonFile("ocelot.processed.json", optional: false, reloadOnChange: true).AddEnvironmentVariables();
-// builder.Services.AddOcelot();
+// Load Ocelot configuration
+builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", policy =>
@@ -28,16 +19,24 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Add Ocelot and SwaggerForOcelot
+builder.Services.AddOcelot(builder.Configuration);
+builder.Services.AddSwaggerForOcelot(builder.Configuration);
+builder.Services.AddControllers();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    app.Urls.Add("https://0.0.0.0:7088"); // HTTPS only in Development
-}
+// Configure the HTTP request pipeline
+app.Urls.Add("https://0.0.0.0:7088");
 app.UseCors("CorsPolicy");
+
+app.UseSwaggerForOcelotUI(opt =>
+{
+    opt.PathToSwaggerGenerator = "/swagger/docs";
+});
+
+app.UseRouting();
+
 await app.UseOcelot();
 
 app.UseAuthorization();

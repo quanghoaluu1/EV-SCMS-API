@@ -1,0 +1,259 @@
+﻿{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/Auth/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 7212 }
+      ],
+      "UpstreamPathTemplate": "/api/Auth/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "SwaggerKey": "AuthService"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Staff/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 7242 }
+      ],
+      "UpstreamPathTemplate": "/api/Staff/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "SwaggerKey": "StaffService"
+    },
+    {
+      "DownstreamPathTemplate": "/api/LeaveRequest/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 7242 }
+      ],
+      "UpstreamPathTemplate": "/api/LeaveRequest/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "SwaggerKey": "StaffService"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Shift/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 7242 }
+      ],
+      "UpstreamPathTemplate": "/api/Shift/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "SwaggerKey": "StaffService"
+    },
+    {
+      "DownstreamPathTemplate": "/api/StaffShift/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 7242 }
+      ],
+      "UpstreamPathTemplate": "/api/StaffShift/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "SwaggerKey": "StaffService"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Customer/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 7040 }
+      ],
+      "UpstreamPathTemplate": "/api/Customer/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "SwaggerKey": "CustomerService"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Vehicle/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 7039 }
+      ],
+      "UpstreamPathTemplate": "/api/Vehicle/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "SwaggerKey": "VehicleService"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Maintenance/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 7043 }
+      ],
+      "UpstreamPathTemplate": "/api/Maintenance/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "SwaggerKey": "MaintenanceService"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Booking/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 7041 }
+      ],
+      "UpstreamPathTemplate": "/api/Booking/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "SwaggerKey": "BookingService"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Inventory/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 7159 }
+      ],
+      "UpstreamPathTemplate": "/api/Inventory/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "SwaggerKey": "InventoryService"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Report/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 7089 }
+      ],
+      "UpstreamPathTemplate": "/api/Report/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "SwaggerKey": "ReportService"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Payment/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 7115 }
+      ],
+      "UpstreamPathTemplate": "/api/Payment/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "SwaggerKey": "PaymentService"
+    },
+    {
+      "DownstreamPathTemplate": "/api/conversations/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 7200 }
+      ],
+      "UpstreamPathTemplate": "/api/conversations/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "SwaggerKey": "ChatService"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Notification/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 7151 }
+      ],
+      "UpstreamPathTemplate": "/api/Notification/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "SwaggerKey": "NotificationService"
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "https://localhost:7080"
+  },
+  "SwaggerEndPoints": [
+    {
+      "Key": "AuthService",
+      "Config": [
+        {
+          "Name": "Auth API",
+          "Version": "v1",
+          "Url": "https://localhost:7212/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "StaffService",
+      "Config": [
+        {
+          "Name": "Staff API",
+          "Version": "v1",
+          "Url": "https://localhost:7242/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "CustomerService",
+      "Config": [
+        {
+          "Name": "Customer API",
+          "Version": "v1",
+          "Url": "https://localhost:7040/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "VehicleService",
+      "Config": [
+        {
+          "Name": "Vehicle API",
+          "Version": "v1",
+          "Url": "https://localhost:7039/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "MaintenanceService",
+      "Config": [
+        {
+          "Name": "Maintenance API",
+          "Version": "v1",
+          "Url": "https://localhost:7043/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "BookingService",
+      "Config": [
+        {
+          "Name": "Booking API",
+          "Version": "v1",
+          "Url": "https://localhost:7041/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "InventoryService",
+      "Config": [
+        {
+          "Name": "Inventory API",
+          "Version": "v1",
+          "Url": "https://localhost:7159/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "ReportService",
+      "Config": [
+        {
+          "Name": "Report API",
+          "Version": "v1",
+          "Url": "https://localhost:7089/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "PaymentService",
+      "Config": [
+        {
+          "Name": "Payment API",
+          "Version": "v1",
+          "Url": "https://localhost:7115/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "ChatService",
+      "Config": [
+        {
+          "Name": "Chat API",
+          "Version": "v1",
+          "Url": "https://localhost:7200/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "NotificationService",
+      "Config": [
+        {
+          "Name": "Notification API",
+          "Version": "v1",
+          "Url": "https://localhost:7151/swagger/v1/swagger.json"
+        }
+      ]
+    }
+  ]
+}

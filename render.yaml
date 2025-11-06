@@ -266,8 +266,8 @@ services:
         value: http://+:8080
       # - key: ConnectionStrings__DefaultConnection
       #   sync: false # Configure in Render dashboard
-      # - key: RabbitMQ__ConnectionString
-      #   sync: false # Configure in Render dashboard
+      - key: RabbitMQ__ConnectionString
+        sync: false # Configure in Render dashboard
 
   # =============================================================================
   # Payment Service

@@ -8,7 +8,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "Report API",
+        Version = "v1",
+        Description = "Report and Analytics API"
+    });
+});
 
 // Add HttpClient for external service communication
 builder.Services.AddHttpClient<IBookingGrpcGateway, BookingGrpcGateway>(client =>

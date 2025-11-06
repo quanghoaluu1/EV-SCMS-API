@@ -40,7 +40,15 @@ builder.Services.AddSingleton(config);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "Notification API",
+        Version = "v1",
+        Description = "Notification and Real-time Updates API"
+    });
+});
 
 var app = builder.Build();
 

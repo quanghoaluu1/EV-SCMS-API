@@ -21,7 +21,15 @@ builder.Services.AddControllers()
 ;
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "Staff API",
+        Version = "v1",
+        Description = "Staff Management API"
+    });
+});
 
 // Add HttpClient for external service communication
 builder.Services.AddHttpClient<IAuthGrpcGateway, AuthGrpcGateway>(client =>

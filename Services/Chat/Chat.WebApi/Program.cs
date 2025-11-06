@@ -29,7 +29,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Virtigo.WebAPI", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo 
+    { 
+        Title = "Chat API", 
+        Version = "v1",
+        Description = "Chat and Messaging API"
+    });
 
     // JWT Security configuration
     var jwtSecurityScheme = new OpenApiSecurityScheme
