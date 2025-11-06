@@ -7,6 +7,7 @@ using Booking.Infrastructure.IServices;
 using Booking.Infrastructure.Repository;
 using Booking.Infrastructure.Services;
 using Mapster;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -68,6 +69,11 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.MapGet("/health", () => Results.Ok("Healthy ✅"));
+
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedProto
+});
 
 app.UseHttpsRedirection();
 

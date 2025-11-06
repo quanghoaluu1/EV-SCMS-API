@@ -6,6 +6,7 @@ using Infrastructure.Interfaces;
 using Infrastructure.IRepository;
 using Infrastructure.Repository;
 using Infrastructure.Services;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Staff.Api.Converters;
 
@@ -54,6 +55,12 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.MapGet("/health", () => Results.Ok("Healthy ✅"));
+
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedProto
+});
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

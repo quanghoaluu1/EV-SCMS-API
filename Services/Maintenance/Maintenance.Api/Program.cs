@@ -7,6 +7,7 @@ using Maintenance.Infrastructure.IServices;
 using Maintenance.Infrastructure.Repository;
 using Maintenance.Infrastructure.Services;
 using Mapster;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -74,6 +75,11 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.MapGet("/health", () => Results.Ok("Healthy ✅"));
+
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedProto
+});
 
 app.UseHttpsRedirection();
 

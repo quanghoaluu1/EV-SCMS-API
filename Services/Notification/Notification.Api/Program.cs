@@ -1,4 +1,5 @@
 using Mapster;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Notification.Api.Consumers;
 using Notification.Api.EventBus;
@@ -58,6 +59,12 @@ app.UseSwaggerUI();
 app.MapGet("/health", () => Results.Ok("Healthy ✅"));
 app.UseCors("AllowAll");
 app.MapHub<NotificationHub>("/notifyHub");
+
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedProto
+});
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
