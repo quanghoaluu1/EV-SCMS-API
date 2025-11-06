@@ -11,7 +11,7 @@ services:
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
@@ -52,7 +52,7 @@ services:
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     healthCheckPath: /health
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
@@ -102,7 +102,7 @@ services:
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     healthCheckPath: /health
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
@@ -128,7 +128,7 @@ services:
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     healthCheckPath: /health
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
@@ -168,7 +168,7 @@ services:
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     healthCheckPath: /health
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
@@ -190,7 +190,7 @@ services:
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     healthCheckPath: /health
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
@@ -210,7 +210,7 @@ services:
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     healthCheckPath: /health
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
@@ -238,7 +238,7 @@ services:
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     healthCheckPath: /health
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
@@ -260,7 +260,7 @@ services:
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     healthCheckPath: /health
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
@@ -290,7 +290,7 @@ services:
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     healthCheckPath: /health
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
@@ -314,7 +314,7 @@ services:
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     healthCheckPath: /health
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
@@ -336,7 +336,7 @@ services:
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     healthCheckPath: /health
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
