@@ -32,16 +32,16 @@ var app = builder.Build();
 // app.Urls.Add($"http://0.0.0.0:{port}");
 app.UseCors("CorsPolicy");
 
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseSwaggerForOcelotUI(opt =>
 {
     opt.PathToSwaggerGenerator = "/swagger/docs";
 });
 
-app.UseRouting();
-
 await app.UseOcelot();
-
-app.UseAuthorization();
 
 app.MapControllers();
 
