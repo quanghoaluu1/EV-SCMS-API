@@ -27,7 +27,9 @@ builder.Services.AddControllers();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
-app.Urls.Add("https://0.0.0.0:7088");
+// Use HTTP in production - cloud platforms handle HTTPS termination
+// var port = Environment.GetEnvironmentVariable("PORT") ?? "7088";
+// app.Urls.Add($"http://0.0.0.0:{port}");
 app.UseCors("CorsPolicy");
 
 app.UseSwaggerForOcelotUI(opt =>

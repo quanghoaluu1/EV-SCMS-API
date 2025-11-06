@@ -24,7 +24,7 @@ services:
   # API Gateway (Ocelot) - Main Entry Point
   # =============================================================================
   - type: web
-    name: ev-scms-api-gateway
+    name: evscms-api-gateway
     env: docker
     dockerfilePath: ApiGateway/Dockerfile
     plan: free
@@ -65,7 +65,7 @@ services:
   # Auth Service - Authentication & Authorization
   # =============================================================================
   - type: web
-    name: ev-scms-auth-api
+    name: evscms-auth-api
     env: docker
     dockerfilePath: Services/Auth/Dockerfile
     plan: free
@@ -115,7 +115,7 @@ services:
   # Booking Service
   # =============================================================================
   - type: web
-    name: ev-scms-booking-api
+    name: evscms-booking-api
     env: docker
     dockerfilePath: Services/Booking/Dockerfile
     plan: free
@@ -141,7 +141,7 @@ services:
   # Chat Service - Real-time Chat with AI Support
   # =============================================================================
   - type: web
-    name: ev-scms-chat-api
+    name: evscms-chat-api
     env: docker
     dockerfilePath: Services/Chat/Dockerfile
     plan: free
@@ -181,7 +181,7 @@ services:
   # Customer Service
   # =============================================================================
   - type: web
-    name: ev-scms-customer-api
+    name: evscms-customer-api
     env: docker
     dockerfilePath: Services/Customer/Dockerfile
     plan: free
@@ -203,7 +203,7 @@ services:
   # Inventory Service
   # =============================================================================
   - type: web
-    name: ev-scms-inventory-api
+    name: evscms-inventory-api
     env: docker
     dockerfilePath: Services/Inventory/Dockerfile
     plan: free
@@ -223,7 +223,7 @@ services:
   # Maintenance Service
   # =============================================================================
   - type: web
-    name: ev-scms-maintenance-api
+    name: evscms-maintenance-api
     env: docker
     dockerfilePath: Services/Maintenance/Dockerfile
     plan: free
@@ -251,7 +251,7 @@ services:
   # Notification Service
   # =============================================================================
   - type: web
-    name: ev-scms-notification-api
+    name: evscms-notification-api
     env: docker
     dockerfilePath: Services/Notification/Dockerfile
     plan: free
@@ -273,7 +273,7 @@ services:
   # Payment Service
   # =============================================================================
   - type: web
-    name: ev-scms-payment-api
+    name: evscms-payment-api
     env: docker
     dockerfilePath: Services/Payment/Dockerfile
     plan: free
@@ -303,7 +303,7 @@ services:
   # Report Service
   # =============================================================================
   - type: web
-    name: ev-scms-report-api
+    name: evscms-report-api
     env: docker
     dockerfilePath: Services/Report/Dockerfile
     plan: free
@@ -327,7 +327,7 @@ services:
   # Staff Service
   # =============================================================================
   - type: web
-    name: ev-scms-staff-api
+    name: evscms-staff-api
     env: docker
     dockerfilePath: Services/Staff/Dockerfile
     plan: free
@@ -349,7 +349,7 @@ services:
   # Vehicle Service
   # =============================================================================
   - type: web
-    name: ev-scms-vehicle-api
+    name: evscms-vehicle-api
     env: docker
     dockerfilePath: Services/Vehicle/Dockerfile
     plan: free
@@ -373,7 +373,7 @@ services:
 # Uncomment to add managed PostgreSQL database
 #
 # databases:
-#   - name: ev-scms-postgres
+#   - name: evscms-postgres
 #     plan: free
 #     region: oregon
 #     databaseName: evscms

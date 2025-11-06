@@ -4,7 +4,7 @@
       "DownstreamPathTemplate": "/api/Auth/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "ev-scms-auth-api.onrender.com", "Port": 443 }
+        { "Host": "evscms-auth-api.onrender.com", "Port": 443 }
       ],
       "UpstreamPathTemplate": "/api/Auth/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
@@ -14,7 +14,7 @@
       "DownstreamPathTemplate": "/api/Staff/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "ev-scms-staff-api.onrender.com", "Port": 443 }
+        { "Host": "evscms-staff-api.onrender.com", "Port": 443 }
       ],
       "UpstreamPathTemplate": "/api/Staff/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
@@ -24,7 +24,7 @@
       "DownstreamPathTemplate": "/api/LeaveRequest/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "ev-scms-staff-api.onrender.com", "Port": 443 }
+        { "Host": "evscms-staff-api.onrender.com", "Port": 443 }
       ],
       "UpstreamPathTemplate": "/api/LeaveRequest/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
@@ -34,7 +34,7 @@
       "DownstreamPathTemplate": "/api/Shift/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "ev-scms-staff-api.onrender.com", "Port": 443 }
+        { "Host": "evscms-staff-api.onrender.com", "Port": 443 }
       ],
       "UpstreamPathTemplate": "/api/Shift/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
@@ -44,7 +44,7 @@
       "DownstreamPathTemplate": "/api/StaffShift/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "ev-scms-staff-api.onrender.com", "Port": 443 }
+        { "Host": "evscms-staff-api.onrender.com", "Port": 443 }
       ],
       "UpstreamPathTemplate": "/api/StaffShift/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
@@ -54,7 +54,7 @@
       "DownstreamPathTemplate": "/api/Customer/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "ev-scms-customer-api.onrender.com", "Port": 443 }
+        { "Host": "evscms-customer-api.onrender.com", "Port": 443 }
       ],
       "UpstreamPathTemplate": "/api/Customer/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
@@ -64,7 +64,7 @@
       "DownstreamPathTemplate": "/api/Vehicle/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "ev-scms-vehicle-api.onrender.com", "Port": 443 }
+        { "Host": "evscms-vehicle-api.onrender.com", "Port": 443 }
       ],
       "UpstreamPathTemplate": "/api/Vehicle/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
@@ -74,7 +74,7 @@
       "DownstreamPathTemplate": "/api/Maintenance/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "ev-scms-maintenance-api.onrender.com", "Port": 443 }
+        { "Host": "evscms-maintenance-api.onrender.com", "Port": 443 }
       ],
       "UpstreamPathTemplate": "/api/Maintenance/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
@@ -84,7 +84,7 @@
       "DownstreamPathTemplate": "/api/Booking/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "ev-scms-booking-api.onrender.com", "Port": 443 }
+        { "Host": "evscms-booking-api.onrender.com", "Port": 443 }
       ],
       "UpstreamPathTemplate": "/api/Booking/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
@@ -94,7 +94,7 @@
       "DownstreamPathTemplate": "/api/Inventory/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "ev-scms-inventory-api.onrender.com", "Port": 443 }
+        { "Host": "evscms-inventory-api.onrender.com", "Port": 443 }
       ],
       "UpstreamPathTemplate": "/api/Inventory/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
@@ -104,7 +104,7 @@
       "DownstreamPathTemplate": "/api/Report/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "ev-scms-report-api.onrender.com", "Port": 443 }
+        { "Host": "evscms-report-api.onrender.com", "Port": 443 }
       ],
       "UpstreamPathTemplate": "/api/Report/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
@@ -114,7 +114,7 @@
       "DownstreamPathTemplate": "/api/Payment/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "ev-scms-payment-api.onrender.com", "Port": 443 }
+        { "Host": "evscms-payment-api.onrender.com", "Port": 443 }
       ],
       "UpstreamPathTemplate": "/api/Payment/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
@@ -124,7 +124,7 @@
       "DownstreamPathTemplate": "/api/conversations/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        { "Host": "ev-scms-chat-api.onrender.com", "Port": 443 }
+        { "Host": "evscms-chat-api.onrender.com", "Port": 443 }
       ],
       "UpstreamPathTemplate": "/api/conversations/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
@@ -132,7 +132,7 @@
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "https://ev-scms-api-gateway.onrender.com"
+    "BaseUrl": "https://evscms-api-gateway.onrender.com"
   },
   "SwaggerEndPoints": [
     {
@@ -141,7 +141,7 @@
         {
           "Name": "Auth API",
           "Version": "v1",
-          "Url": "https://ev-scms-auth-api.onrender.com/swagger/v1/swagger.json"
+          "Url": "https://evscms-auth-api.onrender.com/swagger/v1/swagger.json"
         }
       ]
     },
@@ -151,7 +151,7 @@
         {
           "Name": "Staff API",
           "Version": "v1",
-          "Url": "https://ev-scms-staff-api.onrender.com/swagger/v1/swagger.json"
+          "Url": "https://evscms-staff-api.onrender.com/swagger/v1/swagger.json"
         }
       ]
     },
@@ -161,7 +161,7 @@
         {
           "Name": "Customer API",
           "Version": "v1",
-          "Url": "https://ev-scms-customer-api.onrender.com/swagger/v1/swagger.json"
+          "Url": "https://evscms-customer-api.onrender.com/swagger/v1/swagger.json"
         }
       ]
     },
@@ -171,7 +171,7 @@
         {
           "Name": "Vehicle API",
           "Version": "v1",
-          "Url": "https://ev-scms-vehicle-api.onrender.com/swagger/v1/swagger.json"
+          "Url": "https://evscms-vehicle-api.onrender.com/swagger/v1/swagger.json"
         }
       ]
     },
@@ -181,7 +181,7 @@
         {
           "Name": "Maintenance API",
           "Version": "v1",
-          "Url": "https://ev-scms-maintenance-api.onrender.com/swagger/v1/swagger.json"
+          "Url": "https://evscms-maintenance-api.onrender.com/swagger/v1/swagger.json"
         }
       ]
     },
@@ -191,7 +191,7 @@
         {
           "Name": "Booking API",
           "Version": "v1",
-          "Url": "https://ev-scms-booking-api.onrender.com/swagger/v1/swagger.json"
+          "Url": "https://evscms-booking-api.onrender.com/swagger/v1/swagger.json"
         }
       ]
     },
@@ -201,7 +201,7 @@
         {
           "Name": "Inventory API",
           "Version": "v1",
-          "Url": "https://ev-scms-inventory-api.onrender.com/swagger/v1/swagger.json"
+          "Url": "https://evscms-inventory-api.onrender.com/swagger/v1/swagger.json"
         }
       ]
     },
@@ -211,7 +211,7 @@
         {
           "Name": "Report API",
           "Version": "v1",
-          "Url": "https://ev-scms-report-api.onrender.com/swagger/v1/swagger.json"
+          "Url": "https://evscms-report-api.onrender.com/swagger/v1/swagger.json"
         }
       ]
     },
@@ -221,7 +221,7 @@
         {
           "Name": "Payment API",
           "Version": "v1",
-          "Url": "https://ev-scms-payment-api.onrender.com/swagger/v1/swagger.json"
+          "Url": "https://evscms-payment-api.onrender.com/swagger/v1/swagger.json"
         }
       ]
     },
@@ -231,7 +231,7 @@
         {
           "Name": "Chat API",
           "Version": "v1",
-          "Url": "https://ev-scms-chat-api.onrender.com/swagger/v1/swagger.json"
+          "Url": "https://evscms-chat-api.onrender.com/swagger/v1/swagger.json"
         }
       ]
     }
