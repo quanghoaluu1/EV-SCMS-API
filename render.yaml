@@ -7,9 +7,7 @@ services:
   - type: web
     name: evscms-api-gateway
     env: docker
-    rootDir: ./ApiGateway
     dockerfilePath: ApiGateway/Dockerfile
-    dockerContext: . 
     plan: free
     region: singapore
     branch: main
@@ -50,9 +48,7 @@ services:
   - type: web
     name: evscms-auth-api
     env: docker
-    rootDir: ./Services/Auth
     dockerfilePath: Services/Auth/Dockerfile
-    dockerContext: . 
     plan: free
     region: singapore
     branch: main
@@ -102,8 +98,6 @@ services:
   - type: web
     name: evscms-booking-api
     env: docker
-    rootDir: ./Services/Booking
-    dockerContext: . 
     dockerfilePath: Services/Booking/Dockerfile
     plan: free
     region: singapore
@@ -130,8 +124,6 @@ services:
   - type: web
     name: evscms-chat-api
     env: docker
-    rootDir: ./Services/Chat
-    dockerContext: . 
     dockerfilePath: Services/Chat/Dockerfile
     plan: free
     region: singapore
@@ -172,8 +164,6 @@ services:
   - type: web
     name: evscms-customer-api
     env: docker
-    rootDir: ./Services/Customer
-    dockerContext: . 
     dockerfilePath: Services/Customer/Dockerfile
     plan: free
     region: singapore
@@ -196,8 +186,6 @@ services:
   - type: web
     name: evscms-inventory-api
     env: docker
-    rootDir: ./Services/Inventory
-    dockerContext: . 
     dockerfilePath: Services/Inventory/Dockerfile
     plan: free
     region: singapore
@@ -218,8 +206,6 @@ services:
   - type: web
     name: evscms-maintenance-api
     env: docker
-    rootDir: ./Services/Maintenance
-    dockerContext: . 
     dockerfilePath: Services/Maintenance/Dockerfile
     plan: free
     region: singapore
@@ -248,8 +234,6 @@ services:
   - type: web
     name: evscms-notification-api
     env: docker
-    rootDir: ./Services/Notification
-    dockerContext: . 
     dockerfilePath: Services/Notification/Dockerfile
     plan: free
     region: singapore
@@ -272,8 +256,6 @@ services:
   - type: web
     name: evscms-payment-api
     env: docker
-    rootDir: ./Services/Payment
-    dockerContext: . 
     dockerfilePath: Services/Payment/Dockerfile
     plan: free
     region: singapore
@@ -304,8 +286,6 @@ services:
   - type: web
     name: evscms-report-api
     env: docker
-    rootDir: ./Services/Report
-    dockerContext: . 
     dockerfilePath: Services/Report/Dockerfile
     plan: free
     region: singapore
@@ -330,8 +310,6 @@ services:
   - type: web
     name: evscms-staff-api
     env: docker
-    rootDir: ./Services/Staff
-    dockerContext: . 
     dockerfilePath: Services/Staff/Dockerfile
     plan: free
     region: singapore
@@ -354,8 +332,6 @@ services:
   - type: web
     name: evscms-vehicle-api
     env: docker
-    rootDir: ./Services/Vehicle
-    dockerContext: . 
     dockerfilePath: Services/Vehicle/Dockerfile
     plan: free
     region: singapore
