@@ -63,11 +63,8 @@ builder.Services.AddHttpClient<IStaffGrpcGateway, StaffGrpcGateway>(client =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 app.MapGet("/health", () => Results.Ok("Healthy ✅"));
 
 app.UseHttpsRedirection();
