@@ -345,8 +345,8 @@ public class ChatHub : Hub
         Console.WriteLine("User role: " + role);
         return role?.ToLower() switch
         {
-            "ServiceAdvisor" => SenderType.Staff,
-            "Manager" => SenderType.Staff,
+            "serviceadvisor" => SenderType.Staff,
+            "manager" => SenderType.Staff,
             _ => SenderType.Customer
         };
     }
