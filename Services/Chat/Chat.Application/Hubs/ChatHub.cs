@@ -335,16 +335,14 @@ public class ChatHub : Hub
 
     private string GetUserName()
     {
-        return Context.User?.FindFirst(ClaimTypes.Name)?.Value 
-            ?? Context.User?.FindFirst("name")?.Value 
+        return Context.User?.FindFirst(ClaimTypes.Email)?.Value 
             ?? "Unknown User";
     }
 
     private SenderType GetUserType()
     {
-        var role = Context.User?.FindFirst(ClaimTypes.Role)?.Value 
-            ?? Context.User?.FindFirst("role")?.Value;
-
+        var role = Context.User?.FindFirst(ClaimTypes.Role)?.Value;
+        Console.WriteLine("User role: " + role);
         return role?.ToLower() switch
         {
             "ServiceAdvisor" => SenderType.Staff,
@@ -355,7 +353,6 @@ public class ChatHub : Hub
 
     private string? GetUserRole()
     {
-        return Context.User?.FindFirst(ClaimTypes.Role)?.Value 
-                          ?? Context.User?.FindFirst("role")?.Value;
+        return Context.User?.FindFirst(ClaimTypes.Role)?.Value;
     }
 }
