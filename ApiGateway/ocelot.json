@@ -1,5 +1,4 @@
 ﻿{
-<<<<<<< HEAD
     "Routes": [
         {
             "DownstreamPathTemplate": "/api/Auth/{everything}",
@@ -148,8 +147,7 @@
     ],
     "GlobalConfiguration": {
         "BaseUrl": "localhost"
-    }
-=======
+    },
   "Routes": [
     {
       "DownstreamPathTemplate": "/api/Auth/{everything}",
@@ -387,5 +385,4 @@
       ]
     }
   ]
->>>>>>> 62895c9108a844ed17a1e15b6c2d7100e3ab954b
 }
