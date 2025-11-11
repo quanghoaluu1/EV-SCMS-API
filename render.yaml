@@ -1,36 +1,17 @@
-# =============================================================================
-# Render.com Blueprint - EV-SCMS Microservices
-# =============================================================================
-#
-# Deploy all services with this file:
-# 1. Push this render.yaml to the root of your GitHub repository
-# 2. Go to Render Dashboard → New → Blueprint
-# 3. Connect your GitHub repository
-# 4. Render will detect this render.yaml and build all services automatically
-#
-# All services will:
-# - Auto-deploy from main branch on push
-# - Use Docker with their respective Dockerfiles
-# - Expose port 8080
-# - Run on Free tier (services spin down after 15 min of inactivity)
-#
-# IMPORTANT: After deployment, configure sensitive environment variables
-# (marked with sync: false) manually in each service's dashboard.
-#
-# =============================================================================
+
 
 services:
   # =============================================================================
   # API Gateway (Ocelot) - Main Entry Point
   # =============================================================================
   - type: web
-    name: ev-scms-api-gateway
+    name: evscms-api-gateway
     env: docker
     dockerfilePath: ApiGateway/Dockerfile
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
@@ -42,12 +23,16 @@ services:
         value: ev-scms-auth-api.onrender.com
       - key: BOOKING_API_HOST
         value: ev-scms-booking-api.onrender.com
+      - key: CHAT_API_HOST
+        value: ev-scms-chat-api.onrender.com
       - key: CUSTOMER_API_HOST
         value: ev-scms-customer-api.onrender.com
       - key: INVENTORY_API_HOST
         value: ev-scms-inventory-api.onrender.com
       - key: MAINTENANCE_API_HOST
         value: ev-scms-maintenance-api.onrender.com
+      - key: NOTIFICATION_API_HOST
+        value: ev-scms-notification-api.onrender.com
       - key: PAYMENT_API_HOST
         value: ev-scms-payment-api.onrender.com
       - key: REPORT_API_HOST
@@ -61,13 +46,13 @@ services:
   # Auth Service - Authentication & Authorization
   # =============================================================================
   - type: web
-    name: ev-scms-auth-api
+    name: evscms-auth-api
     env: docker
     dockerfilePath: Services/Auth/Dockerfile
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     healthCheckPath: /health
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
@@ -76,14 +61,32 @@ services:
         value: http://+:8080
       - key: ConnectionStrings__DefaultConnection
         sync: false # Configure in Render dashboard
+      - key: RedisSettings__ConnectionString
+        sync: false # Configure in Render dashboard (Redis connection string)
+      - key: RedisSettings__InstanceName
+        value: AuthApiInstance
       - key: Jwt__Key
         sync: false # Configure in Render dashboard (use: openssl rand -base64 32)
       - key: Jwt__Issuer
-        value: ev-scms-auth
+        value: evscms-issuer
       - key: Jwt__Audience
-        value: ev-scms-api
+        value: evscms-audience
       - key: Jwt__ExpiresInMinutes
         value: "120"
+      - key: SendGrid__ApiKey
+        sync: false # Configure in Render dashboard
+      - key: SendGrid__FromEmail
+        sync: false # Configure in Render dashboard
+      - key: SendGrid__FromName
+        sync: false # Configure in Render dashboard
+      - key: OtpSettings__OtpLength
+        value: "6"
+      - key: OtpSettings__ExpiryMinutes
+        value: "5"
+      - key: OtpSettings__MaxAttempts
+        value: "3"
+      - key: OtpSettings__ResendCooldownSeconds
+        value: "60"
       - key: StaffHost
         sync: false # Configure in Render dashboard
       - key: CustomerHost
@@ -93,13 +96,13 @@ services:
   # Booking Service
   # =============================================================================
   - type: web
-    name: ev-scms-booking-api
+    name: evscms-booking-api
     env: docker
     dockerfilePath: Services/Booking/Dockerfile
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     healthCheckPath: /health
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
@@ -116,16 +119,56 @@ services:
         sync: false # Configure in Render dashboard
 
   # =============================================================================
+  # Chat Service - Real-time Chat with AI Support
+  # =============================================================================
+  - type: web
+    name: evscms-chat-api
+    env: docker
+    dockerfilePath: Services/Chat/Dockerfile
+    plan: free
+    region: singapore
+    branch: main
+    autoDeploy: false
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      - key: MongoDbSettings__ConnectionString
+        sync: false # Configure in Render dashboard (MongoDB connection string)
+      - key: MongoDbSettings__DatabaseName
+        value: chatdb
+      - key: RedisSettings__ConnectionString
+        sync: false # Configure in Render dashboard (Redis connection string)
+      - key: RedisSettings__InstanceName
+        value: ChatService
+      - key: JwtSettings__Key
+        sync: false # Configure in Render dashboard (use: openssl rand -base64 32)
+      - key: JwtSettings__Issuer
+        value: evscms-issuer
+      - key: JwtSettings__Audience
+        value: evscms-audience
+      - key: JwtSettings__ExpiresInMinutes
+        value: "120"
+      - key: GeminiSettings__ApiKey
+        sync: false # Configure in Render dashboard (Google Gemini API key)
+      - key: GeminiSettings__ModelId
+        value: gemini-2.5-flash
+      - key: StaffHost
+        sync: false # Configure in Render dashboard
+
+  # =============================================================================
   # Customer Service
   # =============================================================================
   - type: web
-    name: ev-scms-customer-api
+    name: evscms-customer-api
     env: docker
     dockerfilePath: Services/Customer/Dockerfile
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     healthCheckPath: /health
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
@@ -141,13 +184,13 @@ services:
   # Inventory Service
   # =============================================================================
   - type: web
-    name: ev-scms-inventory-api
+    name: evscms-inventory-api
     env: docker
     dockerfilePath: Services/Inventory/Dockerfile
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     healthCheckPath: /health
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
@@ -161,13 +204,13 @@ services:
   # Maintenance Service
   # =============================================================================
   - type: web
-    name: ev-scms-maintenance-api
+    name: evscms-maintenance-api
     env: docker
     dockerfilePath: Services/Maintenance/Dockerfile
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     healthCheckPath: /health
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
@@ -189,13 +232,13 @@ services:
   # Notification Service
   # =============================================================================
   - type: web
-    name: ev-scms-notification-api
+    name: evscms-notification-api
     env: docker
     dockerfilePath: Services/Notification/Dockerfile
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     healthCheckPath: /health
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
@@ -211,13 +254,13 @@ services:
   # Payment Service
   # =============================================================================
   - type: web
-    name: ev-scms-payment-api
+    name: evscms-payment-api
     env: docker
     dockerfilePath: Services/Payment/Dockerfile
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     healthCheckPath: /health
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
@@ -241,13 +284,13 @@ services:
   # Report Service
   # =============================================================================
   - type: web
-    name: ev-scms-report-api
+    name: evscms-report-api
     env: docker
     dockerfilePath: Services/Report/Dockerfile
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     healthCheckPath: /health
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
@@ -265,13 +308,13 @@ services:
   # Staff Service
   # =============================================================================
   - type: web
-    name: ev-scms-staff-api
+    name: evscms-staff-api
     env: docker
     dockerfilePath: Services/Staff/Dockerfile
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     healthCheckPath: /health
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
@@ -287,13 +330,13 @@ services:
   # Vehicle Service
   # =============================================================================
   - type: web
-    name: ev-scms-vehicle-api
+    name: evscms-vehicle-api
     env: docker
     dockerfilePath: Services/Vehicle/Dockerfile
     plan: free
     region: singapore
     branch: main
-    autoDeploy: true
+    autoDeploy: false
     healthCheckPath: /health
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
@@ -304,20 +347,3 @@ services:
         sync: false # Configure in Render dashboard
       - key: CustomerHost
         sync: false # Configure in Render dashboard
-
-# =============================================================================
-# Optional: Database Services
-# =============================================================================
-# Uncomment to add managed PostgreSQL database
-#
-# databases:
-#   - name: ev-scms-postgres
-#     plan: free
-#     region: oregon
-#     databaseName: evscms
-#     user: evscms_user
-#
-# After deployment, connection string will be available in Render dashboard
-# and can be used for ConnectionStrings__DefaultConnection environment variable
-# =============================================================================
-

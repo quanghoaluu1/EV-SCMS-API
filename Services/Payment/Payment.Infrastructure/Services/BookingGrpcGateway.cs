@@ -28,6 +28,7 @@ public class BookingGrpcGateway : IBookingGrpcGateway
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
+                _logger.LogInformation("Content: {Content}", content);
                 var jsonDoc = JsonDocument.Parse(content);
                 var root = jsonDoc.RootElement;
                 
@@ -42,6 +43,8 @@ public class BookingGrpcGateway : IBookingGrpcGateway
                     BookingId = bookingId.ToString(),
                     CustomerId = data.TryGetProperty("customerId", out var custId) ? custId.ToString() : string.Empty,
                     VehicleId = data.TryGetProperty("vehicleId", out var vehId) ? vehId.ToString() : string.Empty,
+                    StaffId = data.TryGetProperty("staffId", out var staffId) ? staffId.ToString() : string.Empty,
+                    TotalCost = data.TryGetProperty("totalCost", out var totalCost) ? totalCost.GetInt32() : 0,
                     Status = GetStatusAsString(data)
                 };
             }

@@ -1,71 +1,63 @@
-# .dockerignore - Optimize Docker build by excluding unnecessary files
+# ============================================================================
+# Docker Ignore File
+# ============================================================================
+# Files and directories to exclude from Docker build context
+# ============================================================================
 
 # Git
 .git/
 .gitignore
 .gitattributes
 
-# CI/CD
-.github/
-.gitlab-ci.yml
-azure-pipelines.yml
-
-# IDEs
-.vs/
+# IDE
 .vscode/
 .idea/
 *.suo
 *.user
 *.userosscache
 *.sln.docstates
-.DS_Store
-Thumbs.db
+.vs/
 
-# Build outputs (we only need source code, not pre-built binaries)
+# Build artifacts
 **/bin/
 **/obj/
 **/out/
 **/publish/
 
+# NuGet
+*.nupkg
+**/packages/
+.nuget/
+
+# Test results
+**/TestResults/
+**/*.trx
+
 # Documentation
 *.md
-README.md
-docs/
+!README.md
 
-# Tests
-**/*.Tests/
-**/*.Test/
-**/tests/
-**/test/
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
 
-# Package files
-*.nupkg
-*.snupkg
+# Environment
+.env
+.env.*
+env.example
 
 # Logs
 *.log
 logs/
 
-# OS files
-**/.DS_Store
-**/Thumbs.db
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
 
 # Temporary files
 *.tmp
 *.temp
-*.swp
-*.swo
-*~
-
-# Node modules (if any frontend)
-**/node_modules/
-
-# Environment files (should be set via Render environment variables)
-**/.env
-**/.env.*
-!**/.env.example
-
-# Other
-*.http
-*.rest
-
+~$*

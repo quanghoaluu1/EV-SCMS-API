@@ -129,6 +129,45 @@ public class StaffService : IStaffService
             };
         }
 
+        public async Task<ResultDto<List<StaffDto>>> GetAllStaffByRoleAsync(int role)
+        {
+            var userReply = await _authGrpcGateway.GetUserByRole(role);
+            if (userReply is not { IsSuccess: true })
+            {
+                return new ResultDto<List<StaffDto>>()
+                {
+                    IsSuccess = false,
+                    Message = "Failed to retrieve users by role through gRPC",
+                    Data = null,
+                };
+            }
+            var staffDtos = new List<StaffDto>();
+            foreach (var user in userReply.Data)
+            {
+                var staff = await _staffRepository.GetByUserIdAsync(Guid.Parse(user.Id));
+                if (staff != null)
+                {
+                    var staffDto = new StaffDto
+                    {
+                        StaffId = staff.Id,
+                        UserId = staff.UserId,
+                        FullName = user.FullName,
+                        Email = user.Email,
+                        PhoneNumber = user.PhoneNumber,
+                        Role = user.Role
+                    };
+                    staffDtos.Add(staffDto);
+                }
+            }
+            return new ResultDto<List<StaffDto>>()
+            {
+                IsSuccess = true,
+                Message = "Staffs retrieved successfully",
+                Data = staffDtos,
+            };
+        }
+
+
         public async Task<StaffDto> CreateStaffAsync(CreateStaffDto dto)
         {
             var staff = new Staff
@@ -163,4 +202,5 @@ public class StaffService : IStaffService
             await _staffRepository.DeleteAsync(id);
             return true;
         }
+        
     }

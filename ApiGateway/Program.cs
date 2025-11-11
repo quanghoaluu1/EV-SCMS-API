@@ -5,54 +5,43 @@ using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-Env.Load();
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// Load Ocelot configuration
+builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
 
-// Read ocelot.json and replace placeholders with environment variables
-var ocelotConfigPath = Path.Combine(Directory.GetCurrentDirectory(), "ocelot.json");
-var ocelotConfig = File.ReadAllText(ocelotConfigPath);
-
-// Replace all #{VAR_NAME} placeholders with actual environment variables
-ocelotConfig = Regex.Replace(ocelotConfig, @"#\{([^}]+)\}", match =>
+builder.Services.AddCors(options =>
 {
-    var envVarName = match.Groups[1].Value;
-    var envVarValue = Environment.GetEnvironmentVariable(envVarName);
-    
-    if (string.IsNullOrEmpty(envVarValue))
+    options.AddPolicy("CorsPolicy", policy =>
     {
-        Console.WriteLine($"[WARNING] Environment variable {envVarName} is not set!");
-        return match.Value; // Keep placeholder if env var not found
-    }
-    
-    Console.WriteLine($"[DEBUG] Replaced {envVarName} = {envVarValue}");
-    return envVarValue;
+        policy.WithOrigins("http://localhost:5173")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
 });
 
-// Write the processed config to a temporary file
-var tempOcelotPath = Path.Combine(Directory.GetCurrentDirectory(), "ocelot.processed.json");
-File.WriteAllText(tempOcelotPath, ocelotConfig);
-
-// Load the processed configuration
-builder.Configuration.AddJsonFile("ocelot.processed.json", optional: false, reloadOnChange: true).AddEnvironmentVariables();
-builder.Services.AddOcelot();
+// Add Ocelot and SwaggerForOcelot
+builder.Services.AddOcelot(builder.Configuration);
+builder.Services.AddSwaggerForOcelot(builder.Configuration);
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Configure the HTTP request pipeline
+// Use HTTP in production - cloud platforms handle HTTPS termination
+// var port = Environment.GetEnvironmentVariable("PORT") ?? "7088";
+// app.Urls.Add($"http://0.0.0.0:{port}");
+app.UseCors("CorsPolicy");
+
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseSwaggerForOcelotUI(opt =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    opt.PathToSwaggerGenerator = "/swagger/docs";
+});
 
 await app.UseOcelot();
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 

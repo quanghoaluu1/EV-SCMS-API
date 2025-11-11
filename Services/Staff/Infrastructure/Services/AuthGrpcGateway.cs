@@ -14,17 +14,17 @@ public class AuthGrpcGateway : IAuthGrpcGateway
         _httpClient = httpClient;
     }
     
-    public async Task<GetUserByIdResponse> GetUserById(Guid userId)
+    public async Task<ApiResponse<UserData>> GetUserById(Guid userId)
     {
         try
         {
             var response = await _httpClient.GetAsync($"api/Auth/id?userId={userId}");
-            var userResponse = await response.Content.ReadFromJsonAsync<GetUserByIdResponse>();
+            var userResponse = await response.Content.ReadFromJsonAsync<ApiResponse<UserData>>();
             Console.WriteLine("userResponse:" + JsonSerializer.Serialize(userResponse));
             
             if (userResponse is { IsSuccess: true, Data: not null })
             {
-                return new GetUserByIdResponse
+                return new ApiResponse<UserData>
                 {
                     IsSuccess = true,
                     Message = "User found",
@@ -33,7 +33,7 @@ public class AuthGrpcGateway : IAuthGrpcGateway
             }
             else
             {
-                return new GetUserByIdResponse
+                return new ApiResponse<UserData>
                 {
                     IsSuccess = false,
                     Message = $"User not found: {response.StatusCode}"
@@ -42,11 +42,36 @@ public class AuthGrpcGateway : IAuthGrpcGateway
         }
         catch (Exception ex)
         {
-            return new GetUserByIdResponse
+            return new ApiResponse<UserData>
             {
                 IsSuccess = false,
                 Message = $"Error getting user: {ex.Message}"
             };
         }
+    }
+
+    public async Task<ApiResponse<List<UserData>>> GetUserByRole(int role)
+    {
+        var response = await _httpClient.GetAsync($"api/Auth/role?role={role}");
+        var userResponse = await response.Content.ReadFromJsonAsync<ApiResponse<List<UserData>>>();
+
+        Console.WriteLine("userResponse:" + JsonSerializer.Serialize(userResponse));
+
+        if (userResponse is { IsSuccess: true, Data: not null })
+        {
+            return new ApiResponse<List<UserData>>
+            {
+                IsSuccess = true,
+                Message = "Users found",
+                Data = userResponse.Data
+            };
+        }
+
+        return new ApiResponse<List<UserData>>
+        {
+            IsSuccess = false,
+            Message = userResponse?.Message ?? "No users found",
+            Data = new List<UserData>()
+        };
     }
 }
